@@ -9,15 +9,15 @@ public class Client {
 	private String serverIP;
 	private int serverPort;
 	private Socket socket;
-	private ConnectGUI gui;
-	boolean connected = false;
+	private ClientGUI gui;
+	boolean connected = true;
 	private LoginGUI gui2;
 	private LoginNewUserGUI gui3;
 	private DataOutputStream output;
 	private DataInputStream input;
 	private Client client;
 
-	public Client( String serverIP, int serverPort, ConnectGUI gui ) { 
+	public Client( String serverIP, int serverPort, ClientGUI gui ) { 
 		this.serverIP = serverIP;
 		this.serverPort = serverPort;
 		this.gui = gui;
@@ -54,7 +54,7 @@ public class Client {
 				socket = new Socket( InetAddress.getByName( serverIP ), serverPort );
 				output = new DataOutputStream( socket.getOutputStream() );
 
-				output.writeUTF( getMacAdress( socket ) );
+				output.writeUTF( "1337" );
 				output.flush(); 
 				
 				input = new DataInputStream( socket.getInputStream() );
@@ -97,11 +97,11 @@ public class Client {
 				output.writeUTF( password );
 				output.flush();
 
-				connected = input.readBoolean();
-//		message = input.readUTF();
-				if( connected ) {
+//				connected = input.readBoolean();
+				message = input.readUTF(); // Andreas fel ;-)
+				if( message.equals( "sant" ) ) {
 					gui2.setInfoDisplay( "Inloggad" );
-					while(connected) {
+					while( connected ) {
 						respons = JOptionPane.showInputDialog( "1. Lampa1\n2. Lampa2\n4. Disco\n0. Logga ut" );
 						if( respons.equals("0") ) {
 							connected = false;
@@ -139,9 +139,8 @@ public class Client {
 				output.writeUTF( password );
 				output.flush();
 
-				connected = input.readBoolean();
-
-//		message = input.readUTF();
+//				connected = input.readBoolean();
+				message = input.readUTF(); // Andreas fel ;-)
 				if( connected ) {
 					gui3.setInfoDisplay( "Inloggad" );
 					while(connected) {
@@ -187,8 +186,4 @@ public class Client {
 			System.out.println( e );
 		}
 	}
-
-//	public static void main( String[] args ) {
-//		new Client( "10.2.7.14", 5555 );
-//	}
 }

@@ -8,10 +8,10 @@ import javax.swing.*;
 /**
  * Class that handles the login sequence.
  * 
- * @author Gustav Friberg, Andrée Höög, Per Hultman, Peter Johansson
+ * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  * 
  */
-public class ConnectGUI {
+public class ClientGUI {
 	private JFrame frame;
 	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
 	private JLabel lbl = new JLabel("Ange IP-adress:");
@@ -22,11 +22,11 @@ public class ConnectGUI {
 	private JPanel panel4 = new JPanel( new GridLayout( 1, 2 ) );
 	private JPanel panel5 = new JPanel( new GridLayout( 1, 2 ) );
 	private JPanel panel6 = new JPanel( new BorderLayout() );
-	private JTextField ipTextField = new JTextField("192.168.2.70");
+	private JTextField ipTextField = new JTextField("10.2.13.151");
 	private JTextField portTextField = new JTextField("5555");
 	private JButton okBtn = new JButton("OK");
 	private JButton closeBtn = new JButton("CLOSE");
-	private ConnectGUI gui;
+	private ClientGUI gui;
 	
 	/**
 	 * Constructor for Login class.
@@ -34,7 +34,7 @@ public class ConnectGUI {
 	 * @param controller
 	 *            Controller
 	 */
-	public ConnectGUI() {
+	public ClientGUI() {
 		frame = new JFrame();
 		gui = this;
 		
@@ -130,8 +130,5 @@ public class ConnectGUI {
 				System.exit(0);
 			}
 		}
-	}
-	public static void main( String[] args ) {
-		new ConnectGUI();
 	}
 }

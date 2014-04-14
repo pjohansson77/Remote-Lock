@@ -8,7 +8,7 @@ import javax.swing.*;
 /**
  * Class that handles the login sequence.
  * 
- * @author Gustav Friberg, Andrée Höög, Per Hultman, Peter Johansson
+ * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  * 
  */
 public class LoginGUI {
