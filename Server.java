@@ -1,43 +1,41 @@
-package test;
+package arduino;
 
 import java.net.*;
 import java.util.*;
 import java.io.*;
 
+/**
+ * A server that listens for clients and verifies password and mac-addresses.
+ * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ *
+ */
 public class Server {
 	private int port;
 	boolean connected = false;
 
+	/**
+	 * A constructor that starts a new connect thread.
+	 * @param port The port that the server listens on.
+	 */
 	public Server( int port ) {
 		this.port = port;
 		Thread connectThread = new Thread( new Connect() ); 
 		connectThread.start();
 	}
-
+	/**
+	 * A private method that returns the date and time.
+	 * @return date and time
+	 */
 	private Date getTime() {
 		Calendar cal = Calendar.getInstance();
 		return cal.getTime();
 	}
 
-	//	private String getMacAdress( Socket socket ) {
-	//		String macAdress = "";
-	//
-	//		try {
-	//			NetworkInterface net = NetworkInterface.getByInetAddress( socket.getInetAddress() );
-	//			if( net != null ) {
-	//				byte[] mac = net.getHardwareAddress();
-	//				for ( int i = 0; i < mac.length; i++ ) {
-	//					macAdress += String.format("%02x", mac[i]) + ":";   
-	//				}
-	//				macAdress = macAdress.substring( 0, macAdress.length() - 1 );
-	//			} else
-	//				macAdress = "null";           
-	//		} catch( IOException e1 ) {
-	//			System.out.println( e1 );
-	//		} 
-	//		return macAdress;
-	//	}
-
+	/**
+	 * A private class that handles a connecting client and verifies the mac-address.
+	 * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+	 *
+	 */
 	private class Connect implements Runnable {
 		ServerSocket serverSocket;
 		Socket socket;
@@ -45,6 +43,9 @@ public class Server {
 		DataOutputStream output;
 		DataInputStream input;
 
+		/**
+		 * A method that listens for new clients.
+		 */
 		public void run() {
 			try {
 				serverSocket = new ServerSocket( port ); 
@@ -54,13 +55,16 @@ public class Server {
 
 					input = new DataInputStream( socket.getInputStream() );
 					mac = input.readUTF();
-
+					
+					// If the mac-address is known the client only need to input the password. 
 					if( mac.equals( "" ) ) {
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF("Connected");
 						output.flush();
 						Thread clientThread = new Thread( new ConnectAndListenToClient( socket, output, input ) );
 						clientThread.start();
+						
+						// If the mac-address is not known the client also needs a username.
 					} else {
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF("Unknown");
@@ -80,32 +84,41 @@ public class Server {
 		}
 	}
 
+	/**
+	 * A class that verifies the password if the client is known.
+	 * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+	 *
+	 */
 	private class ConnectAndListenToClient implements Runnable { 
 		Socket socket;
 		DataInputStream input;
 		DataOutputStream output;
 		String password;
-
+		
+		/**
+		 * The constructor receives the current socket and streams.
+		 * @param socket The active socket.
+		 * @param output The active OutputStream.
+		 * @param input The active InputStream.
+		 */
 		public ConnectAndListenToClient( Socket socket, DataOutputStream output, DataInputStream input ) {
 			this.socket = socket;
 			this.input = input;
 			this.output = output;
 		}
 
+		/**
+		 * A method that verifies the password. If the password is not correct the user is disconnected.
+		 */
 		public void run() {
 			try {
 				password = input.readUTF();
-				//				System.out.println( socket.getInetAddress().getHostName() + " sent: " + message + "\n" );
 				if( password.toLowerCase().equals( "alfa" ) ) {
-					//					System.out.println("Sant");
 					output.writeBoolean( true );
-					//					output.writeUTF("sant");
 					output.flush();
 					choices( socket, output, input );
 				} else {
-					//					System.out.println("Falskt");
 					output.writeBoolean( false );
-					//					output.writeUTF("falskt");
 					output.flush();
 				}
 			} catch(IOException e) {} 
@@ -115,34 +128,43 @@ public class Server {
 			} catch( Exception e ) {}
 		} 
 	}
-
+	
+	/**
+	 *  A class that verifies the password if the client is unknown.
+	 * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+	 *
+	 */
 	private class ConnectNewAndListenToClient implements Runnable { 
 		Socket socket;
 		DataInputStream input;
 		DataOutputStream output;
 		String username, password;
 
+		/**
+		 * A method that verifies the password. If the password is not correct the user is disconnected.
+		 * @param socket The active socket.
+		 * @param output The active OutputStream.
+		 * @param input The active InputStream.
+		 */
 		public ConnectNewAndListenToClient( Socket socket, DataOutputStream output, DataInputStream input ) {
 			this.socket = socket;
 			this.input = input;
 			this.output = output;
 		}
 
+		/**
+		 * A method that verifies the password and the "admin" user.
+		 */
 		public void run() {
 			try {
 				username = input.readUTF();
 				password = input.readUTF();
-				//				System.out.println( socket.getInetAddress().getHostName() + " sent: " + message + "\n" );
 				if( username.toLowerCase().equals( "admin" ) && password.toLowerCase().equals( "alfa" ) ) {
-					//					System.out.println("Sant");
 					output.writeBoolean( true );
-					//					output.writeUTF("sant");
 					output.flush();
 					choices( socket, output, input );
 				} else {
-					//				System.out.println("Falskt");
 					output.writeBoolean( false );
-					//				output.writeUTF("falskt");
 					output.flush();
 				} 
 			} catch(IOException e) {} 
@@ -153,6 +175,12 @@ public class Server {
 		} 
 	}
 	
+	/**
+	 * A private method that print out the users choices and sends the choice to the ArduinoClient class.
+	 * @param socket The active socket.
+	 * @param output The active OutputStream.
+	 * @param input The active InputStream.
+	 */
 	private void choices( Socket socket, DataOutputStream output, DataInputStream input ) {
 		String message;
 		int num;
@@ -160,6 +188,9 @@ public class Server {
 			while( connected ) {
 				message = input.readUTF();
 				num = Integer.parseInt( message );
+				ArduinoClient arduino = new ArduinoClient("169.254.146.12", 6666);
+				arduino.TalkToArduino(num);
+				
 				if( num == 0 ) {
 					connected = false;
 				} else {
