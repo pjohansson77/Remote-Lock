@@ -43,7 +43,7 @@ public class ArduinoChoices {
 
 				num = Integer.parseInt( message );
 //				ArduinoClient arduino = new ArduinoClient("169.254.146.12", 6666);
-				talkToArduino(num);
+				talkToArduino( num );
 
 				if( num == 0 ) {
 					connected = false;
@@ -71,23 +71,23 @@ public class ArduinoChoices {
 	 * A method that sends the clients choices to the arduino.
 	 * @param message The message from the client to the arduino.
 	 */
-	private void talkToArduino(int message) {
+	private void talkToArduino( int message ) {
 		DataOutputStream output;
 		Socket socket = null;
 		System.out.println( message );
-		try {
-			socket = new Socket( InetAddress.getByName( "169.254.146.12" ), 6666 );
-			output = new DataOutputStream(socket.getOutputStream());
-
-			output.write( message ); // Message to the Arduino
-			output.flush();
-		} catch(Exception e1 ) {
-			System.out.println( e1 );
-		}
-		try {
-			socket.close();
-		} catch( IOException e ) {
-			System.out.println( e );
-		}
+//		try {
+//			socket = new Socket( InetAddress.getByName( "169.254.146.12" ), 6666 );
+//			output = new DataOutputStream( socket.getOutputStream() );
+//
+//			output.write( message ); // Message to the Arduino
+//			output.flush();
+//		} catch(Exception e1 ) {
+//			System.out.println( e1 );
+//		}
+//		try {
+//			socket.close();
+//		} catch( IOException e ) {
+//			System.out.println( e );
+//		}
 	}
 }

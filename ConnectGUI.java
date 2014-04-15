@@ -11,7 +11,7 @@ import javax.swing.*;
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  * 
  */
-public class ClientGUI {
+public class ConnectGUI {
 	private JFrame frame;
 	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
 	private JLabel lbl = new JLabel("Ange IP-adress:");
@@ -26,7 +26,7 @@ public class ClientGUI {
 	private JTextField portTextField = new JTextField("5555");
 	private JButton okBtn = new JButton("OK");
 	private JButton closeBtn = new JButton("CLOSE");
-	private ClientGUI gui;
+	private ConnectGUI gui;
 	
 	/**
 	 * Constructor for Login class.
@@ -34,7 +34,7 @@ public class ClientGUI {
 	 * @param controller
 	 *            Controller
 	 */
-	public ClientGUI() {
+	public ConnectGUI() {
 		frame = new JFrame();
 		gui = this;
 		

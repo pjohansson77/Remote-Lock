@@ -9,7 +9,7 @@ public class Client {
 	private String serverIP;
 	private int serverPort;
 	private Socket socket;
-	private ClientGUI gui;
+	private ConnectGUI gui;
 	boolean connected = true;
 	private LoginGUI gui2;
 	private LoginNewUserGUI gui3;
@@ -17,7 +17,7 @@ public class Client {
 	private DataInputStream input;
 	private Client client;
 
-	public Client( String serverIP, int serverPort, ClientGUI gui ) { 
+	public Client( String serverIP, int serverPort, ConnectGUI gui ) { 
 		this.serverIP = serverIP;
 		this.serverPort = serverPort;
 		this.gui = gui;
@@ -53,8 +53,8 @@ public class Client {
 			try {
 				socket = new Socket( InetAddress.getByName( serverIP ), serverPort );
 				output = new DataOutputStream( socket.getOutputStream() );
-
-				output.writeUTF( "1337" );
+				
+				output.writeUTF( getMacAdress( socket ) );
 				output.flush(); 
 				
 				input = new DataInputStream( socket.getInputStream() );
@@ -64,8 +64,11 @@ public class Client {
 					gui2 = new LoginGUI( client );
 					gui2.setInfoDisplay( message );
 				} else {
-					gui3 = new LoginNewUserGUI( client );
-					gui3.setInfoDisplay( message );
+					try {
+						socket.close();
+					} catch( IOException e ) {
+						System.out.println( e );
+					}
 				}
 				
 			} catch(Exception e1 ) {
@@ -76,11 +79,6 @@ public class Client {
 	
 	public void startLogin( String password ) {
 		Thread newThread = new Thread( new LoginToServer( password ) );
-		newThread.start();
-	}
-	
-	public void startNewUserLogin( String username, String password ) {
-		Thread newThread = new Thread( new LoginNewUserToServer( username, password ) );
 		newThread.start();
 	}
 	
@@ -123,62 +121,9 @@ public class Client {
 		}
 	}
 	
-	private class LoginNewUserToServer implements Runnable {
-		String message, respons, username, password;
-		
-		public LoginNewUserToServer( String username, String password ) {
-			this.username = username;
-			this.password = password;
-		}
-		
-		public void run() {
-			try {
-				output.writeUTF( username );
-				output.flush();
-
-				output.writeUTF( password );
-				output.flush();
-
-//				connected = input.readBoolean();
-				message = input.readUTF(); // Andreas fel ;-)
-				if( connected ) {
-					gui3.setInfoDisplay( "Inloggad" );
-					while(connected) {
-						respons = JOptionPane.showInputDialog( "1. Lampa1\n2. Lampa2\n4. Disco\n0. Logga ut" );
-						if( respons.equals("0") ) {
-							connected = false;
-							logOutNewUser();
-						} else {
-							output.writeUTF( respons );
-							output.flush();
-							message = input.readUTF();
-							gui3.setInfoDisplay( message );
-						}
-					}
-				} else {
-					System.out.println( "Fel användarnamn eller lösenord" );
-					logOutNewUser();
-				} 
-			} catch(Exception e1 ) {
-				System.out.println( e1 );
-			}
-		}
-	}
-	
 	public void logOut() {
 		try {
 			gui2.frameStatus( false );
-			gui.frameStatus( true );
-			gui.setInfoDisplay( "Utloggad" );
-			socket.close();
-		} catch( IOException e ) {
-			System.out.println( e );
-		}
-	}
-	
-	public void logOutNewUser() {
-		try {
-			gui3.frameStatus( false );
 			gui.frameStatus( true );
 			gui.setInfoDisplay( "Utloggad" );
 			socket.close();

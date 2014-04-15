@@ -12,7 +12,7 @@ public class MainServer {
 	 * @param port The port that the server listens on.
 	 */
 	public MainServer( int port ) {
-		Thread connectThread = new Thread( new ConnectToServer( port ) ); 
+		Thread connectThread = new Thread( new ListenForClients( port ) ); 
 		connectThread.start();
 	}
 	
