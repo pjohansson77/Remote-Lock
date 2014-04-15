@@ -44,7 +44,8 @@ public class ConnectNewAndListenToClient implements Runnable {
 				output.flush();
 //				output.writeBoolean( true );
 				
-				choices( socket, output, input );
+				Choices choice = new Choices( socket, output, input );
+				choice.arduinoChoices();
 			} else {
 				output.writeUTF( "falskt" ); // Andreas fel ;-)
 				output.flush();
@@ -64,43 +65,5 @@ public class ConnectNewAndListenToClient implements Runnable {
 	private Date getTime() {
 		Calendar cal = Calendar.getInstance();
 		return cal.getTime();
-	}
-	
-	/**
-	 * A private method that print out the users choices and sends the choice to the ArduinoClient class.
-	 * @param socket The active socket.
-	 * @param output The active OutputStream.
-	 * @param input The active InputStream.
-	 */
-	private void choices( Socket socket, DataOutputStream output, DataInputStream input ) {
-		String message;
-		int num;
-		try{
-			while( connected ) {
-				message = input.readUTF();
-				num = Integer.parseInt( message );
-//				ArduinoClient arduino = new ArduinoClient("169.254.146.12", 6666);
-//				arduino.TalkToArduino(num);
-				
-				if( num == 0 ) {
-					connected = false;
-				} else {
-					System.out.println( "IP-adress: " + socket.getInetAddress().getHostAddress() + " sent: " + message + "\n" );
-					if( num == 1 ) {
-						output.writeUTF( "Lampa1" );
-					}
-					else if( num == 2 ) {
-						output.writeUTF( "Lampa2" );
-					}
-					else if( num == 4 ) {
-						output.writeUTF( "Disco" );
-					} 
-					else {
-						output.writeUTF("Fel val");
-					}
-					output.flush();
-				} 
-			} 
-		} catch(IOException e) {}
 	}
 }
