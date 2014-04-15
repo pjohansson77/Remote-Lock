@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 /**
- * A class that prints out the users choices and sends the choice to the ArduinoClient class.
+ * A class that sends the clients choices to the arduino and sends a confirmation back to the client.
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  * 
  */
@@ -32,7 +32,7 @@ public class ArduinoChoices {
 	}
 
 	/**
-	 * A method that listens to the clients choice and sends it to the talkToArduino method.
+	 * A method that listens to the clients choices and sends it to the talkToArduino method.
 	 *
 	 */
 	public void listenToArduinoChoices() {
@@ -68,7 +68,7 @@ public class ArduinoChoices {
 	}
 	
 	/**
-	 * A method that sends the clients choice to the arduino.
+	 * A method that sends the clients choices to the arduino.
 	 * @param message The message from the client to the arduino.
 	 */
 	private void talkToArduino(int message) {

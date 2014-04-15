@@ -9,7 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * A server that listens for clients and verifies a know client with an unique id.
+ * A server that listens for clients and verifies a known client with an unique id.
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  *
  */
