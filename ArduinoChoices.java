@@ -3,6 +3,7 @@ package test;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -10,7 +11,7 @@ import java.net.Socket;
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  * 
  */
-public class Choices {
+public class ArduinoChoices {
 	private String message;
 	private int num;
 	private boolean connected = true;
@@ -24,17 +25,17 @@ public class Choices {
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 */
-	public Choices( Socket socket, DataOutputStream output, DataInputStream input ) {
+	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 	}
 
 	/**
-	 * A method that sends the clients choices to the ArduinoClient class.
+	 * A method that listens to the clients choice and sends it to the talkToArduino method.
 	 *
 	 */
-	public void arduinoChoices() {
+	public void listenToArduinoChoices() {
 		try{
 			while( connected ) {
 
@@ -42,7 +43,7 @@ public class Choices {
 
 				num = Integer.parseInt( message );
 //				ArduinoClient arduino = new ArduinoClient("169.254.146.12", 6666);
-//				arduino.TalkToArduino(num);
+				talkToArduino(num);
 
 				if( num == 0 ) {
 					connected = false;
@@ -64,5 +65,29 @@ public class Choices {
 				} 
 			} 
 		} catch(IOException e) {}
+	}
+	
+	/**
+	 * A method that sends the clients choice to the arduino.
+	 * @param message The message from the client to the arduino.
+	 */
+	private void talkToArduino(int message) {
+		DataOutputStream output;
+		Socket socket = null;
+		System.out.println( message );
+		try {
+			socket = new Socket( InetAddress.getByName( "169.254.146.12" ), 6666 );
+			output = new DataOutputStream(socket.getOutputStream());
+
+			output.write( message ); // Message to the Arduino
+			output.flush();
+		} catch(Exception e1 ) {
+			System.out.println( e1 );
+		}
+		try {
+			socket.close();
+		} catch( IOException e ) {
+			System.out.println( e );
+		}
 	}
 }

@@ -9,11 +9,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * A server that listens for clients and verifies password and mac-addresses.
+ * A server that listens for clients and verifies a know client with an unique id.
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  *
  */
-public class Server implements Runnable {
+public class ConnectToServer implements Runnable {
 	private int port;
 	private ServerSocket serverSocket;
 	private Socket socket;
@@ -25,7 +25,7 @@ public class Server implements Runnable {
 	 * A constructor that gets a port number to listen on.
 	 * @param port The port that the server listens on.
 	 */
-	public Server( int port ) {
+	public ConnectToServer( int port ) {
 		this.port = port;
 	}
 	
@@ -47,7 +47,7 @@ public class Server implements Runnable {
 					output = new DataOutputStream( socket.getOutputStream() );
 					output.writeUTF( "Connected" );
 					output.flush();
-					Thread clientThread = new Thread( new ConnectAndListenToClient( socket, output, input ) );
+					Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input ) );
 					clientThread.start();
 					
 					// If the mac-address is not known the client also needs a username.
@@ -56,7 +56,7 @@ public class Server implements Runnable {
 					output = new DataOutputStream( socket.getOutputStream() );
 					output.writeUTF( "Unknown" );
 					output.flush();
-					Thread clientThread = new Thread( new ConnectNewAndListenToClient( socket, output, input ) );
+					Thread clientThread = new Thread( new ListenToNewClientPassword( socket, output, input ) );
 					clientThread.start();
 				}
 				System.out.println( "Connected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress()

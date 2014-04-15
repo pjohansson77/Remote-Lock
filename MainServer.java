@@ -1,7 +1,7 @@
 package test;
 
 /**
- * A main klass that starts the server.
+ * A main class that starts the server.
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  *
  */
@@ -12,7 +12,7 @@ public class MainServer {
 	 * @param port The port that the server listens on.
 	 */
 	public MainServer( int port ) {
-		Thread connectThread = new Thread( new Server( port ) ); 
+		Thread connectThread = new Thread( new ConnectToServer( port ) ); 
 		connectThread.start();
 	}
 	

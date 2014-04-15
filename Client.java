@@ -22,7 +22,7 @@ public class Client {
 		this.serverPort = serverPort;
 		this.gui = gui;
 		client = this;
-		Thread thread = new Thread( new ConnectToServer() ); 
+		Thread thread = new Thread( new ConnectingToServer() ); 
 		thread.start();
 	}
 	
@@ -45,7 +45,7 @@ public class Client {
 		return macAdress;
 	}
 
-	private class ConnectToServer implements Runnable {
+	private class ConnectingToServer implements Runnable {
 		String message;
 //		boolean connected = false;
 
