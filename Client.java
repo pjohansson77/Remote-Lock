@@ -3,7 +3,15 @@ package test;
 import java.net.*;
 import java.io.*;
 /**
- * Jesper luktar fis.
+<<<<<<< HEAD
+<<<<<<< HEAD
+ * Andree luktar fis!!!
+=======
+ * Jesper är klyddig.
+>>>>>>> FETCH_HEAD
+=======
+ * Jesper är klyddig. tror jag 
+>>>>>>> FETCH_HEAD
  * @author Andree
  *
  */
