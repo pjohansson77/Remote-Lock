@@ -3,7 +3,7 @@ package test;
 import java.net.*;
 import java.io.*;
 /**
- * Hejhej
+ * Jesper luktar fis.
  * @author Andree
  *
  */
