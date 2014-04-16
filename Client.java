@@ -5,9 +5,13 @@ import java.io.*;
 /**
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  * Andree luktar fis!!!
 =======
  * Jesper är klyddig.
+>>>>>>> FETCH_HEAD
+=======
+ * Jesper är klyddig. tror jag 
 >>>>>>> FETCH_HEAD
 =======
  * Jesper är klyddig. tror jag 
