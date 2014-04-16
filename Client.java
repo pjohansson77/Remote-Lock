@@ -2,7 +2,11 @@ package test;
 
 import java.net.*;
 import java.io.*;
-
+/**
+ * Hejhej
+ * @author Andree
+ *
+ */
 public class Client {
 	private String serverIP;
 	private int serverPort;
