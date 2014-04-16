@@ -3,7 +3,7 @@ package test;
 import java.net.*;
 import java.io.*;
 /**
- * Test Test
+ * Test Test, test2
  * @author Andree
  *
  */
