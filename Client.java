@@ -3,7 +3,7 @@ package test;
 import java.net.*;
 import java.io.*;
 /**
- * Jesper är klyddig.
+ * Jesper är klyddig. tror jag 
  * @author Andree
  *
  */
