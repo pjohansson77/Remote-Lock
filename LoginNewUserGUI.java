@@ -11,14 +11,18 @@ import javax.swing.*;
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  * 
  */
-public class LoginGUI {
+public class LoginNewUserGUI {
 	private JFrame frame;
 	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
-	private JLabel lbl = new JLabel("Ange lösenord:");
+	private JLabel lbl = new JLabel("Ange användarnamn:");
+	private JLabel lbl2 = new JLabel("Ange lösenord:");
 	private JPanel panel = new JPanel( new BorderLayout() );
 	private JPanel panel2 = new JPanel( new GridLayout( 2, 1 ) );
-	private JPanel panel3 = new JPanel( new GridLayout( 1, 2 ) );
-	private JPanel panel4 = new JPanel( new BorderLayout() );
+	private JPanel panel3 = new JPanel( new GridLayout( 2, 1 ) );
+	private JPanel panel4 = new JPanel( new GridLayout( 1, 2 ) );
+	private JPanel panel5 = new JPanel( new GridLayout( 1, 2 ) );
+	private JPanel panel6 = new JPanel( new BorderLayout() );
+	private JTextField userTextField = new JTextField();
 	private JTextField passwordTextField = new JTextField();
 	private JButton okBtn = new JButton("OK");
 	private JButton disconnectBtn = new JButton("Disconnect");
@@ -30,12 +34,13 @@ public class LoginGUI {
 	 * @param controller
 	 *            Controller
 	 */
-	public LoginGUI( Client client ) {
+	public LoginNewUserGUI( Client client ) {
 		frame = new JFrame();
 		this.client = client;
 		
 		okBtn.setFocusable(false);
 		disconnectBtn.setFocusable(false);
+		userTextField.setFocusable(true);
 		passwordTextField.setFocusable(true);
 		
 		infoDisplayLbl.setFont( new Font( "DialogInput", Font.BOLD, 14 ) );
@@ -43,22 +48,29 @@ public class LoginGUI {
 		panel2.setBackground( new Color( 255, 255, 255 ) );
 		panel3.setBackground( new Color( 255, 255, 255 ) );
 		panel4.setBackground( new Color( 255, 255, 255 ) );
+		panel5.setBackground( new Color( 255, 255, 255 ) );
 		
 		panel.add(infoDisplayLbl, BorderLayout.CENTER);
 		
 		panel2.add(lbl);
-		panel2.add(passwordTextField);
+		panel2.add(userTextField);
 		
-		panel3.add(okBtn);
-		panel3.add(disconnectBtn);
+		panel3.add(lbl2);
+		panel3.add(passwordTextField);
 		
-		panel4.add(panel, BorderLayout.NORTH);
-		panel4.add(panel2, BorderLayout.CENTER);
-		panel4.add(panel3, BorderLayout.SOUTH);
+		panel4.add(panel2);
+		panel4.add(panel3);
+		
+		panel5.add(okBtn);
+		panel5.add(disconnectBtn);
+		
+		panel6.add(panel, BorderLayout.NORTH);
+		panel6.add(panel4, BorderLayout.CENTER);
+		panel6.add(panel5, BorderLayout.SOUTH);
 		
 		okBtn.setPreferredSize( new Dimension( 400, 40 ) );
 		panel.setPreferredSize( new Dimension( 400, 60 ) );
-		panel4.setPreferredSize( new Dimension( 400, 160 ) );
+		panel6.setPreferredSize( new Dimension( 400, 160 ) );
 		
 		okBtn.addActionListener( new ButtonListener() );
 		disconnectBtn.addActionListener( new ButtonListener() );
@@ -72,7 +84,7 @@ public class LoginGUI {
 		frame.setVisible( true );
 		frame.setResizable( false );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		frame.getContentPane().add( panel4, BorderLayout.CENTER );
+		frame.getContentPane().add( panel6, BorderLayout.CENTER );
 		frame.setLocation( 200, 100 );
 		frame.pack();
 	}
@@ -85,6 +97,16 @@ public class LoginGUI {
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
+	}
+	
+	/**
+	 * Function that sets textField in GUI with String.
+	 * 
+	 * @param txt
+	 *            String to be set in textField.
+	 */
+	public void clearUserTextField() {
+		userTextField.setText( "" );
 	}
 	
 	public void clearPasswordTextField() {
@@ -105,11 +127,12 @@ public class LoginGUI {
 	private class ButtonListener implements ActionListener {		
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == okBtn ) {
-				client.startLogin( passwordTextField.getText() );
+				client.startNewUserLogin( userTextField.getText(), passwordTextField.getText() );
+				clearUserTextField();
 				clearPasswordTextField();
 			}
 			if( e.getSource() == disconnectBtn ) {
-				client.logOutWrong();
+				client.logOutNewUser();
 			}
 		}
 	}

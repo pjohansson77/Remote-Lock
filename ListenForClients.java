@@ -44,22 +44,32 @@ public class ListenForClients implements Runnable {
 					input = new DataInputStream( socket.getInputStream() );
 					id = input.readUTF();
 					System.out.println( "Inloggningsid: " + id + "\n");
-					// If the mac-address is known the client only needs to input the password. 
-					if( id.equals( "" ) ) { // Andreas fel ;-)
-						System.out.println( "Betrodd" ); // Andreas fel ;-)
+					
+					// If the unique id is known the client only needs to input the password. 
+					if( id.equals( "DA211P1-14" ) ) {
+						System.out.println( "Status: Betrodd\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
-						output.writeUTF( "Connected" );
+						output.writeUTF( "connected" );
 						output.flush();
 						Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input ) );
 						clientThread.start();
 
-						// If the mac-address is not known the client also needs a username.
-					} else {
-						System.out.println( "Inte betrodd" ); // Andreas fel ;-)
+						// If the unique id is empty it's the first login and the client needs a username and password.
+					} else if( id.equals( "" ) ) {
+						System.out.println( "Status: Ny användare\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
-						output.writeUTF( "Unknown" );
+						output.writeUTF( "newuser" );
 						output.flush();
-						System.out.println( "\nDisconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
+						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input ) );
+						clientThread.start();
+						
+						// If the unique id is not empty the user is not allowed to log in.
+					} else {
+						System.out.println( "Status: Inte betrodd\n" );
+						output = new DataOutputStream( socket.getOutputStream() );
+						output.writeUTF( "unknown" );
+						output.flush();
+						System.out.println( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 						socket.close();
 					}
 				} catch( IOException e1 ) {

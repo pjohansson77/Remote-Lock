@@ -13,7 +13,7 @@ import javax.swing.*;
  */
 public class ConnectGUI {
 	private JFrame frame;
-	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
+	private JLabel infoDisplayLbl = new JLabel("Not connected", JLabel.CENTER);
 	private JLabel lbl = new JLabel("Ange IP-adress:");
 	private JLabel lbl2 = new JLabel("Ange port:");
 	private JPanel panel = new JPanel( new BorderLayout() );
@@ -24,9 +24,10 @@ public class ConnectGUI {
 	private JPanel panel6 = new JPanel( new BorderLayout() );
 	private JTextField ipTextField = new JTextField("10.2.13.151");
 	private JTextField portTextField = new JTextField("5555");
-	private JButton okBtn = new JButton("OK");
+	private JButton connectBtn = new JButton("CONNECT");
 	private JButton closeBtn = new JButton("CLOSE");
 	private ConnectGUI gui;
+	private ClientID id;
 	
 	/**
 	 * Constructor for Login class.
@@ -37,8 +38,9 @@ public class ConnectGUI {
 	public ConnectGUI() {
 		frame = new JFrame();
 		gui = this;
+		id = new ClientID();
 		
-		okBtn.setFocusable(false);
+		connectBtn.setFocusable(false);
 		closeBtn.setFocusable(false);
 		ipTextField.setFocusable(true);
 		portTextField.setFocusable(true);
@@ -61,18 +63,18 @@ public class ConnectGUI {
 		panel4.add(panel2);
 		panel4.add(panel3);
 		
-		panel5.add(okBtn);
+		panel5.add(connectBtn);
 		panel5.add(closeBtn);
 		
 		panel6.add(panel, BorderLayout.NORTH);
 		panel6.add(panel4, BorderLayout.CENTER);
 		panel6.add(panel5, BorderLayout.SOUTH);
 		
-		okBtn.setPreferredSize( new Dimension( 400, 40 ) );
+		connectBtn.setPreferredSize( new Dimension( 400, 40 ) );
 		panel.setPreferredSize( new Dimension( 400, 60 ) );
 		panel6.setPreferredSize( new Dimension( 400, 160 ) );
 		
-		okBtn.addActionListener( new ButtonListener() );
+		connectBtn.addActionListener( new ButtonListener() );
 		closeBtn.addActionListener( new ButtonListener() );
 		showLogIn();
 	}
@@ -99,16 +101,6 @@ public class ConnectGUI {
 		infoDisplayLbl.setText( txt );
 	}
 	
-//	/**
-//	 * Function that sets textField in GUI with String.
-//	 * 
-//	 * @param txt
-//	 *            String to be set in textField.
-//	 */
-//	public void setTextField( String txt ) {
-//		textField.setText( txt );
-//	}
-	
 	/**
 	 * Sets Login GUI visible to false.
 	 */
@@ -122,8 +114,8 @@ public class ConnectGUI {
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed( ActionEvent e ) {
-			if( e.getSource() == okBtn ) {
-				new Client(ipTextField.getText(), Integer.parseInt(portTextField.getText()), gui );
+			if( e.getSource() == connectBtn ) {
+				new Client(ipTextField.getText(), Integer.parseInt(portTextField.getText()), gui, id );
 				frameStatus( false );
 			}
 			if( e.getSource() == closeBtn ) {

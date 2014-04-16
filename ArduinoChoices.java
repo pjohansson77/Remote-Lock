@@ -74,7 +74,7 @@ public class ArduinoChoices {
 	private void talkToArduino( int message ) {
 		DataOutputStream output;
 		Socket socket = null;
-		System.out.println( message );
+
 //		try {
 //			socket = new Socket( InetAddress.getByName( "169.254.146.12" ), 6666 );
 //			output = new DataOutputStream( socket.getOutputStream() );
