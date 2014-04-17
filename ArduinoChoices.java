@@ -18,6 +18,7 @@ public class ArduinoChoices {
 	private Socket socket;
 	private DataInputStream input;
 	private DataOutputStream output;
+	private ServerGUI gui;
 
 	/**
 	 * A class constructor that gets the current socket and streams.
@@ -25,10 +26,11 @@ public class ArduinoChoices {
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 */
-	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input ) {
+	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
+		this.gui = gui;
 	}
 
 	/**
@@ -42,13 +44,12 @@ public class ArduinoChoices {
 				message = input.readUTF();
 
 				num = Integer.parseInt( message );
-//				ArduinoClient arduino = new ArduinoClient("169.254.146.12", 6666);
 				talkToArduino( num );
 
 				if( num == 0 ) {
 					connected = false;
 				} else {
-					System.out.println( "IP-adress: " + socket.getInetAddress().getHostAddress() + " sent: " + message + "\n" );
+					gui.showText( "IP-adress: " + socket.getInetAddress().getHostAddress() + " sent: " + message + "\n" );
 					if( num == 1 ) {
 						output.writeUTF( "Lampa1" );
 					}

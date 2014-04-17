@@ -19,7 +19,11 @@ public class LoginGUI {
 	private JPanel panel2 = new JPanel( new GridLayout( 2, 1 ) );
 	private JPanel panel3 = new JPanel( new GridLayout( 1, 2 ) );
 	private JPanel panel4 = new JPanel( new BorderLayout() );
+	private JPanel panel5 = new JPanel( new BorderLayout() );
+	private JPanel panel6 = new JPanel( new BorderLayout() );
 	private JTextField passwordTextField = new JTextField();
+	private JLabel statusLbl = new JLabel("Status: ");
+	private JLabel statusLbl2 = new JLabel("");
 	private JButton okBtn = new JButton("OK");
 	private JButton disconnectBtn = new JButton("Disconnect");
 	private Client client;
@@ -52,13 +56,20 @@ public class LoginGUI {
 		panel3.add(okBtn);
 		panel3.add(disconnectBtn);
 		
-		panel4.add(panel, BorderLayout.NORTH);
-		panel4.add(panel2, BorderLayout.CENTER);
-		panel4.add(panel3, BorderLayout.SOUTH);
+		panel4.add(statusLbl, BorderLayout.WEST);
+		panel4.add(statusLbl2, BorderLayout.CENTER);
+		
+		panel5.add(panel3, BorderLayout.CENTER);
+		panel5.add(panel4, BorderLayout.SOUTH);
+		
+		panel6.add(panel, BorderLayout.NORTH);
+		panel6.add(panel2, BorderLayout.CENTER);
+		panel6.add(panel5, BorderLayout.SOUTH);
 		
 		okBtn.setPreferredSize( new Dimension( 400, 40 ) );
 		panel.setPreferredSize( new Dimension( 400, 60 ) );
-		panel4.setPreferredSize( new Dimension( 400, 160 ) );
+		panel3.setPreferredSize( new Dimension( 400, 50 ) );
+		panel4.setPreferredSize( new Dimension( 400, 30 ) );
 		
 		okBtn.addActionListener( new ButtonListener() );
 		disconnectBtn.addActionListener( new ButtonListener() );
@@ -72,7 +83,7 @@ public class LoginGUI {
 		frame.setVisible( true );
 		frame.setResizable( false );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		frame.getContentPane().add( panel4, BorderLayout.CENTER );
+		frame.getContentPane().add( panel6, BorderLayout.CENTER );
 		frame.setLocation( 200, 100 );
 		frame.pack();
 	}
@@ -85,6 +96,10 @@ public class LoginGUI {
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
+	}
+	
+	public void setStatusDisplay( String txt ) {
+		statusLbl2.setText( txt );
 	}
 	
 	public void clearPasswordTextField() {
@@ -109,7 +124,7 @@ public class LoginGUI {
 				clearPasswordTextField();
 			}
 			if( e.getSource() == disconnectBtn ) {
-				client.logOutWrong();
+				client.disconnectUser();
 			}
 		}
 	}

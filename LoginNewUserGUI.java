@@ -16,12 +16,16 @@ public class LoginNewUserGUI {
 	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
 	private JLabel lbl = new JLabel("Ange användarnamn:");
 	private JLabel lbl2 = new JLabel("Ange lösenord:");
+	private JLabel statusLbl = new JLabel("Status: ");
+	private JLabel statusLbl2 = new JLabel("");
 	private JPanel panel = new JPanel( new BorderLayout() );
 	private JPanel panel2 = new JPanel( new GridLayout( 2, 1 ) );
 	private JPanel panel3 = new JPanel( new GridLayout( 2, 1 ) );
 	private JPanel panel4 = new JPanel( new GridLayout( 1, 2 ) );
 	private JPanel panel5 = new JPanel( new GridLayout( 1, 2 ) );
 	private JPanel panel6 = new JPanel( new BorderLayout() );
+	private JPanel panel7 = new JPanel( new BorderLayout() );
+	private JPanel panel8 = new JPanel( new BorderLayout() );
 	private JTextField userTextField = new JTextField();
 	private JTextField passwordTextField = new JTextField();
 	private JButton okBtn = new JButton("OK");
@@ -49,6 +53,7 @@ public class LoginNewUserGUI {
 		panel3.setBackground( new Color( 255, 255, 255 ) );
 		panel4.setBackground( new Color( 255, 255, 255 ) );
 		panel5.setBackground( new Color( 255, 255, 255 ) );
+		panel6.setBackground( new Color( 255, 255, 255 ) );
 		
 		panel.add(infoDisplayLbl, BorderLayout.CENTER);
 		
@@ -64,13 +69,20 @@ public class LoginNewUserGUI {
 		panel5.add(okBtn);
 		panel5.add(disconnectBtn);
 		
-		panel6.add(panel, BorderLayout.NORTH);
-		panel6.add(panel4, BorderLayout.CENTER);
-		panel6.add(panel5, BorderLayout.SOUTH);
+		panel6.add(statusLbl, BorderLayout.WEST);
+		panel6.add(statusLbl2, BorderLayout.CENTER);
+		
+		panel7.add(panel5, BorderLayout.CENTER);
+		panel7.add(panel6, BorderLayout.SOUTH);
+		
+		panel8.add(panel, BorderLayout.NORTH);
+		panel8.add(panel4, BorderLayout.CENTER);
+		panel8.add(panel7, BorderLayout.SOUTH);
 		
 		okBtn.setPreferredSize( new Dimension( 400, 40 ) );
 		panel.setPreferredSize( new Dimension( 400, 60 ) );
-		panel6.setPreferredSize( new Dimension( 400, 160 ) );
+		panel5.setPreferredSize( new Dimension( 400, 50 ) );
+		panel6.setPreferredSize( new Dimension( 400, 30 ) );
 		
 		okBtn.addActionListener( new ButtonListener() );
 		disconnectBtn.addActionListener( new ButtonListener() );
@@ -84,7 +96,7 @@ public class LoginNewUserGUI {
 		frame.setVisible( true );
 		frame.setResizable( false );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		frame.getContentPane().add( panel6, BorderLayout.CENTER );
+		frame.getContentPane().add( panel8, BorderLayout.CENTER );
 		frame.setLocation( 200, 100 );
 		frame.pack();
 	}
@@ -97,6 +109,10 @@ public class LoginNewUserGUI {
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
+	}
+	
+	public void setStatusDisplay( String txt ) {
+		statusLbl2.setText( txt );
 	}
 	
 	/**
@@ -132,7 +148,7 @@ public class LoginNewUserGUI {
 				clearPasswordTextField();
 			}
 			if( e.getSource() == disconnectBtn ) {
-				client.logOutNewUser();
+				client.logOutNewUserByChoice();
 			}
 		}
 	}

@@ -16,8 +16,10 @@ public class ChoicesGUI {
 	private JFrame frame;
 	private JPanel panel = new JPanel( new GridLayout( 2, 2 ) );
 	private JPanel panel2 = new JPanel( new BorderLayout() );
+	private JPanel panel3 = new JPanel( new BorderLayout() );
 	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
 	private JLabel statusLbl = new JLabel("Status: ");
+	private JLabel statusLbl2 = new JLabel("");
 	private JButton btnVal1 = new JButton("Lampa1");
 	private JButton btnVal2 = new JButton("Lampa2");
 	private JButton btnVal3 = new JButton("Disco");
@@ -33,16 +35,19 @@ public class ChoicesGUI {
 		panel.add( btnVal3 );
 		panel.add( btnVal4 );
 		
-		panel2.add(infoDisplayLbl, BorderLayout.NORTH);
-		panel2.add(panel, BorderLayout.CENTER);
-		panel2.add(statusLbl, BorderLayout.SOUTH);
+		panel2.add(statusLbl, BorderLayout.WEST);
+		panel2.add(statusLbl2, BorderLayout.CENTER);
+		
+		panel3.add(infoDisplayLbl, BorderLayout.NORTH);
+		panel3.add(panel, BorderLayout.CENTER);
+		panel3.add(panel2, BorderLayout.SOUTH);
 		
 		panel.setBackground( new Color( 255, 255, 255 ) );
 		panel2.setBackground( new Color( 255, 255, 255 ) );
 		
 		infoDisplayLbl.setPreferredSize( new Dimension( 400, 60 ) );
 		panel.setPreferredSize( new Dimension( 400, 150 ) );
-		statusLbl.setPreferredSize( new Dimension( 400, 60 ) );
+		panel2.setPreferredSize( new Dimension( 400, 30 ) );
 		
 		btnVal1.addActionListener( new ButtonListener() );
 		btnVal2.addActionListener( new ButtonListener() );
@@ -72,13 +77,17 @@ public class ChoicesGUI {
 		frame.setVisible( true );
 		frame.setResizable( false );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		frame.getContentPane().add( panel2, BorderLayout.CENTER );
+		frame.getContentPane().add( panel3, BorderLayout.CENTER );
 		frame.setLocation( 200, 100 );
 		frame.pack();
 	}
 	
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
+	}
+	
+	public void setStatusDisplay( String txt ) {
+		statusLbl2.setText( txt );
 	}
 	
 	public void frameStatus( boolean status ) {

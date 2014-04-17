@@ -13,10 +13,11 @@ import java.util.Date;
  *
  */
 public class ListenToClientPassword implements Runnable {
-	Socket socket;
-	DataInputStream input;
-	DataOutputStream output;
-	String password;
+	private Socket socket;
+	private DataInputStream input;
+	private DataOutputStream output;
+	private String password;
+	private ServerGUI gui;
 	
 	/**
 	 * The constructor receives the current socket and streams.
@@ -24,10 +25,11 @@ public class ListenToClientPassword implements Runnable {
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 */
-	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input ) {
+	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
+		this.gui = gui;
 	}
 
 	/**
@@ -39,21 +41,22 @@ public class ListenToClientPassword implements Runnable {
 
 			if( password.toLowerCase().equals( "alfa" ) ) {
 
-				output.writeUTF( "sant" ); // Andreas fel ;-)
+				output.writeUTF( "passwordtrue" );
 				output.flush();
 //				output.writeBoolean( true );
 
-				ArduinoChoices choice = new ArduinoChoices( socket, output, input );
+				ArduinoChoices choice = new ArduinoChoices( socket, output, input, gui );
 				choice.listenToArduinoChoices();
 			} else {
-				output.writeUTF( "falskt" ); // Andreas fel ;-)
+				output.writeUTF( "passwordfalse" );
 				output.flush();
+				gui.showText( "Status: Fel användarnamn eller lösenord\n" );
 //				output.writeBoolean( false );
 
 			}
 		} catch(IOException e) {} 
 		try {
-			System.out.println( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
+			gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 			socket.close();
 		} catch( Exception e ) {}
 	} 

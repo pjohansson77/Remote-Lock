@@ -20,13 +20,15 @@ public class ListenForClients implements Runnable {
 	private String id;
 	private DataOutputStream output;
 	private DataInputStream input;
+	private ServerGUI gui;
 
 	/**
 	 * A constructor that gets a port number to listen on.
 	 * @param port The port that the server listens on.
 	 */
-	public ListenForClients( int port ) {
+	public ListenForClients( int port, ServerGUI gui ) {
 		this.port = port;
+		this.gui = gui;
 	}
 
 	/**
@@ -39,41 +41,41 @@ public class ListenForClients implements Runnable {
 				try {
 					socket = serverSocket.accept();
 
-					System.out.println( "Connected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() );
+					gui.showText( "Connected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() );
 
 					input = new DataInputStream( socket.getInputStream() );
 					id = input.readUTF();
-					System.out.println( "Inloggningsid: " + id + "\n");
+					gui.showText( "Inloggningsid: " + id + "\n");
 					
 					// If the unique id is known the client only needs to input the password. 
 					if( id.equals( "DA211P1-14" ) ) {
-						System.out.println( "Status: Betrodd\n" );
+						gui.showText( "Status: Betrodd användare\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "connected" );
 						output.flush();
-						Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input ) );
+						Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui ) );
 						clientThread.start();
 
 						// If the unique id is empty it's the first login and the client needs a username and password.
 					} else if( id.equals( "" ) ) {
-						System.out.println( "Status: Ny användare\n" );
+						gui.showText( "Status: Ny användare\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "newuser" );
 						output.flush();
-						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input ) );
+						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input, gui ) );
 						clientThread.start();
 						
 						// If the unique id is not empty the user is not allowed to log in.
 					} else {
-						System.out.println( "Status: Inte betrodd\n" );
+						gui.showText( "Status: Ej betrodd användare\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "unknown" );
 						output.flush();
-						System.out.println( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
+						gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 						socket.close();
 					}
 				} catch( IOException e1 ) {
-					System.out.println( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
+					gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 				}
 			}
 		} catch( IOException e1 ) {}
@@ -89,5 +91,11 @@ public class ListenForClients implements Runnable {
 	private Date getTime() {
 		Calendar cal = Calendar.getInstance();
 		return cal.getTime();
+	}
+	
+	public void terminate() {
+		try {
+			socket.close();
+		} catch( Exception e ) {}
 	}
 }

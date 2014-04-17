@@ -13,11 +13,12 @@ import java.util.Date;
  *
  */
 public class ListenToNewClient implements Runnable {
-	Socket socket;
-	DataInputStream input;
-	DataOutputStream output;
-	String username, password;
-	boolean connected = true;
+	private Socket socket;
+	private DataInputStream input;
+	private DataOutputStream output;
+	private String username, password;
+	private ServerGUI gui;
+	
 
 	/**
 	 * A method that verifies the password. If the password is not correct the user is disconnected.
@@ -25,10 +26,11 @@ public class ListenToNewClient implements Runnable {
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 */
-	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input ) {
+	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
+		this.gui = gui;
 	}
 
 	/**
@@ -42,20 +44,20 @@ public class ListenToNewClient implements Runnable {
 			if( username.toLowerCase().equals( "admin" ) && password.toLowerCase().equals( "alfa" ) ) {
 				output.writeUTF( "DA211P1-14" ); // Skickar ett unikt id
 				output.flush();
-				System.out.println( "Status: Tillagd i server\n" );
+				gui.showText( "Status: Användare tillagd i server\n" );
 //				output.writeBoolean( true );
 				
 //				ArduinoChoices choice = new ArduinoChoices( socket, output, input );
 //				choice.listenToArduinoChoices();
 			} else {
-				output.writeUTF( "falskt" ); // Andreas fel ;-)
+				output.writeUTF( "tempfalse" );
 				output.flush();
-				System.out.println( "Status: Fel användarnamn eller lösenord\n" );
+				gui.showText( "Status: Fel användarnamn eller lösenord\n" );
 //				output.writeBoolean( false );
 			} 
 		} catch(IOException e) {} 
 		try {
-			System.out.println( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
+			gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 			socket.close();
 		} catch( Exception e ) {}
 	} 
