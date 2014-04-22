@@ -1,4 +1,4 @@
-package test;
+package lock;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,15 +19,18 @@ public class ServerGUI {
 	private JButton btnStart = new JButton("Starta servern");
 	private JButton btnStop = new JButton("Stoppa servern");
 	private JTextArea txtArea = new JTextArea();
-	private JScrollPane scroll = new JScrollPane(txtArea);
+	private JScrollPane scroll;
 	private JLabel ipLabel = new JLabel();
 	private String consoleText = "";
 	private int port;
+	private String user;
 
-	public ServerGUI( int port ) {
+	public ServerGUI( int port, String user ) {
 		frame = new JFrame("Server - Remote Lock");
 		this.port = port;
+		this.user = user;
 		
+		scroll = new JScrollPane(txtArea);
 		DefaultCaret caret = (DefaultCaret)txtArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		
@@ -82,9 +85,11 @@ public class ServerGUI {
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == btnStart) {
+				showText("Server startad\n");
 				btnStart.setEnabled(false);
 				btnStop.setEnabled(true);
-				Thread connectThread = new Thread( server = new ListenForClients( port, gui ) );
+				
+				Thread connectThread = new Thread( server = new ListenForClients( port, gui, user ) );
 				connectThread.start();
 			}
 			if(e.getSource() == btnStop) {

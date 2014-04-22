@@ -1,4 +1,4 @@
-package test;
+package lock;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

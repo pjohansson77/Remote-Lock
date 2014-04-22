@@ -1,4 +1,4 @@
-package test;
+package lock;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -25,11 +25,12 @@ public class ListenToClientPassword implements Runnable {
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 */
-	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
+	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, String password ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
+		this.password = password;
 	}
 
 	/**
@@ -37,9 +38,9 @@ public class ListenToClientPassword implements Runnable {
 	 */
 	public void run() {
 		try {
-			password = input.readUTF();
+			String clientPassword = input.readUTF();
 
-			if( password.toLowerCase().equals( "alfa" ) ) {
+			if( clientPassword.equals( password ) ) {
 
 				output.writeUTF( "passwordtrue" );
 				output.flush();
@@ -50,7 +51,7 @@ public class ListenToClientPassword implements Runnable {
 			} else {
 				output.writeUTF( "passwordfalse" );
 				output.flush();
-				gui.showText( "Status: Fel användarnamn eller lösenord\n" );
+				gui.showText( "Status: Wrong username or password\n" );
 //				output.writeBoolean( false );
 
 			}

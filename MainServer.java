@@ -1,4 +1,6 @@
-package test;
+package lock;
+
+import javax.swing.SwingUtilities;
 
 /**
  * A main class that starts the server.
@@ -7,6 +9,10 @@ package test;
  */
 public class MainServer {	
 	public static void main( String[] args ) {
-		 new ServerGUI( 5555 );
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() { 
+				new ServerGUI( 5555, "src/lock/Users.txt" );
+			}
+		});
 	} 
 }

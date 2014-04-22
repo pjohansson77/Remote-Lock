@@ -1,8 +1,11 @@
-package test;
+package lock;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Calendar;
@@ -21,14 +24,18 @@ public class ListenForClients implements Runnable {
 	private DataOutputStream output;
 	private DataInputStream input;
 	private ServerGUI gui;
+	private HashtableOH<String, User> table;
+	private User user;
 
 	/**
 	 * A constructor that gets a port number to listen on.
 	 * @param port The port that the server listens on.
 	 */
-	public ListenForClients( int port, ServerGUI gui ) {
+	public ListenForClients( int port, ServerGUI gui, String user ) {
 		this.port = port;
 		this.gui = gui;
+		this.table = new HashtableOH<String, User>(10);
+		readUsers( user );
 	}
 
 	/**
@@ -48,12 +55,12 @@ public class ListenForClients implements Runnable {
 					gui.showText( "Inloggningsid: " + id + "\n");
 					
 					// If the unique id is known the client only needs to input the password. 
-					if( id.equals( "DA211P1-14" ) ) {
-						gui.showText( "Status: Betrodd användare\n" );
+					if( table.containsKey( id ) ) {
+						gui.showText( "Status: Användaren " + table.get( id ).getName() + " är betrodd\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "connected" );
 						output.flush();
-						Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui ) );
+						Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table.get( id ).getPassword() ) );
 						clientThread.start();
 
 						// If the unique id is empty it's the first login and the client needs a username and password.
@@ -62,7 +69,7 @@ public class ListenForClients implements Runnable {
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "newuser" );
 						output.flush();
-						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input, gui ) );
+						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input, gui, table ) );
 						clientThread.start();
 						
 						// If the unique id is not empty the user is not allowed to log in.
@@ -82,6 +89,30 @@ public class ListenForClients implements Runnable {
 		try {
 			serverSocket.close();
 		} catch( Exception e ) {}
+	}
+	
+	/**
+	 * Function that reads Library Member txt file with all members and puts
+	 * them in Server class.
+	 * 
+	 * @param filename
+	 *            Name of file that contains all Library Members.
+	 */
+	private void readUsers( String filename ) {
+		String str;
+		String[] values;
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					new FileInputStream( filename ), "ISO-8859-1"));
+			while ( ( str = reader.readLine() ) != null ) {
+				values = str.split( ";" );
+				user = new User( values[ 0 ], values[ 1 ], values[ 2 ] );
+				table.put( values[ 0 ], user );
+			}
+			reader.close();
+		} catch (IOException e) {
+			System.out.println(e);
+		}
 	}
 
 	/**

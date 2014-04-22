@@ -1,8 +1,13 @@
-package test;
+package lock;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,9 +21,9 @@ public class ListenToNewClient implements Runnable {
 	private Socket socket;
 	private DataInputStream input;
 	private DataOutputStream output;
-	private String username, password;
 	private ServerGUI gui;
-	
+	private User user;
+	private HashtableOH<String, User> table;
 
 	/**
 	 * A method that verifies the password. If the password is not correct the user is disconnected.
@@ -26,11 +31,12 @@ public class ListenToNewClient implements Runnable {
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 */
-	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
+	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
+		this.table = table;
 	}
 
 	/**
@@ -38,29 +44,52 @@ public class ListenToNewClient implements Runnable {
 	 */
 	public void run() {
 		try {
-			username = input.readUTF();
-			password = input.readUTF();
+			String loginUsername = input.readUTF();
+			String loginPassword = input.readUTF();
+			String id = "DA211P1-14";
 			
-			if( username.toLowerCase().equals( "admin" ) && password.toLowerCase().equals( "alfa" ) ) {
-				output.writeUTF( "DA211P1-14" ); // Skickar ett unikt id
+			if( loginUsername.equals( "admin" ) && loginPassword.equals( "alfa" ) ) {
+				output.writeUTF( id ); // Skickar ett unikt id
 				output.flush();
-				gui.showText( "Status: Användare tillagd i server\n" );
-//				output.writeBoolean( true );
 				
-//				ArduinoChoices choice = new ArduinoChoices( socket, output, input );
-//				choice.listenToArduinoChoices();
+				String clientUsername = input.readUTF();
+				String clientPassword = input.readUTF();
+				user = new User( id, clientUsername, clientPassword );
+				table.put( id, user );
+
+				writeUser( "src/lock/Users.txt" );
+				gui.showText( "Status: User " + clientUsername + " added to server\n" );
+				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, clientPassword ) );
+				clientThread.start();
+				
 			} else {
 				output.writeUTF( "tempfalse" );
 				output.flush();
-				gui.showText( "Status: Fel användarnamn eller lösenord\n" );
+				gui.showText( "Status: Wrong username or password\n" );
+				try {
+					gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
+					socket.close();
+				} catch( Exception e ) {}
 //				output.writeBoolean( false );
 			} 
 		} catch(IOException e) {} 
-		try {
-			gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
-			socket.close();
-		} catch( Exception e ) {}
 	} 
+	
+	private void writeUser( String filename ) {
+		String str;
+		try {
+			BufferedWriter writer = new BufferedWriter( new FileWriter( filename, true ) );
+
+			str = user.getID() + ";" + user.getName() + ";" + user.getPassword();
+			
+			writer.write( str ); // Skriva strängen till textfilen
+			writer.newLine(); // Skriva ny-rad-tecken till textfilen
+
+			writer.close();
+		} catch( IOException e ) {
+			System.out.println( e );
+		}
+	}
 	
 	/**
 	 * A private method that returns the date and time.
