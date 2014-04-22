@@ -1,4 +1,4 @@
-package test;
+package lock;
 
 public class ClientID {
 	private String id;

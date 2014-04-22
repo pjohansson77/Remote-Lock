@@ -1,4 +1,4 @@
-package test;
+package lock;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -31,6 +31,7 @@ public class LoginNewUserGUI {
 	private JButton okBtn = new JButton("OK");
 	private JButton disconnectBtn = new JButton("Disconnect");
 	private Client client;
+	private ConnectGUI gui;
 	
 	/**
 	 * Constructor for Login class.
@@ -38,9 +39,10 @@ public class LoginNewUserGUI {
 	 * @param controller
 	 *            Controller
 	 */
-	public LoginNewUserGUI( Client client ) {
+	public LoginNewUserGUI( Client client, ConnectGUI gui ) {
 		frame = new JFrame();
 		this.client = client;
+		this.gui = gui;
 		
 		okBtn.setFocusable(false);
 		disconnectBtn.setFocusable(false);
@@ -115,6 +117,14 @@ public class LoginNewUserGUI {
 		statusLbl2.setText( txt );
 	}
 	
+	public void setlbl( String txt ) {
+		lbl.setText( txt );
+	}
+	
+	public void setlbl2( String txt ) {
+		lbl2.setText( txt );
+	}
+	
 	/**
 	 * Function that sets textField in GUI with String.
 	 * 
@@ -132,8 +142,8 @@ public class LoginNewUserGUI {
 	/**
 	 * Sets Login GUI visible to false.
 	 */
-	public void frameStatus( boolean status ) {
-		frame.setVisible( status );
+	public void hideFrame() {
+		frame.setVisible( false );
 	}
 	
 	/**
@@ -148,7 +158,9 @@ public class LoginNewUserGUI {
 				clearPasswordTextField();
 			}
 			if( e.getSource() == disconnectBtn ) {
-				client.logOutNewUserByChoice();
+				hideFrame();
+				gui.setInfoDisplay( "" );
+				client.disconnect();
 			}
 		}
 	}

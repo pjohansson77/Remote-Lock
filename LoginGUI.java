@@ -1,4 +1,4 @@
-package test;
+package lock;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -27,6 +27,7 @@ public class LoginGUI {
 	private JButton okBtn = new JButton("OK");
 	private JButton disconnectBtn = new JButton("Disconnect");
 	private Client client;
+	private ConnectGUI gui;
 	
 	/**
 	 * Constructor for Login class.
@@ -34,9 +35,10 @@ public class LoginGUI {
 	 * @param controller
 	 *            Controller
 	 */
-	public LoginGUI( Client client ) {
+	public LoginGUI( Client client, ConnectGUI gui ) {
 		frame = new JFrame();
 		this.client = client;
+		this.gui = gui;
 		
 		okBtn.setFocusable(false);
 		disconnectBtn.setFocusable(false);
@@ -109,8 +111,8 @@ public class LoginGUI {
 	/**
 	 * Sets Login GUI visible to false.
 	 */
-	public void frameStatus( boolean status ) {
-		frame.setVisible( status );
+	public void hideFrame() {
+		frame.setVisible( false );
 	}
 	
 	/**
@@ -124,7 +126,9 @@ public class LoginGUI {
 				clearPasswordTextField();
 			}
 			if( e.getSource() == disconnectBtn ) {
-				client.disconnectUser();
+				hideFrame();
+				gui.setInfoDisplay( "" );
+				client.disconnect();
 			}
 		}
 	}

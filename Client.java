@@ -1,12 +1,8 @@
-package test;
+package lock;
 
 import java.net.*;
 import java.io.*;
-/**
- * Test Test, Jesper
- * @author Andree
- *
- */
+
 public class Client {
 	private String serverIP;
 	private int serverPort;
@@ -15,6 +11,7 @@ public class Client {
 	boolean connected = true;
 	private LoginGUI gui2;
 	private LoginNewUserGUI gui3;
+	private LoginInfoGUI gui4;
 	private DataOutputStream output;
 	private DataInputStream input;
 	private Client client;
@@ -33,7 +30,6 @@ public class Client {
 
 	private class ConnectingToServer implements Runnable {
 		String message;
-		//		boolean connected = false;
 
 		public void run() {
 			try {
@@ -47,11 +43,11 @@ public class Client {
 				message = input.readUTF();
 
 				if( message.equals( "connected" ) ) {
-					gui2 = new LoginGUI( client );
+					gui2 = new LoginGUI( client, gui );
 					gui2.setInfoDisplay( "Welcome" );
 					gui2.setStatusDisplay( "Pending" );
 				} else if( message.equals( "newuser" ) ) {
-					gui3 = new LoginNewUserGUI( client );
+					gui3 = new LoginNewUserGUI( client, gui );
 					gui3.setInfoDisplay( "New user" );
 					gui3.setStatusDisplay( "Pending" );
 				} else {
@@ -77,6 +73,22 @@ public class Client {
 		Thread newThread = new Thread( new LoginNewUserToServer( username, password ) );
 		newThread.start();
 	}
+	
+	public void startInfoLogin( String username, String password ) {
+		try {
+			output.writeUTF( username );
+			output.flush();
+
+			output.writeUTF( password );
+			output.flush();
+
+			gui4.hideFrame();
+			gui2 = new LoginGUI( client, gui );
+			gui2.setStatusDisplay( "Tillagd i server" );
+		} catch(Exception e1 ) {
+			System.out.println( e1 );
+		}
+	}
 
 	private class LoginToServer implements Runnable {
 		String message, password;
@@ -90,15 +102,15 @@ public class Client {
 				output.writeUTF( password );
 				output.flush();
 
-				//				connected = input.readBoolean();
 				message = input.readUTF();
 				if( message.equals( "passwordtrue" ) ) {
-					gui2.frameStatus( false );
+					gui2.hideFrame();
 					choice = new ChoicesGUI( client );
 					choice.setStatusDisplay("Connected" );
 				} else {
 					gui.setInfoDisplay( "Fel användarnamn eller lösenord" );
-					logOutWrong();
+					gui2.hideFrame();
+					disconnect();
 				} 
 			} catch(Exception e1 ) {
 				System.out.println( e1 );
@@ -112,6 +124,8 @@ public class Client {
 			arduinoChoice = str;
 			if( arduinoChoice.equals( "0" ) ) {
 				connected = false;
+				choice.hideFrame();
+				gui.setInfoDisplay( "" );
 				disconnect();
 			} else {
 				output.writeUTF( arduinoChoice );
@@ -140,15 +154,17 @@ public class Client {
 				output.writeUTF( password );
 				output.flush();
 
-				//				connected = input.readBoolean();
 				message = input.readUTF();
 				if( message.equals( "tempfalse" ) ) {
 					gui.setInfoDisplay( "Fel användarnamn eller lösenord" );
-					disconnectNewUser();
+					gui3.hideFrame();
+					disconnect();
 				} else {
 					id.setID( message );
-					gui.setInfoDisplay( "Tillagd i server" );
-					disconnectNewUser();
+					gui3.hideFrame();
+					gui4 = new LoginInfoGUI( client, gui );
+//					gui2.setInfoDisplay( "Ditt lösenord: " + message );
+//					gui2.setStatusDisplay( "Tillagd i server" );
 				}
 			} catch(Exception e1 ) {
 				System.out.println( e1 );
@@ -156,57 +172,9 @@ public class Client {
 		}
 	}
 
-	public void logOutWrong() {
-		try {
-			gui2.frameStatus( false );
-			gui.frameStatus( true );
-			gui.setStatusDisplay( "Disconnected" );
-			socket.close();
-		} catch( IOException e ) {
-			System.out.println( e );
-		}
-	}
-	
-	public void disconnectUser() {
-		try {
-			gui2.frameStatus( false );
-			gui.frameStatus( true );
-			gui.setInfoDisplay( "" );
-			gui.setStatusDisplay( "Disconnected" );
-			socket.close();
-		} catch( IOException e ) {
-			System.out.println( e );
-		}
-	}
-
-	public void disconnectNewUser() {
-		try {
-			gui3.frameStatus( false );
-			gui.frameStatus( true );
-			gui.setStatusDisplay( "Disconnected" );
-			socket.close();
-		} catch( IOException e ) {
-			System.out.println( e );
-		}
-	}
-	
-	public void logOutNewUserByChoice() {
-		try {
-			gui3.frameStatus( false );
-			gui.frameStatus( true );
-			gui.setInfoDisplay( "" );
-			gui.setStatusDisplay( "Disconnected" );
-			socket.close();
-		} catch( IOException e ) {
-			System.out.println( e );
-		}
-	}
-	
 	public void disconnect() {
 		try {
-			choice.frameStatus( false );
 			gui.frameStatus( true );
-			gui.setInfoDisplay( "" );
 			gui.setStatusDisplay( "Disconnected" );
 			socket.close();
 		} catch( IOException e ) {

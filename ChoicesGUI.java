@@ -1,4 +1,4 @@
-package test;
+package lock;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -44,6 +44,7 @@ public class ChoicesGUI {
 		
 		panel.setBackground( new Color( 255, 255, 255 ) );
 		panel2.setBackground( new Color( 255, 255, 255 ) );
+		panel3.setBackground( new Color( 255, 255, 255 ) );
 		
 		infoDisplayLbl.setPreferredSize( new Dimension( 400, 60 ) );
 		panel.setPreferredSize( new Dimension( 400, 150 ) );
@@ -90,7 +91,7 @@ public class ChoicesGUI {
 		statusLbl2.setText( txt );
 	}
 	
-	public void frameStatus( boolean status ) {
-		frame.setVisible( status );
+	public void hideFrame() {
+		frame.setVisible( false );
 	}
 }
