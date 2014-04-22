@@ -92,11 +92,11 @@ public class ListenForClients implements Runnable {
 	}
 	
 	/**
-	 * Function that reads Library Member txt file with all members and puts
-	 * them in Server class.
+	 * Function that reads an user textfile with all users and puts
+	 * them in a hashtable.
 	 * 
 	 * @param filename
-	 *            Name of file that contains all Library Members.
+	 *            Name of file that contains all users.
 	 */
 	private void readUsers( String filename ) {
 		String str;

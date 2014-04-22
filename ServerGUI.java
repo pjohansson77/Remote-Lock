@@ -11,7 +11,7 @@ import javax.swing.text.DefaultCaret;
 
 public class ServerGUI {
 	private ListenForClients server;
-	private ServerGUI gui = this;
+	private ServerGUI gui;
 	private JFrame frame;
 	private JPanel panel = new JPanel(new BorderLayout());
 	private JPanel btnPanel = new JPanel(new GridLayout(1,2));
@@ -23,12 +23,13 @@ public class ServerGUI {
 	private JLabel ipLabel = new JLabel();
 	private String consoleText = "";
 	private int port;
-	private String user;
+	private String userTextFile;
 
-	public ServerGUI( int port, String user ) {
+	public ServerGUI( int port, String userTextFile ) {
 		frame = new JFrame("Server - Remote Lock");
 		this.port = port;
-		this.user = user;
+		this.gui = this;
+		this.userTextFile = userTextFile;
 		
 		scroll = new JScrollPane(txtArea);
 		DefaultCaret caret = (DefaultCaret)txtArea.getCaret();
@@ -89,7 +90,7 @@ public class ServerGUI {
 				btnStart.setEnabled(false);
 				btnStop.setEnabled(true);
 				
-				Thread connectThread = new Thread( server = new ListenForClients( port, gui, user ) );
+				Thread connectThread = new Thread( server = new ListenForClients( port, gui, userTextFile ) );
 				connectThread.start();
 			}
 			if(e.getSource() == btnStop) {

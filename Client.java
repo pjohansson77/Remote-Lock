@@ -18,12 +18,13 @@ public class Client {
 	private ClientID id;
 	private ChoicesGUI choice;
 
-	public Client( String serverIP, int serverPort, ConnectGUI gui, ClientID id ) { 
+	public Client( String serverIP, int serverPort, ConnectGUI gui, ClientID id, String idTextFile ) { 
 		this.serverIP = serverIP;
 		this.serverPort = serverPort;
 		this.gui = gui;
 		this.id = id;
 		client = this;
+		readID( idTextFile );
 		Thread thread = new Thread( new ConnectingToServer() ); 
 		thread.start();
 	}
@@ -44,11 +45,9 @@ public class Client {
 
 				if( message.equals( "connected" ) ) {
 					gui2 = new LoginGUI( client, gui );
-					gui2.setInfoDisplay( "Welcome" );
 					gui2.setStatusDisplay( "Pending" );
 				} else if( message.equals( "newuser" ) ) {
 					gui3 = new LoginNewUserGUI( client, gui );
-					gui3.setInfoDisplay( "New user" );
 					gui3.setStatusDisplay( "Pending" );
 				} else {
 					try {
@@ -161,6 +160,7 @@ public class Client {
 					disconnect();
 				} else {
 					id.setID( message );
+					writeID( "src/lock/ID.txt" );
 					gui3.hideFrame();
 					gui4 = new LoginInfoGUI( client, gui );
 //					gui2.setInfoDisplay( "Ditt lösenord: " + message );
@@ -169,6 +169,36 @@ public class Client {
 			} catch(Exception e1 ) {
 				System.out.println( e1 );
 			}
+		}
+	}
+	
+	private void readID( String filename ) {
+		String str;
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					new FileInputStream( filename ), "ISO-8859-1"));
+			while ( ( str = reader.readLine() ) != null ) {
+				id.setID( str );
+			}
+			reader.close();
+		} catch (IOException e) {
+			System.out.println(e);
+		}
+	}
+	
+	private void writeID( String filename ) {
+		String str;
+		try {
+			BufferedWriter writer = new BufferedWriter( new FileWriter( filename ) );
+
+			str = id.getID();
+			
+			writer.write( str ); // Skriva strängen till textfilen
+			writer.newLine(); // Skriva ny-rad-tecken till textfilen
+
+			writer.close();
+		} catch( IOException e ) {
+			System.out.println( e );
 		}
 	}
 

@@ -32,6 +32,7 @@ public class ConnectGUI {
 	private JButton closeBtn = new JButton("CLOSE");
 	private ConnectGUI gui;
 	private ClientID id;
+	private String idTextFile;
 	
 	/**
 	 * Constructor for Login class.
@@ -39,10 +40,11 @@ public class ConnectGUI {
 	 * @param controller
 	 *            Controller
 	 */
-	public ConnectGUI() {
+	public ConnectGUI( String idTextFile ) {
 		frame = new JFrame();
 		gui = this;
-		id = new ClientID();
+		id = new ClientID( "" );
+		this.idTextFile = idTextFile;
 		
 		connectBtn.setFocusable(false);
 		closeBtn.setFocusable(false);
@@ -131,7 +133,7 @@ public class ConnectGUI {
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == connectBtn ) {
-				new Client(ipTextField.getText(), Integer.parseInt(portTextField.getText()), gui, id );
+				new Client(ipTextField.getText(), Integer.parseInt(portTextField.getText()), gui, id, idTextFile );
 				frameStatus( false );
 			}
 			if( e.getSource() == closeBtn ) {

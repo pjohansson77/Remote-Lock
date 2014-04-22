@@ -3,8 +3,8 @@ package lock;
 public class ClientID {
 	private String id;
 	
-	public ClientID() {
-		this.id = "";
+	public ClientID( String id ) {
+		this.id = id;
 	}
 	
 	public String getID() {

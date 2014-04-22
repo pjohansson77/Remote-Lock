@@ -1,16 +1,14 @@
 package lock;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 /**
  *  A class that verifies the password if the client is unknown.
@@ -46,7 +44,7 @@ public class ListenToNewClient implements Runnable {
 		try {
 			String loginUsername = input.readUTF();
 			String loginPassword = input.readUTF();
-			String id = "DA211P1-14";
+			String id = getRandomID();
 			
 			if( loginUsername.equals( "admin" ) && loginPassword.equals( "alfa" ) ) {
 				output.writeUTF( id ); // Skickar ett unikt id
@@ -89,6 +87,13 @@ public class ListenToNewClient implements Runnable {
 		} catch( IOException e ) {
 			System.out.println( e );
 		}
+	}
+	
+	private String getRandomID() {
+		Random rand = new Random();
+		int nbr = rand.nextInt(100) + 1;
+		String id = "DA211P1-" + nbr;
+		return id;
 	}
 	
 	/**

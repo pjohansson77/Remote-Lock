@@ -13,7 +13,7 @@ import javax.swing.*;
  */
 public class LoginGUI {
 	private JFrame frame;
-	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
+	private JLabel infoDisplayLbl = new JLabel("Welcome", JLabel.CENTER);
 	private JLabel lbl = new JLabel("Ange lösenord:");
 	private JPanel panel = new JPanel( new BorderLayout() );
 	private JPanel panel2 = new JPanel( new GridLayout( 2, 1 ) );

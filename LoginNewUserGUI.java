@@ -13,7 +13,7 @@ import javax.swing.*;
  */
 public class LoginNewUserGUI {
 	private JFrame frame;
-	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
+	private JLabel infoDisplayLbl = new JLabel("Server info", JLabel.CENTER);
 	private JLabel lbl = new JLabel("Ange användarnamn:");
 	private JLabel lbl2 = new JLabel("Ange lösenord:");
 	private JLabel statusLbl = new JLabel("Status: ");
