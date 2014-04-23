@@ -9,8 +9,8 @@ import java.util.Date;
 
 /**
  *  A class that verifies the password if the client is unknown.
+ *  
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- *
  */
 public class ListenToNewClient implements Runnable {
 	private Socket socket;
@@ -22,9 +22,11 @@ public class ListenToNewClient implements Runnable {
 
 	/**
 	 * A method that verifies the password. If the password is not correct the user is disconnected.
+	 * 
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
+	 * @param gui The server GUI.
 	 */
 	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
 		this.socket = socket;
@@ -42,15 +44,16 @@ public class ListenToNewClient implements Runnable {
 			password = input.readUTF();
 			
 			if( username.equals( "admin" ) && password.equals( "alfa" ) ) {
-				output.writeUTF( "DA211P1-14" ); // Skickar ett unikt id till klienten(just nu inte unikt)
+				output.writeUTF( "DA211P1-14" ); // Sends unique id to client
 				output.flush();
-				gui.showText( "Status: Användare tillagd i server\n" );
+				gui.showText( "Status: User added to server\n" );
+				
 				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui ) );
 				clientThread.start();
 			} else {
 				output.writeUTF( "tempfalse" );
 				output.flush();
-				gui.showText( "Status: Fel användarnamn eller lösenord\n" );
+				gui.showText( "Status: Wrong username or password\n" );
 				try {
 					gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 					socket.close();
@@ -61,6 +64,7 @@ public class ListenToNewClient implements Runnable {
 	
 	/**
 	 * A private method that returns the date and time.
+	 * 
 	 * @return date and time
 	 */
 	private Date getTime() {

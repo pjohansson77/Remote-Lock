@@ -8,8 +8,8 @@ import java.net.Socket;
 
 /**
  * A class that sends the clients choices to the arduino and sends a confirmation back to the client.
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  * 
+ * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  */
 public class ArduinoChoices {
 	private String message;
@@ -22,9 +22,11 @@ public class ArduinoChoices {
 
 	/**
 	 * A class constructor that gets the current socket and streams.
+	 * 
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
+	 * @param gui The server GUI.
 	 */
 	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
 		this.socket = socket;
@@ -35,7 +37,6 @@ public class ArduinoChoices {
 
 	/**
 	 * A method that listens to the clients choices and sends it to the talkToArduino method.
-	 *
 	 */
 	public void listenToArduinoChoices() {
 		try{
@@ -70,6 +71,7 @@ public class ArduinoChoices {
 	
 	/**
 	 * A method that sends the clients choices to the arduino.
+	 * 
 	 * @param message The message from the client to the arduino.
 	 */
 	private void talkToArduino( int message ) {

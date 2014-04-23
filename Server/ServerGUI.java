@@ -9,6 +9,11 @@ import java.net.UnknownHostException;
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 
+/**
+ * Class that handles the server sequence.
+ * 
+ * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ */
 public class ServerGUI {
 	private ListenForClients server;
 	private ServerGUI gui = this;
@@ -24,6 +29,11 @@ public class ServerGUI {
 	private String consoleText = "";
 	private int port;
 
+	/**
+	 * Constructor for ServerGUI class.
+	 * 
+	 * @param port The port that the server listens on.
+	 */
 	public ServerGUI( int port ) {
 		frame = new JFrame( "Server - Remote Lock" );
 		this.port = port;
@@ -52,10 +62,12 @@ public class ServerGUI {
 		btnStart.addActionListener( new ButtonListener() );
 		btnStop.addActionListener( new ButtonListener() );
 		
-		showServerInfo();
 		showServerGUI();	
 	}
 	
+	/**
+	 * Function that activates ServerGUI.
+	 */
 	public void showServerGUI() {
 		frame.setVisible( true );
 		frame.setResizable( false );
@@ -65,25 +77,38 @@ public class ServerGUI {
 		frame.pack();
 	}
 	
+	/**
+	 * Function that sends the ip-adress and port to the GUI.
+	 */
 	public void showServerInfo() {
 		try {
 			ipLabel.setText( "Server-IP: " + InetAddress.getLocalHost().getHostAddress() + " Port: " + port );
 		} catch ( UnknownHostException e ) {
 			e.printStackTrace();
 		}
-	
 	}
 	
+	/**
+	 * Function that sends text to the GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
 	public void showText( String str ) {
 		consoleText += str+"\n";
 		txtArea.setText( consoleText );
 	}
 	
+	/**
+	 * Button listener that does what the name suggest.
+	 * Listens to all user inputs in ServerGUI.
+	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == btnStart ) {
 				btnStart.setEnabled( false );
 				btnStop.setEnabled( true );
+				showServerInfo();
+				showText( "Server started\n" );
 				Thread connectThread = new Thread( server = new ListenForClients( port, gui ) );
 				connectThread.start();
 			}
@@ -91,9 +116,8 @@ public class ServerGUI {
 				btnStart.setEnabled( true );
 				btnStop.setEnabled( false );
 				server.terminate();
-				showText( "Server stängd\n" );
+				showText( "Server closed\n" );
 			}
 		}
-		
 	}
 }

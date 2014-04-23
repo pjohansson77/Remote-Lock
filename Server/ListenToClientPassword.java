@@ -9,8 +9,8 @@ import java.util.Date;
 
 /**
  * A class that verifies the password if the client is known.
+ * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- *
  */
 public class ListenToClientPassword implements Runnable {
 	private Socket socket;
@@ -21,9 +21,11 @@ public class ListenToClientPassword implements Runnable {
 	
 	/**
 	 * The constructor receives the current socket and streams.
+	 * 
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
+	 * @param gui The server GUI.
 	 */
 	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
 		this.socket = socket;
@@ -42,13 +44,14 @@ public class ListenToClientPassword implements Runnable {
 			if( password.equals( "alfa" ) ) {
 				output.writeUTF( "passwordtrue" );
 				output.flush();
+				gui.showText( "Status: User connected\n" );
 
 				ArduinoChoices choice = new ArduinoChoices( socket, output, input, gui );
 				choice.listenToArduinoChoices();
 			} else {
 				output.writeUTF( "passwordfalse" );
 				output.flush();
-				gui.showText( "Status: Fel användarnamn eller lösenord\n" );
+				gui.showText( "Status: Wrong username or password\n" );
 
 			}
 		} catch(IOException e) {} 
@@ -60,6 +63,7 @@ public class ListenToClientPassword implements Runnable {
 	
 	/**
 	 * A private method that returns the date and time.
+	 * 
 	 * @return date and time
 	 */
 	private Date getTime() {
