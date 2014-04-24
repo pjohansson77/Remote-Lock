@@ -16,13 +16,12 @@ import javax.swing.text.DefaultCaret;
  */
 public class ServerGUI {
 	private ListenForClients server;
-	private ServerGUI gui = this;
 	private JFrame frame;
 	private JPanel panel = new JPanel( new BorderLayout() );
 	private JPanel btnPanel = new JPanel( new GridLayout( 1,2 ) );
 	private JPanel topPanel = new JPanel( new BorderLayout() );
-	private JButton btnStart = new JButton( "Starta servern" );
-	private JButton btnStop = new JButton( "Stoppa servern" );
+	private JButton btnStart = new JButton( "Start server" );
+	private JButton btnStop = new JButton( "Stop server" );
 	private JTextArea txtArea = new JTextArea();
 	private JScrollPane scroll = new JScrollPane( txtArea );
 	private JLabel ipLabel = new JLabel();
@@ -33,10 +32,12 @@ public class ServerGUI {
 	 * Constructor for ServerGUI class.
 	 * 
 	 * @param port The port that the server listens on.
+	 * @param server A reference to the ListenForClients class.
 	 */
-	public ServerGUI( int port ) {
+	public ServerGUI( int port, ListenForClients server ) {
 		frame = new JFrame( "Server - Remote Lock" );
 		this.port = port;
+		this.server = server;
 		
 		DefaultCaret caret = ( DefaultCaret )txtArea.getCaret();
 		caret.setUpdatePolicy( DefaultCaret.ALWAYS_UPDATE );
@@ -109,8 +110,6 @@ public class ServerGUI {
 				btnStop.setEnabled( true );
 				showServerInfo();
 				showText( "Server started\n" );
-				Thread connectThread = new Thread( server = new ListenForClients( port, gui ) );
-				connectThread.start();
 			}
 			if(e.getSource() == btnStop) {
 				btnStart.setEnabled( true );

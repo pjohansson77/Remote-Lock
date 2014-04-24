@@ -9,7 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * A server that listens for clients and verifies a known client with an unique id.
+ * A server class that listens for clients and verifies a trusted client with an unique id.
  * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  */
@@ -23,18 +23,17 @@ public class ListenForClients implements Runnable {
 	private ServerGUI gui;
 
 	/**
-	 * A constructor that gets a port number to listen on.
+	 * A constructor that gets a port number to listen on and a reference to the server GUI.
 	 * 
 	 * @param port The port that the server listens on.
-	 * @param gui The server GUI.
 	 */
-	public ListenForClients( int port, ServerGUI gui ) {
+	public ListenForClients( int port ) {
 		this.port = port;
-		this.gui = gui;
+		gui = new ServerGUI( port, this );
 	}
 
 	/**
-	 * A method that listens for new clients.
+	 * A function that listens for new clients.
 	 */
 	public void run() {
 		try {
@@ -87,7 +86,7 @@ public class ListenForClients implements Runnable {
 	}
 
 	/**
-	 * A private method that returns the date and time.
+	 * A private function that returns the date and time.
 	 * 
 	 * @return date and time
 	 */
@@ -97,9 +96,7 @@ public class ListenForClients implements Runnable {
 	}
 	
 	/**
-	 * A private method that terminates the connection.
-	 * 
-	 * @return date and time
+	 * A private function that terminates the connection with the user.
 	 */
 	public void terminate() {
 		try {

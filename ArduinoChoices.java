@@ -8,8 +8,8 @@ import java.net.Socket;
 
 /**
  * A class that sends the clients choices to the arduino and sends a confirmation back to the client.
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  * 
+ * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  */
 public class ArduinoChoices {
 	private String message;
@@ -21,10 +21,12 @@ public class ArduinoChoices {
 	private ServerGUI gui;
 
 	/**
-	 * A class constructor that gets the current socket and streams.
+	 * A class constructor that gets the current socket, current streams and a reference to the server gui.
+	 * 
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
+	 * @param gui The server GUI.
 	 */
 	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
 		this.socket = socket;
@@ -35,7 +37,6 @@ public class ArduinoChoices {
 
 	/**
 	 * A method that listens to the clients choices and sends it to the talkToArduino method.
-	 *
 	 */
 	public void listenToArduinoChoices() {
 		try{
@@ -51,16 +52,16 @@ public class ArduinoChoices {
 				} else {
 					gui.showText( "IP-adress: " + socket.getInetAddress().getHostAddress() + " sent: " + message + "\n" );
 					if( num == 1 ) {
-						output.writeUTF( "Lampa1" );
+						output.writeUTF( "Door unlocked" );
 					}
 					else if( num == 2 ) {
-						output.writeUTF( "Lampa2" );
+						output.writeUTF( "Door locked" );
 					}
 					else if( num == 4 ) {
 						output.writeUTF( "Disco" );
 					} 
 					else {
-						output.writeUTF("Fel val");
+						output.writeUTF("Wrong choice");
 					}
 					output.flush();
 				} 
@@ -70,12 +71,15 @@ public class ArduinoChoices {
 	
 	/**
 	 * A method that sends the clients choices to the arduino.
+	 * 
 	 * @param message The message from the client to the arduino.
 	 */
 	private void talkToArduino( int message ) {
 		DataOutputStream output;
+		DataInputStream input;
 		Socket socket = null;
 
+		// Avmarkera nedanstående javakod ifall Arduino inte är inkopplad
 //		try {
 //			socket = new Socket( InetAddress.getByName( "169.254.146.12" ), 6666 );
 //			output = new DataOutputStream( socket.getOutputStream() );

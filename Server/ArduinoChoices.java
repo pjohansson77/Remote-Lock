@@ -21,12 +21,12 @@ public class ArduinoChoices {
 	private ServerGUI gui;
 
 	/**
-	 * A class constructor that gets the current socket and streams.
+	 * A class constructor that recieves the current socket, current streams and a reference to the server GUI.
 	 * 
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
-	 * @param gui The server GUI.
+	 * @param gui A reference to the ServerGUI class.
 	 */
 	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
 		this.socket = socket;
@@ -36,7 +36,7 @@ public class ArduinoChoices {
 	}
 
 	/**
-	 * A method that listens to the clients choices and sends it to the talkToArduino method.
+	 * A function that listens to the clients Arduino choices and sends it to the talkToArduino method.
 	 */
 	public void listenToArduinoChoices() {
 		try{
@@ -70,7 +70,7 @@ public class ArduinoChoices {
 	}
 	
 	/**
-	 * A method that sends the clients choices to the arduino.
+	 * A function that sends the clients choices to the arduino.
 	 * 
 	 * @param message The message from the client to the arduino.
 	 */

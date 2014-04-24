@@ -9,12 +9,11 @@ import javax.swing.*;
  * Class that handles the login sequence.
  * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- * 
  */
 public class LoginGUI {
 	private JFrame frame;
 	private JLabel infoDisplayLbl = new JLabel("Welcome", JLabel.CENTER);
-	private JLabel lbl = new JLabel("Ange lösenord:");
+	private JLabel lbl = new JLabel("Enter password:");
 	private JPanel panel = new JPanel( new BorderLayout() );
 	private JPanel panel2 = new JPanel( new GridLayout( 2, 1 ) );
 	private JPanel panel3 = new JPanel( new GridLayout( 1, 2 ) );
@@ -30,10 +29,10 @@ public class LoginGUI {
 	private ConnectGUI gui;
 	
 	/**
-	 * Constructor for Login class.
+	 * Constructor for LoginGUI class.
 	 * 
-	 * @param controller
-	 *            Controller
+	 * @param client Client
+	 * @param gui ConnectGUI
 	 */
 	public LoginGUI( Client client, ConnectGUI gui ) {
 		frame = new JFrame();
@@ -79,7 +78,7 @@ public class LoginGUI {
 	}
 	
 	/**
-	 * Function that activates login GUI.
+	 * Function that activates LoginGUI.
 	 */
 	public void showLogIn() {
 		frame.setVisible( true );
@@ -91,25 +90,32 @@ public class LoginGUI {
 	}
 	
 	/**
-	 * Function that sends a message to GUI.
+	 * Function that sends a message to the GUI.
 	 * 
-	 * @param txt
-	 *            Message in a String.
+	 * @param txt Message in a String.
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
 	}
 	
+	/**
+	 * Function that sends a message to the GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
 	public void setStatusDisplay( String txt ) {
 		statusLbl2.setText( txt );
 	}
 	
+	/**
+	 * Function that clears the password textfield.
+	 */
 	public void clearPasswordTextField() {
 		passwordTextField.setText( "" );
 	}
 	
 	/**
-	 * Sets Login GUI visible to false.
+	 * Function that sets LoginGUI visible to false.
 	 */
 	public void hideFrame() {
 		frame.setVisible( false );
@@ -117,7 +123,7 @@ public class LoginGUI {
 	
 	/**
 	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in Login GUI.
+	 * Listens to all user inputs in LoginGUI.
 	 */
 	private class ButtonListener implements ActionListener {		
 		public void actionPerformed( ActionEvent e ) {

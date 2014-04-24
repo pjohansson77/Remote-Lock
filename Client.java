@@ -17,12 +17,14 @@ public class Client {
 	private Client client;
 	private ClientID id;
 	private ChoicesGUI choice;
+	private String idTextFile;
 
 	public Client( String serverIP, int serverPort, ConnectGUI gui, ClientID id, String idTextFile ) { 
 		this.serverIP = serverIP;
 		this.serverPort = serverPort;
 		this.gui = gui;
 		this.id = id;
+		this.idTextFile = idTextFile;
 		client = this;
 		readID( idTextFile );
 		Thread thread = new Thread( new ConnectingToServer() ); 
@@ -45,10 +47,10 @@ public class Client {
 
 				if( message.equals( "connected" ) ) {
 					gui2 = new LoginGUI( client, gui );
-					gui2.setStatusDisplay( "Pending" );
+					gui2.setStatusDisplay( "Waiting for password" );
 				} else if( message.equals( "newuser" ) ) {
 					gui3 = new LoginNewUserGUI( client, gui );
-					gui3.setStatusDisplay( "Pending" );
+					gui3.setStatusDisplay( "Waiting for username and password" );
 				} else {
 					try {
 						socket.close();
@@ -83,7 +85,7 @@ public class Client {
 
 			gui4.hideFrame();
 			gui2 = new LoginGUI( client, gui );
-			gui2.setStatusDisplay( "Tillagd i server" );
+			gui2.setStatusDisplay( "Added to server" );
 		} catch(Exception e1 ) {
 			System.out.println( e1 );
 		}
@@ -107,7 +109,7 @@ public class Client {
 					choice = new ChoicesGUI( client );
 					choice.setStatusDisplay("Connected" );
 				} else {
-					gui.setInfoDisplay( "Fel användarnamn eller lösenord" );
+					gui.setInfoDisplay( "Wrong username or password" );
 					gui2.hideFrame();
 					disconnect();
 				} 
@@ -155,16 +157,15 @@ public class Client {
 
 				message = input.readUTF();
 				if( message.equals( "tempfalse" ) ) {
-					gui.setInfoDisplay( "Fel användarnamn eller lösenord" );
+					gui.setInfoDisplay( "Wrong username or password" );
 					gui3.hideFrame();
 					disconnect();
 				} else {
 					id.setID( message );
-					writeID( "src/lock/ID.txt" );
+					writeID( idTextFile );
 					gui3.hideFrame();
 					gui4 = new LoginInfoGUI( client, gui );
-//					gui2.setInfoDisplay( "Ditt lösenord: " + message );
-//					gui2.setStatusDisplay( "Tillagd i server" );
+					gui4.setStatusDisplay( "Waiting for username and password" );
 				}
 			} catch(Exception e1 ) {
 				System.out.println( e1 );

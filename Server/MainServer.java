@@ -7,6 +7,7 @@ package test;
  */
 public class MainServer {	
 	public static void main( String[] args ) {
-		 new ServerGUI( 5555 );
+		Thread connectThread = new Thread( new ListenForClients( 5555 ) );
+		connectThread.start();
 	} 
 }

@@ -12,9 +12,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * A server that listens for clients and verifies a known client with an unique id.
+ * A server that listens for clients and verifies a known client with a unique id.
+ * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- *
  */
 public class ListenForClients implements Runnable {
 	private int port;
@@ -26,16 +26,21 @@ public class ListenForClients implements Runnable {
 	private ServerGUI gui;
 	private HashtableOH<String, User> table;
 	private User user;
+	private String userTextFile;
 
 	/**
-	 * A constructor that gets a port number to listen on.
+	 * A constructor that recieves a port number to listen on, a reference to the server GUI and the user textfile.
+	 * 
 	 * @param port The port that the server listens on.
+	 * @param gui The server GUI.
+	 * @param userTextFile The user textfile.
 	 */
-	public ListenForClients( int port, ServerGUI gui, String user ) {
+	public ListenForClients( int port, String userTextFile ) {
 		this.port = port;
-		this.gui = gui;
 		this.table = new HashtableOH<String, User>(10);
-		readUsers( user );
+		this.userTextFile = userTextFile;
+		readUsers( userTextFile );
+		gui = new ServerGUI( port, this );
 	}
 
 	/**
@@ -56,7 +61,7 @@ public class ListenForClients implements Runnable {
 					
 					// If the unique id is known the client only needs to input the password. 
 					if( table.containsKey( id ) ) {
-						gui.showText( "Status: Användaren " + table.get( id ).getName() + " är betrodd\n" );
+						gui.showText( "Status: User " + table.get( id ).getName() + " is trusted\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "connected" );
 						output.flush();
@@ -65,16 +70,16 @@ public class ListenForClients implements Runnable {
 
 						// If the unique id is empty it's the first login and the client needs a username and password.
 					} else if( id.equals( "" ) ) {
-						gui.showText( "Status: Ny användare\n" );
+						gui.showText( "Status: New user\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "newuser" );
 						output.flush();
-						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input, gui, table ) );
+						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input, gui, table, userTextFile ) );
 						clientThread.start();
 						
 						// If the unique id is not empty the user is not allowed to log in.
 					} else {
-						gui.showText( "Status: Ej betrodd användare\n" );
+						gui.showText( "Status: User not trusted\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "unknown" );
 						output.flush();
@@ -95,8 +100,7 @@ public class ListenForClients implements Runnable {
 	 * Function that reads an user textfile with all users and puts
 	 * them in a hashtable.
 	 * 
-	 * @param filename
-	 *            Name of file that contains all users.
+	 * @param filename Name of file that contains all users.
 	 */
 	private void readUsers( String filename ) {
 		String str;
@@ -117,6 +121,7 @@ public class ListenForClients implements Runnable {
 
 	/**
 	 * A private method that returns the date and time.
+	 * 
 	 * @return date and time
 	 */
 	private Date getTime() {
@@ -124,6 +129,11 @@ public class ListenForClients implements Runnable {
 		return cal.getTime();
 	}
 	
+	/**
+	 * A private method that terminates the connection.
+	 * 
+	 * @return date and time
+	 */
 	public void terminate() {
 		try {
 			socket.close();

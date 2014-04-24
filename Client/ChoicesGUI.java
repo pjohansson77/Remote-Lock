@@ -13,6 +13,12 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
+/**
+ * Class that handles the arduino choice sequence.
+ * 
+ * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ */
 public class ChoicesGUI {
 	private JFrame frame;
 	private JPanel panel = new JPanel( new GridLayout( 2, 2 ) );
@@ -21,15 +27,20 @@ public class ChoicesGUI {
 	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
 	private JLabel statusLbl = new JLabel("Status: ");
 	private JLabel statusLbl2 = new JLabel("");
-	private JButton btnVal1 = new JButton("Lampa1");
-	private JButton btnVal2 = new JButton("Lampa2");
-	private JButton btnVal3 = new JButton("Disco");
-	private JButton btnVal4 = new JButton("Logga ut");
-	private Client client;
+	private JButton btnVal1 = new JButton("Unlock door");
+	private JButton btnVal2 = new JButton("Lock door");
+	private JButton btnVal3 = new JButton("Door status");
+	private JButton btnVal4 = new JButton("Log out");
+	private LoginToServer loginToServer;
 	
-	public ChoicesGUI( Client client ) {
+	/**
+	 * Constructor for ChoicesGUI class.
+	 * 
+	 * @param loginToServer A reference to the LoginToServer class.
+	 */
+	public ChoicesGUI( LoginToServer loginToServer ) {
 		frame = new JFrame();
-		this.client = client;
+		this.loginToServer = loginToServer;
 		
 		panel.add( btnVal1 );
 		panel.add( btnVal2 );
@@ -60,22 +71,9 @@ public class ChoicesGUI {
 		showChoices();
 	}
 	
-	private class ButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			String res = "Status: ";
-			if( e.getSource() == btnVal1 ) {
-				client.choices( "1" );
-			} else if( e.getSource() == btnVal2 ) {
-				client.choices( "2" );
-			} else if( e.getSource() == btnVal3 ) {
-				client.choices( "4" );
-			} else if( e.getSource() == btnVal4 ) {
-				client.choices( "0" );
-			}
-			statusLbl.setText( res );
-		}			
-	}
-	
+	/**
+	 * Function that activates ChoicesGUI.
+	 */
 	public void showChoices() {
 		frame.setVisible( true );
 		frame.setResizable( false );
@@ -85,18 +83,48 @@ public class ChoicesGUI {
 		frame.pack();
 	}
 	
+	/**
+	 * Function that sends a message to GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
 	}
 	
+	/**
+	 * Function that sends a message to GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
 	public void setStatusDisplay( String txt ) {
 		statusLbl2.setText( txt );
 	}
 	
 	/**
-	 * Sets Login GUI visible to false.
+	 * Function that sets ChoicesGUI visible to false.
 	 */
 	public void hideFrame() {
 		frame.setVisible( false );
+	}
+	
+	/**
+	 * Button listener that does what the name suggest.
+	 * Listens to all user inputs in ChoicesGUI.
+	 */
+	private class ButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			String res = "Status: ";
+			if( e.getSource() == btnVal1 ) {
+				loginToServer.choices( "1" );
+			} else if( e.getSource() == btnVal2 ) {
+				loginToServer.choices( "2" );
+			} else if( e.getSource() == btnVal3 ) {
+				loginToServer.choices( "4" );
+			} else if( e.getSource() == btnVal4 ) {
+				loginToServer.choices( "0" );
+			}
+			statusLbl.setText( res );
+		}			
 	}
 }

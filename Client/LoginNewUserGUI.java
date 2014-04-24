@@ -6,10 +6,9 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- * Class that handles the login sequence.
+ * Class that handles the login new user sequence.
  * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- * 
  */
 public class LoginNewUserGUI {
 	private JFrame frame;
@@ -28,17 +27,20 @@ public class LoginNewUserGUI {
 	private JButton disconnectBtn = new JButton("Disconnect");
 	private Client client;
 	private ConnectGUI gui;
+	private ClientID id;
 	
 	/**
-	 * Constructor for Login class.
+	 * Constructor for LoginNewUser class.
 	 * 
-	 * @param controller
-	 *            Controller
+	 * @param client A reference to the Client class
+	 * @param gui A reference to the ConnectGUI class
+	 * @param id A reference to the ClientID class
 	 */
-	public LoginNewUserGUI( Client client, ConnectGUI gui ) {
+	public LoginNewUserGUI( Client client, ConnectGUI gui, ClientID id ) {
 		frame = new JFrame();
 		this.client = client;
 		this.gui = gui;
+		this.id = id;
 		
 		okBtn.setFocusable(false);
 		disconnectBtn.setFocusable(false);
@@ -80,7 +82,7 @@ public class LoginNewUserGUI {
 	}
 	
 	/**
-	 * Function that activates login GUI.
+	 * Function that activates LoginNewUserGUI.
 	 */
 	public void showLogIn() {
 		frame.setVisible( true );
@@ -94,29 +96,28 @@ public class LoginNewUserGUI {
 	/**
 	 * Function that sends a message to GUI.
 	 * 
-	 * @param txt
-	 *            Message in a String.
+	 * @param txt Message in a String.
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
 	}
 	
 	/**
-	 * Function that sets textField in GUI with String.
-	 * 
-	 * @param txt
-	 *            String to be set in textField.
+	 * Function that clears the username textfield.
 	 */
 	public void clearUserTextField() {
 		userTextField.setText( "" );
 	}
 	
+	/**
+	 * Function that clears the password textfield.
+	 */
 	public void clearPasswordTextField() {
 		passwordTextField.setText( "" );
 	}
 	
 	/**
-	 * Sets Login GUI visible to false.
+	 * Function that sets LoginNewUserGUI visible to false.
 	 */
 	public void hideFrame() {
 		frame.setVisible( false );
@@ -124,12 +125,12 @@ public class LoginNewUserGUI {
 	
 	/**
 	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in Login GUI.
+	 * Listens to all user inputs in LoginNewUserGUI.
 	 */
 	private class ButtonListener implements ActionListener {		
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == okBtn ) {
-				client.startNewUserLogin( userTextField.getText(), passwordTextField.getText() );
+				client.startNewUserLogin( userTextField.getText(), passwordTextField.getText(), id );
 				clearUserTextField();
 				clearPasswordTextField();
 			}

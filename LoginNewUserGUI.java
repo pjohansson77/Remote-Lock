@@ -6,16 +6,15 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- * Class that handles the login sequence.
+ * Class that handles the login new user sequence.
  * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- * 
  */
 public class LoginNewUserGUI {
 	private JFrame frame;
 	private JLabel infoDisplayLbl = new JLabel("Server info", JLabel.CENTER);
-	private JLabel lbl = new JLabel("Ange användarnamn:");
-	private JLabel lbl2 = new JLabel("Ange lösenord:");
+	private JLabel lbl = new JLabel("Enter username:");
+	private JLabel lbl2 = new JLabel("Enter password:");
 	private JLabel statusLbl = new JLabel("Status: ");
 	private JLabel statusLbl2 = new JLabel("");
 	private JPanel panel = new JPanel( new BorderLayout() );
@@ -34,10 +33,10 @@ public class LoginNewUserGUI {
 	private ConnectGUI gui;
 	
 	/**
-	 * Constructor for Login class.
+	 * Constructor for LoginNewUserGUI class.
 	 * 
-	 * @param controller
-	 *            Controller
+	 * @param client Client
+	 * @param gui ConnectGUI
 	 */
 	public LoginNewUserGUI( Client client, ConnectGUI gui ) {
 		frame = new JFrame();
@@ -92,7 +91,7 @@ public class LoginNewUserGUI {
 	}
 	
 	/**
-	 * Function that activates login GUI.
+	 * Function that activates LoginNewUserGUI.
 	 */
 	public void showLogIn() {
 		frame.setVisible( true );
@@ -104,43 +103,59 @@ public class LoginNewUserGUI {
 	}
 	
 	/**
-	 * Function that sends a message to GUI.
+	 * Function that sends a message to the GUI.
 	 * 
-	 * @param txt
-	 *            Message in a String.
+	 * @param txt Message in a String.
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
 	}
 	
+	/**
+	 * Function that sends a message to the GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
 	public void setStatusDisplay( String txt ) {
 		statusLbl2.setText( txt );
 	}
 	
+	/**
+	 * Function that sends a message to the GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
 	public void setlbl( String txt ) {
 		lbl.setText( txt );
 	}
 	
+	/**
+	 * Function that sends a message to the GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
 	public void setlbl2( String txt ) {
 		lbl2.setText( txt );
 	}
 	
 	/**
-	 * Function that sets textField in GUI with String.
+	 * Function that clears the username textfield.
 	 * 
-	 * @param txt
-	 *            String to be set in textField.
 	 */
 	public void clearUserTextField() {
 		userTextField.setText( "" );
 	}
 	
+	/**
+	 * Function that clears the password textfield.
+	 * 
+	 */
 	public void clearPasswordTextField() {
 		passwordTextField.setText( "" );
 	}
 	
 	/**
-	 * Sets Login GUI visible to false.
+	 * Function that sets LoginNewUserGUI visible to false.
 	 */
 	public void hideFrame() {
 		frame.setVisible( false );
@@ -148,7 +163,7 @@ public class LoginNewUserGUI {
 	
 	/**
 	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in Login GUI.
+	 * Listens to all user inputs in LoginNewUserGUI.
 	 */
 	private class ButtonListener implements ActionListener {		
 		public void actionPerformed( ActionEvent e ) {

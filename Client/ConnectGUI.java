@@ -6,10 +6,9 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- * Class that handles the login sequence.
+ * Class that handles the connection sequence.
  * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- * 
  */
 public class ConnectGUI {
 	private JFrame frame;
@@ -30,15 +29,12 @@ public class ConnectGUI {
 	private ClientID id;
 	
 	/**
-	 * Constructor for Login class.
-	 * 
-	 * @param controller
-	 *            Controller
+	 * Constructor for ConnectGUI class.
 	 */
 	public ConnectGUI() {
 		frame = new JFrame();
 		gui = this;
-		id = new ClientID();
+		id = new ClientID( "" );
 		
 		connectBtn.setFocusable(false);
 		closeBtn.setFocusable(false);
@@ -80,7 +76,7 @@ public class ConnectGUI {
 	}
 	
 	/**
-	 * Function that activates login GUI.
+	 * Function that activates ConnectGUI.
 	 */
 	public void showLogIn() {
 		frame.setVisible( true );
@@ -94,15 +90,14 @@ public class ConnectGUI {
 	/**
 	 * Function that sends a message to GUI.
 	 * 
-	 * @param txt
-	 *            Message in a String.
+	 * @param txt Message in a String.
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
 	}
 	
 	/**
-	 * Sets Login GUI visible to false.
+	 * Function that sets ConnectGUI visible to false.
 	 */
 	public void frameStatus( boolean status ) {
 		frame.setVisible( status );
@@ -110,12 +105,13 @@ public class ConnectGUI {
 	
 	/**
 	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in Login GUI.
+	 * Listens to all user inputs in ConnectGUI.
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == connectBtn ) {
-				new Client(ipTextField.getText(), Integer.parseInt(portTextField.getText()), gui, id );
+				Thread thread = new Thread( new Client(ipTextField.getText(), Integer.parseInt(portTextField.getText() ), gui, id ) ); 
+				thread.start();
 				frameStatus( false );
 			}
 			if( e.getSource() == closeBtn ) {

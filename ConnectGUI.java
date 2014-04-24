@@ -6,16 +6,15 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- * Class that handles the login sequence.
+ * Class that handles the connection sequence.
  * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- * 
  */
 public class ConnectGUI {
 	private JFrame frame;
 	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
-	private JLabel lbl = new JLabel("Ange IP-adress:");
-	private JLabel lbl2 = new JLabel("Ange port:");
+	private JLabel lbl = new JLabel("Enter IP-address:");
+	private JLabel lbl2 = new JLabel("Enter port:");
 	private JPanel panel = new JPanel( new BorderLayout() );
 	private JPanel panel2 = new JPanel( new GridLayout( 2, 1 ) );
 	private JPanel panel3 = new JPanel( new GridLayout( 2, 1 ) );
@@ -35,10 +34,9 @@ public class ConnectGUI {
 	private String idTextFile;
 	
 	/**
-	 * Constructor for Login class.
+	 * Constructor for ConnectGUI class.
 	 * 
-	 * @param controller
-	 *            Controller
+	 * @param idTextFile String
 	 */
 	public ConnectGUI( String idTextFile ) {
 		frame = new JFrame();
@@ -94,7 +92,7 @@ public class ConnectGUI {
 	}
 	
 	/**
-	 * Function that activates login GUI.
+	 * Function that activates ConnectGUI.
 	 */
 	public void showLogIn() {
 		frame.setVisible( true );
@@ -106,21 +104,25 @@ public class ConnectGUI {
 	}
 	
 	/**
-	 * Function that sends a message to GUI.
+	 * Function that sends a message to the GUI.
 	 * 
-	 * @param txt
-	 *            Message in a String.
+	 * @param txt Message in a String.
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
 	}
 	
+	/**
+	 * Function that sends a message to the GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
 	public void setStatusDisplay( String txt ) {
 		statusLbl2.setText( txt );
 	}
 	
 	/**
-	 * Sets Login GUI visible to false.
+	 * Function that sets ConnectGUI visible to false.
 	 */
 	public void frameStatus( boolean status ) {
 		frame.setVisible( status );
@@ -128,7 +130,7 @@ public class ConnectGUI {
 	
 	/**
 	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in Login GUI.
+	 * Listens to all user inputs in ConnectGUI.
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed( ActionEvent e ) {

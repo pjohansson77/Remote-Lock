@@ -8,10 +8,16 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Class that handles the arduino choice sequence.
+ * 
+ * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ */
 public class ChoicesGUI {
 	private JFrame frame;
 	private JPanel panel = new JPanel( new GridLayout( 2, 2 ) );
@@ -20,12 +26,17 @@ public class ChoicesGUI {
 	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
 	private JLabel statusLbl = new JLabel("Status: ");
 	private JLabel statusLbl2 = new JLabel("");
-	private JButton btnVal1 = new JButton("Lampa1");
-	private JButton btnVal2 = new JButton("Lampa2");
-	private JButton btnVal3 = new JButton("Disco");
-	private JButton btnVal4 = new JButton("Logga ut");
+	private JButton btnVal1 = new JButton("Unlock door");
+	private JButton btnVal2 = new JButton("Lock door");
+	private JButton btnVal3 = new JButton("Door status");
+	private JButton btnVal4 = new JButton("Log out");
 	private Client client;
 	
+	/**
+	 * Constructor for ChoicesGUI class.
+	 * 
+	 * @param client Client
+	 */
 	public ChoicesGUI( Client client ) {
 		frame = new JFrame();
 		this.client = client;
@@ -46,6 +57,7 @@ public class ChoicesGUI {
 		panel2.setBackground( new Color( 255, 255, 255 ) );
 		panel3.setBackground( new Color( 255, 255, 255 ) );
 		
+		infoDisplayLbl.setFont( new Font( "DialogInput", Font.BOLD, 14 ) );
 		infoDisplayLbl.setPreferredSize( new Dimension( 400, 60 ) );
 		panel.setPreferredSize( new Dimension( 400, 150 ) );
 		panel2.setPreferredSize( new Dimension( 400, 30 ) );
@@ -58,6 +70,47 @@ public class ChoicesGUI {
 		showChoices();
 	}
 	
+	/**
+	 * Function that activates ChoicesGUI.
+	 */
+	public void showChoices() {
+		frame.setVisible( true );
+		frame.setResizable( false );
+		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		frame.getContentPane().add( panel3, BorderLayout.CENTER );
+		frame.setLocation( 200, 100 );
+		frame.pack();
+	}
+	
+	/**
+	 * Function that sends a message to GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
+	public void setInfoDisplay( String txt ) {
+		infoDisplayLbl.setText( txt );
+	}
+	
+	/**
+	 * Function that sends a message to GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
+	public void setStatusDisplay( String txt ) {
+		statusLbl2.setText( txt );
+	}
+	
+	/**
+	 * Function that sets ChoicesGUI visible to false.
+	 */
+	public void hideFrame() {
+		frame.setVisible( false );
+	}
+	
+	/**
+	 * Button listener that does what the name suggest.
+	 * Listens to all user inputs in ChoicesGUI.
+	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			String res = "Status: ";
@@ -72,26 +125,5 @@ public class ChoicesGUI {
 			}
 			statusLbl.setText( res );
 		}			
-	}
-	
-	public void showChoices() {
-		frame.setVisible( true );
-		frame.setResizable( false );
-		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		frame.getContentPane().add( panel3, BorderLayout.CENTER );
-		frame.setLocation( 200, 100 );
-		frame.pack();
-	}
-	
-	public void setInfoDisplay( String txt ) {
-		infoDisplayLbl.setText( txt );
-	}
-	
-	public void setStatusDisplay( String txt ) {
-		statusLbl2.setText( txt );
-	}
-	
-	public void hideFrame() {
-		frame.setVisible( false );
 	}
 }

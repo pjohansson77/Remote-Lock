@@ -11,9 +11,9 @@ import java.util.Date;
 import java.util.Random;
 
 /**
- *  A class that verifies the password if the client is unknown.
+ *  A class that verifies the password if the client is a new user.
+ *  
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- *
  */
 public class ListenToNewClient implements Runnable {
 	private Socket socket;
@@ -22,23 +22,31 @@ public class ListenToNewClient implements Runnable {
 	private ServerGUI gui;
 	private User user;
 	private HashtableOH<String, User> table;
+	private String userTextFile;
 
 	/**
-	 * A method that verifies the password. If the password is not correct the user is disconnected.
+	 * A constructor that receives the current socket, current streams, a reference to the server GUI, a hashtable of users and the user textfile.
+	 * 
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
+	 * @param gui The server GUI.
+	 * @param table A hashtable that stores users.
+	 * @param userTextFile The user textfile.
 	 */
-	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table ) {
+	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String userTextFile ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
 		this.table = table;
+		this.userTextFile = userTextFile;
 	}
 
 	/**
-	 * A method that verifies the password and the "admin" user.
+	 * A function that verifies with a username and a password that the 
+	 * user is authorised to be added to the server. After that the
+	 * user selects an own name and password for future login.
 	 */
 	public void run() {
 		try {
@@ -47,19 +55,20 @@ public class ListenToNewClient implements Runnable {
 			String id = getRandomID();
 			
 			if( loginUsername.equals( "admin" ) && loginPassword.equals( "alfa" ) ) {
-				output.writeUTF( id ); // Skickar ett unikt id
+				output.writeUTF( id ); // Sends unique id to client
 				output.flush();
 				
 				String clientUsername = input.readUTF();
 				String clientPassword = input.readUTF();
+	
 				user = new User( id, clientUsername, clientPassword );
 				table.put( id, user );
 
-				writeUser( "src/lock/Users.txt" );
+				writeUser( userTextFile );
 				gui.showText( "Status: User " + clientUsername + " added to server\n" );
+				
 				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, clientPassword ) );
 				clientThread.start();
-				
 			} else {
 				output.writeUTF( "tempfalse" );
 				output.flush();
@@ -68,20 +77,23 @@ public class ListenToNewClient implements Runnable {
 					gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 					socket.close();
 				} catch( Exception e ) {}
-//				output.writeBoolean( false );
 			} 
 		} catch(IOException e) {} 
 	} 
 	
+	/**
+	 * Function that writes users to a textfile.
+	 * 
+	 * @param filename Name of file that contains all users.
+	 */
 	private void writeUser( String filename ) {
 		String str;
 		try {
 			BufferedWriter writer = new BufferedWriter( new FileWriter( filename, true ) );
-
 			str = user.getID() + ";" + user.getName() + ";" + user.getPassword();
 			
-			writer.write( str ); // Skriva strängen till textfilen
-			writer.newLine(); // Skriva ny-rad-tecken till textfilen
+			writer.write( str );
+			writer.newLine();
 
 			writer.close();
 		} catch( IOException e ) {
@@ -89,6 +101,11 @@ public class ListenToNewClient implements Runnable {
 		}
 	}
 	
+	/**
+	 * A private method that creates a unique id.
+	 * 
+	 * @return unique id
+	 */
 	private String getRandomID() {
 		Random rand = new Random();
 		int nbr = rand.nextInt(100) + 1;
@@ -98,6 +115,7 @@ public class ListenToNewClient implements Runnable {
 	
 	/**
 	 * A private method that returns the date and time.
+	 * 
 	 * @return date and time
 	 */
 	private Date getTime() {

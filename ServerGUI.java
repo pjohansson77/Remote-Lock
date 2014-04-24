@@ -9,102 +9,115 @@ import java.net.UnknownHostException;
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 
+/**
+ * Class that handles the server sequence.
+ * 
+ * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ */
 public class ServerGUI {
 	private ListenForClients server;
-	private ServerGUI gui;
 	private JFrame frame;
-	private JPanel panel = new JPanel(new BorderLayout());
-	private JPanel btnPanel = new JPanel(new GridLayout(1,2));
-	private JPanel topPanel = new JPanel(new BorderLayout());
-	private JButton btnStart = new JButton("Starta servern");
-	private JButton btnStop = new JButton("Stoppa servern");
+	private JPanel panel = new JPanel( new BorderLayout() );
+	private JPanel btnPanel = new JPanel( new GridLayout(1,2) );
+	private JPanel topPanel = new JPanel( new BorderLayout() );
+	private JButton btnStart = new JButton( "Start server" );
+	private JButton btnStop = new JButton( "Stop server" );
 	private JTextArea txtArea = new JTextArea();
-	private JScrollPane scroll;
+	private JScrollPane scroll = new JScrollPane( txtArea );
 	private JLabel ipLabel = new JLabel();
 	private String consoleText = "";
 	private int port;
-	private String userTextFile;
 
-	public ServerGUI( int port, String userTextFile ) {
-		frame = new JFrame("Server - Remote Lock");
+	/**
+	 * Constructor for ServerGUI class.
+	 * 
+	 * @param port The port that the server listens on.
+	 * @param userTextFile The user textfile.
+	 */
+	public ServerGUI( int port, ListenForClients server ) {
+		frame = new JFrame( "Server - Remote Lock" );
 		this.port = port;
-		this.gui = this;
-		this.userTextFile = userTextFile;
+		this.server = server;
 		
-		scroll = new JScrollPane(txtArea);
-		DefaultCaret caret = (DefaultCaret)txtArea.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		DefaultCaret caret = ( DefaultCaret )txtArea.getCaret();
+		caret.setUpdatePolicy( DefaultCaret.ALWAYS_UPDATE );
 		
-		btnPanel.add(btnStart);
-		btnPanel.add(btnStop);
+		btnPanel.add( btnStart );
+		btnPanel.add( btnStop );
 		
-		topPanel.add(btnPanel, BorderLayout.CENTER);
-		topPanel.add(ipLabel, BorderLayout.SOUTH);
+		topPanel.add( btnPanel, BorderLayout.CENTER );
+		topPanel.add( ipLabel, BorderLayout.SOUTH );
 		
-		panel.add(topPanel, BorderLayout.NORTH);
-		panel.add(scroll, BorderLayout.CENTER);
+		panel.add( topPanel, BorderLayout.NORTH );
+		panel.add( scroll, BorderLayout.CENTER );
 		
-		panel.setPreferredSize(new Dimension(425, 500));
+		panel.setPreferredSize( new Dimension( 425, 500 ) );
 		
-		ipLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		ipLabel.setPreferredSize(new Dimension(200, 20));
-		btnPanel.setPreferredSize(new Dimension(125, 50));
+		ipLabel.setHorizontalAlignment( SwingConstants.CENTER );
+		ipLabel.setPreferredSize( new Dimension(200, 20 ) );
+		btnPanel.setPreferredSize( new Dimension(125, 50 ) );
 		
-		btnStop.setEnabled(false);
-		txtArea.setEditable(false);
+		btnStop.setEnabled( false );
+		txtArea.setEditable( false );
 
-		btnStart.addActionListener(new ButtonListener());
-		btnStop.addActionListener(new ButtonListener());
+		btnStart.addActionListener( new ButtonListener() );
+		btnStop.addActionListener( new ButtonListener() );
 		
-		showServerInfo();
 		showServerGUI();	
 	}
 	
+	/**
+	 * Function that activates ServerGUI.
+	 */
 	public void showServerGUI() {
 		frame.setVisible(true);
 		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().add(panel, BorderLayout.CENTER);
-		frame.setLocation(600, 100);
+		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		frame.getContentPane().add( panel, BorderLayout.CENTER );
+		frame.setLocation( 600, 100 );
 		frame.pack();
 	}
 	
+	/**
+	 * Function that sends the ip-adress and port to the GUI.
+	 */
 	public void showServerInfo() {
 		try {
 			ipLabel.setText("Server-IP: " + InetAddress.getLocalHost().getHostAddress() + " Port: " + port );
-		} catch (UnknownHostException e) {
+		} catch ( UnknownHostException e ) {
 			e.printStackTrace();
 		}
 	
 	}
 	
-	public void showText(String str) {
+	/**
+	 * Function that sends text to the GUI.
+	 * 
+	 * @param txt Message in a String.
+	 */
+	public void showText( String str ) {
 		consoleText += str+"\n";
-		txtArea.setText(consoleText);
+		txtArea.setText( consoleText );
 	}
 	
+	/**
+	 * Button listener that does what the name suggest.
+	 * Listens to all user inputs in ServerGUI.
+	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			if(e.getSource() == btnStart) {
-				showText("Server startad\n");
+			if( e.getSource() == btnStart ) {
+				showText( "Server started\n" );
 				btnStart.setEnabled(false);
 				btnStop.setEnabled(true);
-				
-				Thread connectThread = new Thread( server = new ListenForClients( port, gui, userTextFile ) );
-				connectThread.start();
+				showServerInfo();
 			}
-			if(e.getSource() == btnStop) {
+			if( e.getSource() == btnStop ) {
 				btnStart.setEnabled(true);
 				btnStop.setEnabled(false);
 				server.terminate();
-				showText("Server stängd\n");
+				showText( "Server closed\n" );
 			}
 		}
-		
 	}
-	
-//	public static void main(String[] args) {
-//		new ServerGUI();
-////		gui.showServerGUI();
-//	}
 }

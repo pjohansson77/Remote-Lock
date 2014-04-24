@@ -9,7 +9,6 @@ import javax.swing.*;
  * Class that handles the login sequence.
  * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
- * 
  */
 public class LoginGUI {
 	private JFrame frame;
@@ -24,17 +23,19 @@ public class LoginGUI {
 	private JButton disconnectBtn = new JButton("Disconnect");
 	private Client client;
 	private ConnectGUI gui;
+	private LoginGUI gui2;
 	
 	/**
-	 * Constructor for Login class.
+	 * Constructor for LoginGUI class.
 	 * 
-	 * @param controller
-	 *            Controller
+	 * @param client A reference to the Client class.
+	 * @param gui A reference to the ConnectGUI class.
 	 */
 	public LoginGUI( Client client, ConnectGUI gui ) {
 		frame = new JFrame();
 		this.client = client;
 		this.gui = gui;
+		this.gui2 = this;
 		
 		okBtn.setFocusable(false);
 		disconnectBtn.setFocusable(false);
@@ -68,7 +69,7 @@ public class LoginGUI {
 	}
 	
 	/**
-	 * Function that activates login GUI.
+	 * Function that activates LoginGUI.
 	 */
 	public void showLogIn() {
 		frame.setVisible( true );
@@ -82,19 +83,21 @@ public class LoginGUI {
 	/**
 	 * Function that sends a message to GUI.
 	 * 
-	 * @param txt
-	 *            Message in a String.
+	 * @param txt Message in a String.
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
 	}
 	
+	/**
+	 * Function that clears the password textfield.
+	 */
 	public void clearPasswordTextField() {
 		passwordTextField.setText( "" );
 	}
 	
 	/**
-	 * Sets Login GUI visible to false.
+	 * Function that sets LoginGUI visible to false.
 	 */
 	public void hideFrame() {
 		frame.setVisible( false );
@@ -102,12 +105,12 @@ public class LoginGUI {
 	
 	/**
 	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in Login GUI.
+	 * Listens to all user inputs in LoginGUI.
 	 */
 	private class ButtonListener implements ActionListener {		
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == okBtn ) {
-				client.startLogin( passwordTextField.getText() );
+				client.startLogin( passwordTextField.getText(), gui2 );
 				clearPasswordTextField();
 			}
 			if( e.getSource() == disconnectBtn ) {
