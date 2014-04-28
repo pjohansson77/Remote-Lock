@@ -30,18 +30,17 @@ public class LoginInfoGUI {
 	private JButton okBtn = new JButton("OK");
 	private JButton disconnectBtn = new JButton("Disconnect");
 	private Client client;
-	private ConnectGUI gui;
+	private LoginNewUserToServer loginNewUserToServer;
 	
 	/**
 	 * Constructor for LoginInfoGUI class.
 	 * 
 	 * @param client Client
-	 * @param gui ConnectGUI
 	 */
-	public LoginInfoGUI( Client client, ConnectGUI gui ) {
+	public LoginInfoGUI( Client client, LoginNewUserToServer loginNewUserToServer ) {
 		frame = new JFrame();
 		this.client = client;
-		this.gui = gui;
+		this.loginNewUserToServer = loginNewUserToServer;
 		
 		okBtn.setFocusable(false);
 		disconnectBtn.setFocusable(false);
@@ -160,22 +159,20 @@ public class LoginInfoGUI {
 	}
 	
 	/**
-	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in LoginInfoGUI.
+	 * Button listener that listens to all user inputs in LoginInfoGUI.
 	 */
 	private class ButtonListener implements ActionListener {		
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == okBtn && !userTextField.getText().equals( "" ) && !passwordTextField.getText().equals( "" ) ) {
-				client.startInfoLogin( userTextField.getText(), passwordTextField.getText() );
+				loginNewUserToServer.startInfoLogin( userTextField.getText(), passwordTextField.getText() );
 				clearUserTextField();
 				clearPasswordTextField();
 			} else
 				setInfoDisplay( "Name and password required" );
 			if( e.getSource() == disconnectBtn ) {
-				hideFrame();
-				gui.setInfoDisplay( "" );
 				client.disconnect();
 			}
+			hideFrame();
 		}
 	}
 }

@@ -3,22 +3,30 @@ package lock;
 import java.net.*;
 import java.io.*;
 
-public class Client {
-	private String serverIP;
+/**
+ * Client class that connects the client to the server.
+ * 
+ * @author Jesper Hansen, Peter Johansson, Andree Höög
+ */
+public class Client implements Runnable {
+	private String message, serverIP;
 	private int serverPort;
 	private Socket socket;
-	private ConnectGUI gui;
 	boolean connected = true;
+	private ConnectGUI gui;
 	private LoginGUI gui2;
 	private LoginNewUserGUI gui3;
-	private LoginInfoGUI gui4;
 	private DataOutputStream output;
 	private DataInputStream input;
 	private Client client;
 	private ClientID id;
-	private ChoicesGUI choice;
 	private String idTextFile;
 
+	/**
+	 * Constructor for Client class.
+	 * 
+	 * @param idTextFile The user id textfile.
+	 */
 	public Client( String serverIP, int serverPort, ConnectGUI gui, ClientID id, String idTextFile ) { 
 		this.serverIP = serverIP;
 		this.serverPort = serverPort;
@@ -27,152 +35,68 @@ public class Client {
 		this.idTextFile = idTextFile;
 		client = this;
 		readID( idTextFile );
-		Thread thread = new Thread( new ConnectingToServer() ); 
-		thread.start();
 	}
 
-	private class ConnectingToServer implements Runnable {
-		String message;
-
-		public void run() {
-			try {
-				socket = new Socket( InetAddress.getByName( serverIP ), serverPort );
-				output = new DataOutputStream( socket.getOutputStream() );
-
-				output.writeUTF( id.getID() );
-				output.flush(); 
-
-				input = new DataInputStream( socket.getInputStream() );
-				message = input.readUTF();
-
-				if( message.equals( "connected" ) ) {
-					gui2 = new LoginGUI( client, gui );
-					gui2.setStatusDisplay( "Waiting for password" );
-				} else if( message.equals( "newuser" ) ) {
-					gui3 = new LoginNewUserGUI( client, gui );
-					gui3.setStatusDisplay( "Waiting for username and password" );
-				} else {
-					try {
-						socket.close();
-					} catch( IOException e ) {
-						System.out.println( e );
-					}
-				}
-
-			} catch(Exception e1 ) {
-				System.out.println( e1 );
-			}
-		}
-	}
-
-	public void startLogin( String password ) {
-		Thread newThread = new Thread( new LoginToServer( password ) );
-		newThread.start();
-	}
-
-	public void startNewUserLogin( String username, String password ) {
-		Thread newThread = new Thread( new LoginNewUserToServer( username, password ) );
-		newThread.start();
-	}
-	
-	public void startInfoLogin( String username, String password ) {
+	/**
+	 * A function that connects the client to the server and sends the client id.
+	 */
+	public void run() {
 		try {
-			output.writeUTF( username );
-			output.flush();
+			socket = new Socket( InetAddress.getByName( serverIP ), serverPort );
+			output = new DataOutputStream( socket.getOutputStream() );
 
-			output.writeUTF( password );
-			output.flush();
+			output.writeUTF( id.getID() );
+			output.flush(); 
 
-			gui4.hideFrame();
-			gui2 = new LoginGUI( client, gui );
-			gui2.setStatusDisplay( "Added to server" );
-		} catch(Exception e1 ) {
-			System.out.println( e1 );
-		}
-	}
+			input = new DataInputStream( socket.getInputStream() );
+			message = input.readUTF();
 
-	private class LoginToServer implements Runnable {
-		String message, password;
-
-		public LoginToServer( String password ) {
-			this.password = password;
-		}
-
-		public void run() {
-			try {
-				output.writeUTF( password );
-				output.flush();
-
-				message = input.readUTF();
-				if( message.equals( "passwordtrue" ) ) {
-					gui2.hideFrame();
-					choice = new ChoicesGUI( client );
-					choice.setStatusDisplay("Connected" );
-				} else {
-					gui.setInfoDisplay( "Wrong username or password" );
-					gui2.hideFrame();
-					disconnect();
-				} 
-			} catch(Exception e1 ) {
-				System.out.println( e1 );
-			}
-		}
-	}
-
-	public void choices( String str ) {
-		String arduinoChoice, message;
-		try {
-			arduinoChoice = str;
-			if( arduinoChoice.equals( "0" ) ) {
-				connected = false;
-				choice.hideFrame();
-				gui.setInfoDisplay( "" );
-				disconnect();
+			if( message.equals( "connected" ) ) {
+				gui2 = new LoginGUI( client );
+				gui2.setStatusDisplay( "Waiting for password" );
+			} else if( message.equals( "newuser" ) ) {
+				gui3 = new LoginNewUserGUI( client );
+				gui3.setStatusDisplay( "Waiting for username and password" );
 			} else {
-				output.writeUTF( arduinoChoice );
-				output.flush();
-				message = input.readUTF();
-				choice.setInfoDisplay( message );
+				try {
+					socket.close();
+					gui.showLogIn();
+				} catch( IOException e ) {
+					System.out.println( e );
+				}
 			}
+
 		} catch(Exception e1 ) {
 			System.out.println( e1 );
 		}
 	}
 
-	private class LoginNewUserToServer implements Runnable {
-		String message, username, password;
-
-		public LoginNewUserToServer( String username, String password ) {
-			this.username = username;
-			this.password = password;
-		}
-
-		public void run() {
-			try {
-				output.writeUTF( username );
-				output.flush();
-
-				output.writeUTF( password );
-				output.flush();
-
-				message = input.readUTF();
-				if( message.equals( "tempfalse" ) ) {
-					gui.setInfoDisplay( "Wrong username or password" );
-					gui3.hideFrame();
-					disconnect();
-				} else {
-					id.setID( message );
-					writeID( idTextFile );
-					gui3.hideFrame();
-					gui4 = new LoginInfoGUI( client, gui );
-					gui4.setStatusDisplay( "Waiting for username and password" );
-				}
-			} catch(Exception e1 ) {
-				System.out.println( e1 );
-			}
-		}
+	/**
+	 * A function that starts the login to the server
+	 * @param password User password.
+	 * @param gui2 A reference to the LoginGUI class.
+	 */
+	public void startLogin( String password, LoginGUI gui2 ) {
+		Thread newThread = new Thread( new LoginToServer( password, client, output, input, gui ) );
+		newThread.start();
 	}
-	
+
+	/**
+	 * A function that starts the new user login to the server
+	 * @param password Server username.
+	 * @param password Server password.
+	 * @param id A reference to the ClientID class.
+	 */
+	public void startNewUserLogin( String username, String password ) {
+		Thread newThread = new Thread( new LoginNewUserToServer( username, password, client, output, input, gui, id, idTextFile ) );
+		newThread.start();
+	}
+
+	/**
+	 * A private function that reads a user id textfile.
+	 * 
+	 * @param filename Name of file that contains all users.
+	 */
 	private void readID( String filename ) {
 		String str;
 		try {
@@ -186,28 +110,14 @@ public class Client {
 			System.out.println(e);
 		}
 	}
-	
-	private void writeID( String filename ) {
-		String str;
-		try {
-			BufferedWriter writer = new BufferedWriter( new FileWriter( filename ) );
 
-			str = id.getID();
-			
-			writer.write( str ); // Skriva strängen till textfilen
-			writer.newLine(); // Skriva ny-rad-tecken till textfilen
-
-			writer.close();
-		} catch( IOException e ) {
-			System.out.println( e );
-		}
-	}
-
+	/**
+	 * A function that disconnects the clients from the server.
+	 */
 	public void disconnect() {
 		try {
-			gui.frameStatus( true );
-			gui.setStatusDisplay( "Disconnected" );
 			socket.close();
+			gui.showLogIn();
 		} catch( IOException e ) {
 			System.out.println( e );
 		}

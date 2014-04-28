@@ -9,7 +9,7 @@ import java.net.Socket;
 /**
  * A class that sends the clients choices to the arduino and sends a confirmation back to the client.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ * @author Jesper Hansen, Peter Johansson, Andree Höög
  */
 public class ArduinoChoices {
 	private String message;
@@ -26,7 +26,7 @@ public class ArduinoChoices {
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
-	 * @param gui The server GUI.
+	 * @param gui A reference to the ServerGUI class.
 	 */
 	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui ) {
 		this.socket = socket;
@@ -36,7 +36,7 @@ public class ArduinoChoices {
 	}
 
 	/**
-	 * A method that listens to the clients choices and sends it to the talkToArduino method.
+	 * A function that listens to the clients choices and sends it to the talkToArduino method.
 	 */
 	public void listenToArduinoChoices() {
 		try{
@@ -52,16 +52,16 @@ public class ArduinoChoices {
 				} else {
 					gui.showText( "IP-adress: " + socket.getInetAddress().getHostAddress() + " sent: " + message + "\n" );
 					if( num == 1 ) {
-						output.writeUTF( "Door unlocked" );
+						output.writeUTF( "Lampa1" );
 					}
 					else if( num == 2 ) {
-						output.writeUTF( "Door locked" );
+						output.writeUTF( "Lamp2" );
 					}
 					else if( num == 4 ) {
 						output.writeUTF( "Disco" );
 					} 
 					else {
-						output.writeUTF("Wrong choice");
+						output.writeUTF("Fel val");
 					}
 					output.flush();
 				} 
@@ -70,7 +70,7 @@ public class ArduinoChoices {
 	}
 	
 	/**
-	 * A method that sends the clients choices to the arduino.
+	 * A function that sends the clients choices to the arduino.
 	 * 
 	 * @param message The message from the client to the arduino.
 	 */

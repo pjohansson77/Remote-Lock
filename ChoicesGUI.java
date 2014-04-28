@@ -30,16 +30,16 @@ public class ChoicesGUI {
 	private JButton btnVal2 = new JButton("Lock door");
 	private JButton btnVal3 = new JButton("Door status");
 	private JButton btnVal4 = new JButton("Log out");
-	private Client client;
+	private LoginToServer loginToServer;
 	
 	/**
 	 * Constructor for ChoicesGUI class.
 	 * 
-	 * @param client Client
+	 * @param loginToServer A reference to the LoginToServer class.
 	 */
-	public ChoicesGUI( Client client ) {
+	public ChoicesGUI( LoginToServer loginToServer ) {
 		frame = new JFrame();
-		this.client = client;
+		this.loginToServer = loginToServer;
 		
 		panel.add( btnVal1 );
 		panel.add( btnVal2 );
@@ -108,20 +108,19 @@ public class ChoicesGUI {
 	}
 	
 	/**
-	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in ChoicesGUI.
+	 * Button listener that listens to all user inputs in ChoicesGUI.
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			String res = "Status: ";
 			if( e.getSource() == btnVal1 ) {
-				client.choices( "1" );
+				loginToServer.choices( "1" );
 			} else if( e.getSource() == btnVal2 ) {
-				client.choices( "2" );
+				loginToServer.choices( "2" );
 			} else if( e.getSource() == btnVal3 ) {
-				client.choices( "4" );
+				loginToServer.choices( "4" );
 			} else if( e.getSource() == btnVal4 ) {
-				client.choices( "0" );
+				loginToServer.choices( "0" );
 			}
 			statusLbl.setText( res );
 		}			

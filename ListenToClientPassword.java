@@ -8,9 +8,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * A class that verifies the password if the client is known.
+ * A class that verifies the password if the client is trusted.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ * @author Jesper Hansen, Peter Johansson, Andree Höög
  */
 public class ListenToClientPassword implements Runnable {
 	private Socket socket;
@@ -37,7 +37,7 @@ public class ListenToClientPassword implements Runnable {
 	}
 
 	/**
-	 * A method that verifies the password. If the password is not correct the user is disconnected.
+	 * A function that verifies the password. If the password is not correct the user is disconnected.
 	 */
 	public void run() {
 		try {
@@ -63,7 +63,7 @@ public class ListenToClientPassword implements Runnable {
 	} 
 	
 	/**
-	 * A private method that returns the date and time.
+	 * A private function that returns the date and time.
 	 * 
 	 * @return date and time
 	 */

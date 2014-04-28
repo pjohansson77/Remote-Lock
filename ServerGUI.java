@@ -12,7 +12,7 @@ import javax.swing.text.DefaultCaret;
 /**
  * Class that handles the server sequence.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ * @author Jesper Hansen, Peter Johansson, Andree Höög
  */
 public class ServerGUI {
 	private ListenForClients server;
@@ -32,7 +32,7 @@ public class ServerGUI {
 	 * Constructor for ServerGUI class.
 	 * 
 	 * @param port The port that the server listens on.
-	 * @param userTextFile The user textfile.
+	 * @param server A reference to the ListenForClients class.
 	 */
 	public ServerGUI( int port, ListenForClients server ) {
 		frame = new JFrame( "Server - Remote Lock" );
@@ -79,7 +79,7 @@ public class ServerGUI {
 	}
 	
 	/**
-	 * Function that sends the ip-adress and port to the GUI.
+	 * Function that sends the ip-address and port to the GUI.
 	 */
 	public void showServerInfo() {
 		try {
@@ -87,7 +87,6 @@ public class ServerGUI {
 		} catch ( UnknownHostException e ) {
 			e.printStackTrace();
 		}
-	
 	}
 	
 	/**
@@ -101,8 +100,7 @@ public class ServerGUI {
 	}
 	
 	/**
-	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in ServerGUI.
+	 * Button listener that listens to all user inputs in ServerGUI.
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {

@@ -1,11 +1,11 @@
 package lock;
 
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -13,7 +13,7 @@ import java.util.Random;
 /**
  *  A class that verifies the password if the client is a new user.
  *  
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ * @author Jesper Hansen, Peter Johansson, Andree Höög
  */
 public class ListenToNewClient implements Runnable {
 	private Socket socket;
@@ -22,7 +22,7 @@ public class ListenToNewClient implements Runnable {
 	private ServerGUI gui;
 	private User user;
 	private HashtableOH<String, User> table;
-	private String userTextFile;
+	private String loginUsername, loginPassword, id, clientUsername, clientPassword;
 
 	/**
 	 * A constructor that receives the current socket, current streams, a reference to the server GUI, a hashtable of users and the user textfile.
@@ -32,39 +32,40 @@ public class ListenToNewClient implements Runnable {
 	 * @param input The active InputStream.
 	 * @param gui The server GUI.
 	 * @param table A hashtable that stores users.
-	 * @param userTextFile The user textfile.
 	 */
-	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String userTextFile ) {
+	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
 		this.table = table;
-		this.userTextFile = userTextFile;
 	}
 
 	/**
 	 * A function that verifies with a username and a password that the 
 	 * user is authorised to be added to the server. After that the
-	 * user selects an own name and password for future login.
+	 * user selects a username and password for future login.
 	 */
 	public void run() {
 		try {
-			String loginUsername = input.readUTF();
-			String loginPassword = input.readUTF();
-			String id = getRandomID();
+			loginUsername = input.readUTF();
+			loginPassword = input.readUTF();
 			
 			if( loginUsername.equals( "admin" ) && loginPassword.equals( "alfa" ) ) {
-				output.writeUTF( id ); // Sends unique id to client
+				output.writeUTF( "temptrue" );
 				output.flush();
 				
-				String clientUsername = input.readUTF();
-				String clientPassword = input.readUTF();
+				clientUsername = input.readUTF();
+				clientPassword = input.readUTF();
+				
+				id = getRandomID();
+				output.writeUTF( id ); // Sends unique id to client
+				output.flush();
 	
 				user = new User( id, clientUsername, clientPassword );
 				table.put( id, user );
 
-				writeUser( userTextFile );
+				writeMySQL();
 				gui.showText( "Status: User " + clientUsername + " added to server\n" );
 				
 				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, clientPassword ) );
@@ -82,27 +83,27 @@ public class ListenToNewClient implements Runnable {
 	} 
 	
 	/**
-	 * Function that writes users to a textfile.
+	 * A private function that writes new users to a database.
 	 * 
-	 * @param filename Name of file that contains all users.
+	 * @param id User id.
+	 * @param clientUsername Username.
+	 * @param clientPassword User password.
 	 */
-	private void writeUser( String filename ) {
-		String str;
+	private void writeMySQL() {
 		try {
-			BufferedWriter writer = new BufferedWriter( new FileWriter( filename, true ) );
-			str = user.getID() + ";" + user.getName() + ";" + user.getPassword();
-			
-			writer.write( str );
-			writer.newLine();
+			Statement statement = MysqlDB.connect();
 
-			writer.close();
-		} catch( IOException e ) {
-			System.out.println( e );
+			String insert = "INSERT INTO ad1067.users VALUES ('" + id + "','" + clientUsername + "','" + clientPassword + "')";
+			statement.executeUpdate( insert );
+			
+			MysqlDB.disconnect();
+		} catch(SQLException e) {
+			System.out.println(e);
 		}
 	}
 	
 	/**
-	 * A private method that creates a unique id.
+	 * A private function that creates a unique id.
 	 * 
 	 * @return unique id
 	 */

@@ -30,18 +30,16 @@ public class LoginNewUserGUI {
 	private JButton okBtn = new JButton("OK");
 	private JButton disconnectBtn = new JButton("Disconnect");
 	private Client client;
-	private ConnectGUI gui;
 	
 	/**
 	 * Constructor for LoginNewUserGUI class.
 	 * 
-	 * @param client Client
-	 * @param gui ConnectGUI
+	 * @param client A reference to the Client class
+	 * @param id A reference to the ClientID class
 	 */
-	public LoginNewUserGUI( Client client, ConnectGUI gui ) {
+	public LoginNewUserGUI( Client client ) {
 		frame = new JFrame();
 		this.client = client;
-		this.gui = gui;
 		
 		okBtn.setFocusable(false);
 		disconnectBtn.setFocusable(false);
@@ -162,8 +160,7 @@ public class LoginNewUserGUI {
 	}
 	
 	/**
-	 * Button listener that does what the name suggest.
-	 * Listens to all user inputs in LoginNewUserGUI.
+	 * Button listener that listens to all user inputs in LoginNewUserGUI.
 	 */
 	private class ButtonListener implements ActionListener {		
 		public void actionPerformed( ActionEvent e ) {
@@ -173,10 +170,9 @@ public class LoginNewUserGUI {
 				clearPasswordTextField();
 			}
 			if( e.getSource() == disconnectBtn ) {
-				hideFrame();
-				gui.setInfoDisplay( "" );
 				client.disconnect();
 			}
+			hideFrame();
 		}
 	}
 }

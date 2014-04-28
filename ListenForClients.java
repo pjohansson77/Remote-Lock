@@ -1,20 +1,21 @@
 package lock;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 
 /**
- * A server that listens for clients and verifies a known client with a unique id.
+ * A server class that listens for clients and verifies a trusted client with an unique id.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ * @author Jesper Hansen, Peter Johansson, Andree Höög
  */
 public class ListenForClients implements Runnable {
 	private int port;
@@ -26,25 +27,21 @@ public class ListenForClients implements Runnable {
 	private ServerGUI gui;
 	private HashtableOH<String, User> table;
 	private User user;
-	private String userTextFile;
 
 	/**
-	 * A constructor that recieves a port number to listen on, a reference to the server GUI and the user textfile.
+	 * A constructor that recieves a port number to listen on and the user textfile.
 	 * 
 	 * @param port The port that the server listens on.
-	 * @param gui The server GUI.
-	 * @param userTextFile The user textfile.
 	 */
-	public ListenForClients( int port, String userTextFile ) {
+	public ListenForClients( int port ) {
 		this.port = port;
 		this.table = new HashtableOH<String, User>(10);
-		this.userTextFile = userTextFile;
-		readUsers( userTextFile );
+		readMySQL();
 		gui = new ServerGUI( port, this );
 	}
 
 	/**
-	 * A method that listens for new clients.
+	 * A function that listens for new clients.
 	 */
 	public void run() {
 		try {
@@ -58,7 +55,7 @@ public class ListenForClients implements Runnable {
 					input = new DataInputStream( socket.getInputStream() );
 					id = input.readUTF();
 					gui.showText( "Inloggningsid: " + id + "\n");
-					
+
 					// If the unique id is known the client only needs to input the password. 
 					if( table.containsKey( id ) ) {
 						gui.showText( "Status: User " + table.get( id ).getName() + " is trusted\n" );
@@ -74,9 +71,9 @@ public class ListenForClients implements Runnable {
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "newuser" );
 						output.flush();
-						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input, gui, table, userTextFile ) );
+						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input, gui, table ) );
 						clientThread.start();
-						
+
 						// If the unique id is not empty the user is not allowed to log in.
 					} else {
 						gui.showText( "Status: User not trusted\n" );
@@ -95,26 +92,29 @@ public class ListenForClients implements Runnable {
 			serverSocket.close();
 		} catch( Exception e ) {}
 	}
-	
+
 	/**
-	 * Function that reads an user textfile with all users and puts
-	 * them in a hashtable.
-	 * 
-	 * @param filename Name of file that contains all users.
+	 * A private function that reads users from
+	 * a database and puts them in a hashtable.
 	 */
-	private void readUsers( String filename ) {
-		String str;
+	private void readMySQL() {
 		String[] values;
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream( filename ), "ISO-8859-1"));
-			while ( ( str = reader.readLine() ) != null ) {
-				values = str.split( ";" );
+			Statement statement = MysqlDB.connect();
+
+			ResultSet result = statement.executeQuery( "SELECT * FROM ad1067.users" );
+			ResultSetMetaData meta = result.getMetaData();
+ 
+			values = new String[ meta.getColumnCount() ];
+			while( result.next() ) {
+				for( int i = 0; i < values.length; i++ ) {
+					values[ i ] = result.getObject( i + 1 ).toString();
+				}
 				user = new User( values[ 0 ], values[ 1 ], values[ 2 ] );
 				table.put( values[ 0 ], user );
 			}
-			reader.close();
-		} catch (IOException e) {
+			MysqlDB.disconnect();
+		} catch(SQLException e) {
 			System.out.println(e);
 		}
 	}
@@ -128,11 +128,9 @@ public class ListenForClients implements Runnable {
 		Calendar cal = Calendar.getInstance();
 		return cal.getTime();
 	}
-	
+
 	/**
-	 * A private method that terminates the connection.
-	 * 
-	 * @return date and time
+	 * A function that terminates the connection.
 	 */
 	public void terminate() {
 		try {
