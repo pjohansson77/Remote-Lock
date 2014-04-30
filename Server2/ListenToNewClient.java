@@ -4,8 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -22,7 +20,7 @@ public class ListenToNewClient implements Runnable {
 	private ServerGUI gui;
 	private User user;
 	private HashtableOH<String, User> table;
-	private String loginInfo, loginUsername, loginPassword, id, tempUsername = "admin", tempPassword = "alfa";
+	private String loginInfo, username, password, id, tempUsername = "admin", tempPassword = "alfa";
 
 	/**
 	 * A constructor that receives the current socket, current streams, a reference to the server GUI, a hashtable of users and the user textfile.
@@ -51,7 +49,7 @@ public class ListenToNewClient implements Runnable {
 			loginInfo = input.readUTF();
 			splitInfo( loginInfo );
 
-			if( loginUsername.equals( tempUsername ) && loginPassword.equals( tempPassword ) ) {
+			if( username.equals( tempUsername ) && password.equals( tempPassword ) ) {
 				output.writeUTF( "temptrue" );
 				output.flush();
 
@@ -65,11 +63,11 @@ public class ListenToNewClient implements Runnable {
 				output.writeUTF( id ); // Sends unique id to client
 				output.flush();
 
-				user = new User( id, loginUsername, loginPassword );
+				user = new User( id, username, password );
 				table.put( id, user );
 
-//				writeMySQL();
-				gui.showText( "Status: User " + loginUsername + " added to server\n" );
+//				MySQL.writeToMySQL( id, username, password );
+				gui.showText( "Status: User " + username + " added to server\n" );
 
 				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id ) );
 				clientThread.start();
@@ -86,26 +84,6 @@ public class ListenToNewClient implements Runnable {
 			} 
 		} catch(IOException e) {} 
 	} 
-
-	/**
-	 * A private function that writes new users to a database.
-	 * 
-	 * @param id User id.
-	 * @param clientUsername Username.
-	 * @param clientPassword User password.
-	 */
-	private void writeMySQL() {
-		try {
-			Statement statement = MysqlDB.connect();
-
-			String insert = "INSERT INTO ad1067.users VALUES ('" + id + "','" + loginUsername + "','" + loginPassword + "')";
-			statement.executeUpdate( insert );
-
-			MysqlDB.disconnect();
-		} catch(SQLException e) {
-			System.out.println(e);
-		}
-	}
 
 	/**
 	 * A private function that creates a unique id.
@@ -133,10 +111,15 @@ public class ListenToNewClient implements Runnable {
 		return cal.getTime();
 	}
 
-	private void splitInfo( String txt ) {
+	/**
+	 * A private function that splits a string.
+	 * 
+	 * @param str The string that will be split.
+	 */
+	private void splitInfo( String str ) {
 		String[] values;
-		values = txt.split( ";" );
-		loginUsername = values[ 0 ];
-		loginPassword = values[ 1 ];
+		values = str.split( ";" );
+		username = values[ 0 ];
+		password = values[ 1 ];
 	}
 }

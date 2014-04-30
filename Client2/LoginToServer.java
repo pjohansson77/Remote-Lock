@@ -70,6 +70,9 @@ public class LoginToServer implements Runnable {
 		try {
 			arduinoChoice = str;
 			if( arduinoChoice.equals( "0" ) ) {
+				output.writeUTF( arduinoChoice );
+				output.flush();
+				
 				choice.hideFrame();
 				client.disconnect();
 			} else if( arduinoChoice.equals( "3" ) ) {

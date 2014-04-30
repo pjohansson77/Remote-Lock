@@ -27,7 +27,8 @@ public class ListenToClientPassword implements Runnable {
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 * @param gui The server GUI.
-	 * @param password The user password.
+	 * @param table A hashtable that stores users.
+	 * @param id A user id.
 	 */
 	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id ) {
 		this.socket = socket;

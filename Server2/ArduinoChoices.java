@@ -5,8 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * A class that sends the clients choices to the arduino and sends a confirmation back to the client.
@@ -14,7 +12,7 @@ import java.sql.Statement;
  * @author Jesper Hansen, Peter Johansson, Andree Höög
  */
 public class ArduinoChoices {
-	private String message, id, clientpassword, newClientPassword;
+	private String message, id, clientpassword, newClientPassword, status;
 	private int num, arduinoStatus;
 	private boolean connected = true;
 	private Socket arduinoSocket;
@@ -26,10 +24,11 @@ public class ArduinoChoices {
 	/**
 	 * A class constructor that gets the current socket, current streams and a reference to the server gui.
 	 * 
-	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 * @param gui A reference to the ServerGUI class.
+	 * @param table A hashtable that stores users.
+	 * @param id A user id.
 	 */
 	public ArduinoChoices( DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id ) {
 		this.clientInput = input;
@@ -40,6 +39,9 @@ public class ArduinoChoices {
 		connectToArduino();
 	}
 
+	/**
+	 * A private function that makes a connection to the arduino.
+	 */
 	private void connectToArduino() {
 
 		// Avmarkera nedanstående javakod ifall Arduino inte är inkopplad
@@ -48,10 +50,10 @@ public class ArduinoChoices {
 //
 //			arduinoOutput = new DataOutputStream( arduinoSocket.getOutputStream() );
 //			arduinoInput = new DataInputStream( arduinoSocket.getInputStream() );
-			
+//
 //			arduinoOutput.write( 8 ); // Message to Arduino
 //			arduinoOutput.flush();
-			
+
 			arduinoStatus = 1; // Tas bort sen!
 			statusToClient();
 			listenToArduinoChoices();
@@ -60,18 +62,21 @@ public class ArduinoChoices {
 		}
 	}
 
+	/**
+	 * A private function that sends the arduinostatus to the client.
+	 */
 	private void statusToClient() {
 		try{
 //			arduinoStatus = arduinoInput.read(); // Message from Arduino
 
 			if( arduinoStatus == 1 ) {
-				clientOutput.writeUTF( "unlocked" );
+				status = "unlocked";
 			} else if( arduinoStatus == 2 ) {
-				clientOutput.writeUTF( "locked" );
+				status = "locked";
 			}else if( arduinoStatus == 3 ) {
-				clientOutput.writeUTF( "open" );
+				status = "open";
 			}
-
+			clientOutput.writeUTF( status );
 			clientOutput.flush();
 		} catch(IOException e) {}
 	}
@@ -84,69 +89,65 @@ public class ArduinoChoices {
 			while( connected ) {
 
 				message = clientInput.readUTF();
-
-				if( message.equals( "0" ) ) {
-					talkToArduino( message );
-					connected = false;
+				if( message.length() > 2 ) {
+					splitInfo( message );
+					if( message.equals( "changepassword" ) && table.get( id ).getPassword().equals( clientpassword ) ) {
+						changePassword();
+					} else {
+						clientOutput.writeUTF( "wrongpassword" );
+						clientOutput.flush();
+					} 
 				} else {
-					if( message.equals( "1" ) ) {
-						gui.showText( "Status: User " + table.get( id ).getName() + " sent: " + message + "\n" );
+					if( message.equals( "0" ) ) {
+						talkToArduino( message );
+						connected = false;
+						status = "disconnect";
+					}
+					if( message.equals( "1" ) ) {				
 						talkToArduino( message );
 						arduinoStatus = 1; // Tas bort sen!
 						statusToClient();
-					} else if( message.equals( "2" ) ) {
-						gui.showText( "Status: User " + table.get( id ).getName() + " sent: " + message + "\n" );
+					} 
+					if( message.equals( "2" ) ) {
 						talkToArduino( message );
 						arduinoStatus = 2; // Tas bort sen!
 						statusToClient();
-					} else if( message.length() > 2 ) {
-						splitInfo( message );
-						if( message.equals( "changepassword" ) && table.get( id ).getPassword().equals( clientpassword ) ) {
-							clientOutput.writeUTF( "sendnewpassword" );
-							clientOutput.flush();
-
-							newClientPassword = clientInput.readUTF();
-							table.get( id ).setPassword( newClientPassword );
-							
-//							writeMySQL();
-							gui.showText( "Status: User " + table.get( id ).getName() + " changed password\n" );
-							
-							clientOutput.writeUTF( "Password changed" );
-							clientOutput.flush();
-						} else {
-							clientOutput.writeUTF( "wrongpassword" );
-							clientOutput.flush();
-						}
 					} 
+					gui.showText( "Status: User " + table.get( id ).getName() + " sent " + status + "\n" );
 				} 
-			} 
-			arduinoSocket.close();
-			arduinoOutput.close();
-			arduinoInput.close();
+			}
+//			arduinoSocket.close();
+//			arduinoOutput.close();
+//			arduinoInput.close();
 		} catch(IOException e) {}
 	}
 
-	private void writeMySQL() {
-		try {
-			Statement statement = MysqlDB.connect();
+	/**
+	 * A private function that changes the user password.
+	 */
+	private void changePassword() {
+		try{
+			clientOutput.writeUTF( "sendnewpassword" );
+			clientOutput.flush();
 
-			String insert = "UPDATE ad1067.users SET password = '" + newClientPassword + "' WHERE id = '" + id + "'";
-			statement.executeUpdate( insert );
+			newClientPassword = clientInput.readUTF();
+			table.get( id ).setPassword( newClientPassword );
 
-			MysqlDB.disconnect();
-		} catch(SQLException e) {
-			System.out.println(e);
-		}
+//			MySQL.updateMySQL( newClientPassword, id );
+			gui.showText( "Status: User " + table.get( id ).getName() + " changed password\n" );
+
+			clientOutput.writeUTF( "Password changed" );
+			clientOutput.flush();
+		} catch(IOException e) {}
 	}
 
 	/**
-	 * A function that sends the clients choices to the arduino.
+	 * A private function that sends the clients choices to the arduino.
 	 * 
 	 * @param message The message from the client to the arduino.
 	 */
 	private void talkToArduino( String message ) {
 		num = Integer.parseInt( message );
-		
 		try {
 //			arduinoOutput.write( num ); // Message to Arduino
 //			arduinoOutput.flush();	
@@ -154,10 +155,15 @@ public class ArduinoChoices {
 			System.out.println( e1 );
 		}
 	}
-	
-	private void splitInfo( String txt ) {
+
+	/**
+	 * A private function that splits a string.
+	 * 
+	 * @param str The string that will be split.
+	 */
+	private void splitInfo( String str ) {
 		String[] values;
-		values = txt.split( ";" );
+		values = str.split( ";" );
 		message = values[ 0 ];
 		clientpassword = values[ 1 ];
 	}

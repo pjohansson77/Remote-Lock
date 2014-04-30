@@ -5,10 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -29,19 +25,20 @@ public class ListenForClients implements Runnable {
 	private User user;
 
 	/**
-	 * A constructor that recieves a port number to listen on and the user textfile.
+	 * A constructor that recieves a port number to listen on and a reference to the ServerGUI.
 	 * 
 	 * @param port The port that the server listens on.
+	 * @param gui A reference to the ServerGUI class.
 	 */
 	public ListenForClients( int port, ServerGUI gui ) {
 		this.port = port;
 		this.table = new HashtableOH<String, User>(10);
-//		readMySQL();
+//		table = MySQL.readMySQL( table, user );
 		this.gui = gui;
 	}
 
 	/**
-	 * A function that listens for new clients.
+	 * A function that listens for new clients and sends them the right way.
 	 */
 	public void run() {
 		try {
@@ -96,32 +93,6 @@ public class ListenForClients implements Runnable {
 	}
 
 	/**
-	 * A private function that reads users from
-	 * a database and puts them in a hashtable.
-	 */
-	private void readMySQL() {
-		String[] values;
-		try {
-			Statement statement = MysqlDB.connect();
-
-			ResultSet result = statement.executeQuery( "SELECT * FROM ad1067.users" );
-			ResultSetMetaData meta = result.getMetaData();
- 
-			values = new String[ meta.getColumnCount() ];
-			while( result.next() ) {
-				for( int i = 0; i < values.length; i++ ) {
-					values[ i ] = result.getObject( i + 1 ).toString();
-				}
-				user = new User( values[ 0 ], values[ 1 ], values[ 2 ] );
-				table.put( values[ 0 ], user );
-			}
-			MysqlDB.disconnect();
-		} catch(SQLException e) {
-			System.out.println(e);
-		}
-	}
-
-	/**
 	 * A private method that returns the date and time.
 	 * 
 	 * @return date and time
@@ -132,7 +103,7 @@ public class ListenForClients implements Runnable {
 	}
 
 	/**
-	 * A function that terminates the connection.
+	 * A function that terminates the connection with the client.
 	 */
 	public void terminate() {
 		try {
