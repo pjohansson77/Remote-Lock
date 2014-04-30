@@ -49,6 +49,9 @@ public class ArduinoChoices {
 //			arduinoOutput = new DataOutputStream( arduinoSocket.getOutputStream() );
 //			arduinoInput = new DataInputStream( arduinoSocket.getInputStream() );
 			
+//			arduinoOutput.write( 8 ); // Message to Arduino
+//			arduinoOutput.flush();
+			
 			arduinoStatus = 1; // Tas bort sen!
 			statusToClient();
 			listenToArduinoChoices();
@@ -77,10 +80,7 @@ public class ArduinoChoices {
 	 * A function that listens to the clients choices and sends it to the talkToArduino method.
 	 */
 	public void listenToArduinoChoices() {
-		try{
-//			arduinoOutput.write( 8 ); // Message to Arduino
-//			arduinoOutput.flush();
-			
+		try{			
 			while( connected ) {
 
 				message = clientInput.readUTF();
