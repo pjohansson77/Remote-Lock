@@ -3,13 +3,15 @@ package lock;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
+import javax.swing.JOptionPane;
+
 /**
  * Class that handles a login sequence.
  * 
  * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
  */
 public class LoginToServer implements Runnable {
-	private String message, password;
+	private String message, password, status, newPassword;
 	private DataInputStream input;
 	private DataOutputStream output;
 	private Client client;
@@ -45,8 +47,11 @@ public class LoginToServer implements Runnable {
 
 			message = input.readUTF();
 			if( message.equals( "passwordtrue" ) ) {
+				
 				choice = new ChoicesGUI( loginToServer );
-				choice.setStatusDisplay("Connected" );
+				status = input.readUTF();
+				choice.setInfoDisplay( "Door " + status );
+				doorStatus();
 			} else {
 				gui.setInfoDisplay( "Wrong username or password" );
 				client.disconnect();
@@ -61,21 +66,45 @@ public class LoginToServer implements Runnable {
 	 * @param str Arduino choices.
 	 */
 	public void choices( String str ) {
-		String arduinoChoice, message;
+		String arduinoChoice;
 		try {
 			arduinoChoice = str;
-			if( arduinoChoice.equals("0") ) {
+			if( arduinoChoice.equals( "0" ) ) {
 				choice.hideFrame();
-				gui.setInfoDisplay( "" );
 				client.disconnect();
+			} else if( arduinoChoice.equals( "3" ) ) {
+				output.writeUTF( "changepassword;" + JOptionPane.showInputDialog( "Type old password:" ) );
+				output.flush();
+				
+				message = input.readUTF();
+				if( message.equals( "sendnewpassword" ) ) {
+					newPassword = JOptionPane.showInputDialog( "Type new password:" );
+					output.writeUTF( newPassword );
+					output.flush();
+					
+					status = input.readUTF();
+					choice.setInfoDisplay( status );
+				} else {
+					choice.setInfoDisplay( "Wrong password" );
+				}
+					
 			} else {
 				output.writeUTF( arduinoChoice );
 				output.flush();
-				message = input.readUTF();
-				choice.setInfoDisplay( message );
+				status = input.readUTF();
+				choice.setInfoDisplay( "Door " + status );
+				doorStatus();
 			}
 		} catch(Exception e1 ) {
 			System.out.println( e1 );
 		}
+	}
+	
+	private void doorStatus() {
+		if( status.equals( "unlocked" ) ) {
+			choice.lockedChoice();
+		} else if( status.equals( "locked" ) ) {
+			choice.unlockedChoice();
+		} 
 	}
 }

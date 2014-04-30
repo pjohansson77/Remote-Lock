@@ -117,6 +117,8 @@ public class Client implements Runnable {
 	public void disconnect() {
 		try {
 			socket.close();
+			output.close();
+			input.close();
 			gui.showLogIn();
 		} catch( IOException e ) {
 			System.out.println( e );

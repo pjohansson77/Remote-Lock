@@ -51,10 +51,7 @@ public class LoginNewUserToServer implements Runnable {
 	 */
 	public void run() {
 		try {
-			output.writeUTF( username );
-			output.flush();
-
-			output.writeUTF( password );
+			output.writeUTF( username + ";" + password );
 			output.flush();
 
 			message = input.readUTF();
@@ -72,10 +69,7 @@ public class LoginNewUserToServer implements Runnable {
 
 	public void startInfoLogin( String username, String password ) {
 		try {
-			output.writeUTF( username );
-			output.flush();
-
-			output.writeUTF( password );
+			output.writeUTF( username + ";" + password );
 			output.flush();
 
 			message = input.readUTF();

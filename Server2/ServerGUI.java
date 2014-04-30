@@ -27,6 +27,7 @@ public class ServerGUI {
 	private JLabel ipLabel = new JLabel();
 	private String consoleText = "";
 	private int port;
+	private ServerGUI gui;
 
 	/**
 	 * Constructor for ServerGUI class.
@@ -34,10 +35,10 @@ public class ServerGUI {
 	 * @param port The port that the server listens on.
 	 * @param server A reference to the ListenForClients class.
 	 */
-	public ServerGUI( int port, ListenForClients server ) {
+	public ServerGUI( int port ) {
 		frame = new JFrame( "Server - Remote Lock" );
 		this.port = port;
-		this.server = server;
+		this.gui = this;
 		
 		DefaultCaret caret = ( DefaultCaret )txtArea.getCaret();
 		caret.setUpdatePolicy( DefaultCaret.ALWAYS_UPDATE );
@@ -109,6 +110,8 @@ public class ServerGUI {
 				btnStart.setEnabled(false);
 				btnStop.setEnabled(true);
 				showServerInfo();
+				Thread connectThread = new Thread( server = new ListenForClients( port, gui ) );
+				connectThread.start();
 			}
 			if( e.getSource() == btnStop ) {
 				btnStart.setEnabled(true);

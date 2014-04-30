@@ -33,11 +33,11 @@ public class ListenForClients implements Runnable {
 	 * 
 	 * @param port The port that the server listens on.
 	 */
-	public ListenForClients( int port ) {
+	public ListenForClients( int port, ServerGUI gui ) {
 		this.port = port;
 		this.table = new HashtableOH<String, User>(10);
-		readMySQL();
-		gui = new ServerGUI( port, this );
+//		readMySQL();
+		this.gui = gui;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class ListenForClients implements Runnable {
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "connected" );
 						output.flush();
-						Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table.get( id ).getPassword() ) );
+						Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id ) );
 						clientThread.start();
 
 						// If the unique id is empty it's the first login and the client needs a username and password.
@@ -82,6 +82,8 @@ public class ListenForClients implements Runnable {
 						output.flush();
 						gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 						socket.close();
+						output.close();
+						input.close();
 					}
 				} catch( IOException e1 ) {
 					gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
@@ -135,6 +137,8 @@ public class ListenForClients implements Runnable {
 	public void terminate() {
 		try {
 			socket.close();
+			output.close();
+			input.close();
 		} catch( Exception e ) {}
 	}
 }

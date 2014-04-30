@@ -22,7 +22,7 @@ public class ListenToNewClient implements Runnable {
 	private ServerGUI gui;
 	private User user;
 	private HashtableOH<String, User> table;
-	private String loginUsername, loginPassword, id, clientUsername, clientPassword;
+	private String loginInfo, loginUsername, loginPassword, id, tempUsername = "admin", tempPassword = "alfa";
 
 	/**
 	 * A constructor that receives the current socket, current streams, a reference to the server GUI, a hashtable of users and the user textfile.
@@ -48,27 +48,30 @@ public class ListenToNewClient implements Runnable {
 	 */
 	public void run() {
 		try {
-			loginUsername = input.readUTF();
-			loginPassword = input.readUTF();
-			
-			if( loginUsername.equals( "admin" ) && loginPassword.equals( "alfa" ) ) {
+			loginInfo = input.readUTF();
+			splitInfo( loginInfo );
+
+			if( loginUsername.equals( tempUsername ) && loginPassword.equals( tempPassword ) ) {
 				output.writeUTF( "temptrue" );
 				output.flush();
-				
-				clientUsername = input.readUTF();
-				clientPassword = input.readUTF();
-				
+
+				loginInfo = input.readUTF();
+				splitInfo( loginInfo );
+
 				id = getRandomID();
+				while( table.containsKey( id ) ) {
+					id = getRandomID();
+				}
 				output.writeUTF( id ); // Sends unique id to client
 				output.flush();
-	
-				user = new User( id, clientUsername, clientPassword );
+
+				user = new User( id, loginUsername, loginPassword );
 				table.put( id, user );
 
-				writeMySQL();
-				gui.showText( "Status: User " + clientUsername + " added to server\n" );
-				
-				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, clientPassword ) );
+//				writeMySQL();
+				gui.showText( "Status: User " + loginUsername + " added to server\n" );
+
+				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id ) );
 				clientThread.start();
 			} else {
 				output.writeUTF( "tempfalse" );
@@ -77,11 +80,13 @@ public class ListenToNewClient implements Runnable {
 				try {
 					gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 					socket.close();
+					output.close();
+					input.close();
 				} catch( Exception e ) {}
 			} 
 		} catch(IOException e) {} 
 	} 
-	
+
 	/**
 	 * A private function that writes new users to a database.
 	 * 
@@ -93,27 +98,31 @@ public class ListenToNewClient implements Runnable {
 		try {
 			Statement statement = MysqlDB.connect();
 
-			String insert = "INSERT INTO ad1067.users VALUES ('" + id + "','" + clientUsername + "','" + clientPassword + "')";
+			String insert = "INSERT INTO ad1067.users VALUES ('" + id + "','" + loginUsername + "','" + loginPassword + "')";
 			statement.executeUpdate( insert );
-			
+
 			MysqlDB.disconnect();
 		} catch(SQLException e) {
 			System.out.println(e);
 		}
 	}
-	
+
 	/**
 	 * A private function that creates a unique id.
 	 * 
 	 * @return unique id
 	 */
 	private String getRandomID() {
+		String id = "DA";
+		char character;
 		Random rand = new Random();
-		int nbr = rand.nextInt(100) + 1;
-		String id = "DA211P1-" + nbr;
+		for( int i = 0; i < 8; i++ ) {
+			character = ( char )( rand.nextInt( 75 ) + '0' );
+			id += character;
+		}
 		return id;
 	}
-	
+
 	/**
 	 * A private method that returns the date and time.
 	 * 
@@ -122,5 +131,12 @@ public class ListenToNewClient implements Runnable {
 	private Date getTime() {
 		Calendar cal = Calendar.getInstance();
 		return cal.getTime();
+	}
+
+	private void splitInfo( String txt ) {
+		String[] values;
+		values = txt.split( ";" );
+		loginUsername = values[ 0 ];
+		loginPassword = values[ 1 ];
 	}
 }

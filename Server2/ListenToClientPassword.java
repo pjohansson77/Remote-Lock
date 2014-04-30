@@ -16,8 +16,9 @@ public class ListenToClientPassword implements Runnable {
 	private Socket socket;
 	private DataInputStream input;
 	private DataOutputStream output;
-	private String password;
+	private HashtableOH<String, User> table;
 	private ServerGUI gui;
+	private String id;
 	
 	/**
 	 * The constructor receives the current socket, current streams, a reference to the server GUI and the user password.
@@ -28,12 +29,13 @@ public class ListenToClientPassword implements Runnable {
 	 * @param gui The server GUI.
 	 * @param password The user password.
 	 */
-	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, String password ) {
+	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
-		this.password = password;
+		this.table = table;
+		this.id = id;
 	}
 
 	/**
@@ -43,13 +45,12 @@ public class ListenToClientPassword implements Runnable {
 		try {
 			String clientPassword = input.readUTF();
 
-			if( clientPassword.equals( password ) ) {
+			if( clientPassword.equals( table.get( id ).getPassword() ) ) {
 				output.writeUTF( "passwordtrue" );
 				output.flush();
-				gui.showText( "Status: User connected\n" );
+				gui.showText( "Status: User " + table.get( id ).getName() + " connected\n" );
 
-				ArduinoChoices choice = new ArduinoChoices( socket, output, input, gui );
-				choice.listenToArduinoChoices();
+				new ArduinoChoices( output, input, gui, table, id );
 			} else {
 				output.writeUTF( "passwordfalse" );
 				output.flush();
@@ -59,6 +60,8 @@ public class ListenToClientPassword implements Runnable {
 		try {
 			gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
 			socket.close();
+			output.close();
+			input.close();
 		} catch( Exception e ) {}
 	} 
 	

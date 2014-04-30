@@ -22,13 +22,10 @@ public class ChoicesGUI {
 	private JFrame frame;
 	private JPanel panel = new JPanel( new GridLayout( 2, 2 ) );
 	private JPanel panel2 = new JPanel( new BorderLayout() );
-	private JPanel panel3 = new JPanel( new BorderLayout() );
 	private JLabel infoDisplayLbl = new JLabel("", JLabel.CENTER);
-	private JLabel statusLbl = new JLabel("Status: ");
-	private JLabel statusLbl2 = new JLabel("");
 	private JButton btnVal1 = new JButton("Unlock door");
 	private JButton btnVal2 = new JButton("Lock door");
-	private JButton btnVal3 = new JButton("Door status");
+	private JButton btnVal3 = new JButton("Change password");
 	private JButton btnVal4 = new JButton("Log out");
 	private LoginToServer loginToServer;
 	
@@ -46,21 +43,15 @@ public class ChoicesGUI {
 		panel.add( btnVal3 );
 		panel.add( btnVal4 );
 		
-		panel2.add(statusLbl, BorderLayout.WEST);
-		panel2.add(statusLbl2, BorderLayout.CENTER);
-		
-		panel3.add(infoDisplayLbl, BorderLayout.NORTH);
-		panel3.add(panel, BorderLayout.CENTER);
-		panel3.add(panel2, BorderLayout.SOUTH);
+		panel2.add(infoDisplayLbl, BorderLayout.NORTH);
+		panel2.add(panel, BorderLayout.CENTER);
 		
 		panel.setBackground( new Color( 255, 255, 255 ) );
 		panel2.setBackground( new Color( 255, 255, 255 ) );
-		panel3.setBackground( new Color( 255, 255, 255 ) );
 		
 		infoDisplayLbl.setFont( new Font( "DialogInput", Font.BOLD, 14 ) );
 		infoDisplayLbl.setPreferredSize( new Dimension( 400, 60 ) );
 		panel.setPreferredSize( new Dimension( 400, 150 ) );
-		panel2.setPreferredSize( new Dimension( 400, 30 ) );
 		
 		btnVal1.addActionListener( new ButtonListener() );
 		btnVal2.addActionListener( new ButtonListener() );
@@ -77,7 +68,7 @@ public class ChoicesGUI {
 		frame.setVisible( true );
 		frame.setResizable( false );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		frame.getContentPane().add( panel3, BorderLayout.CENTER );
+		frame.getContentPane().add( panel2, BorderLayout.CENTER );
 		frame.setLocation( 200, 100 );
 		frame.pack();
 	}
@@ -91,13 +82,14 @@ public class ChoicesGUI {
 		infoDisplayLbl.setText( txt );
 	}
 	
-	/**
-	 * Function that sends a message to GUI.
-	 * 
-	 * @param txt Message in a String.
-	 */
-	public void setStatusDisplay( String txt ) {
-		statusLbl2.setText( txt );
+	public void unlockedChoice() {
+		btnVal1.setEnabled( true );
+		btnVal2.setEnabled( false );
+	}
+	
+	public void lockedChoice() {
+		btnVal1.setEnabled( false );
+		btnVal2.setEnabled( true );
 	}
 	
 	/**
@@ -112,17 +104,15 @@ public class ChoicesGUI {
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			String res = "Status: ";
 			if( e.getSource() == btnVal1 ) {
 				loginToServer.choices( "1" );
 			} else if( e.getSource() == btnVal2 ) {
 				loginToServer.choices( "2" );
 			} else if( e.getSource() == btnVal3 ) {
-				loginToServer.choices( "4" );
+				loginToServer.choices( "3" );
 			} else if( e.getSource() == btnVal4 ) {
 				loginToServer.choices( "0" );
 			}
-			statusLbl.setText( res );
 		}			
 	}
 }

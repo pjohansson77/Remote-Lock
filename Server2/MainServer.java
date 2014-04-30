@@ -11,8 +11,7 @@ public class MainServer {
 	public static void main( String[] args ) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() { 
-				Thread connectThread = new Thread( new ListenForClients( 5555 ) );
-				connectThread.start();
+				new ServerGUI( 5555 );
 			}
 		});
 	} 
