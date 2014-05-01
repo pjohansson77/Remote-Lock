@@ -33,7 +33,7 @@ public class MySQL {
 	 * @param table A hashtable.
 	 * @param users A reference to a user.
 	 */
-    public static HashtableOH<String, User> readMySQL( HashtableOH<String, User> table, User user ) {
+    public static void readMySQL( HashtableOH<String, User> table, User user ) {
     	String[] values;
 		try {
 			connect();
@@ -52,7 +52,6 @@ public class MySQL {
 		} catch(SQLException e) {
 			System.out.println(e);
 		}
-		return table;
     }
     
     /**

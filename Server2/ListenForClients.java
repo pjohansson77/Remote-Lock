@@ -33,7 +33,7 @@ public class ListenForClients implements Runnable {
 	public ListenForClients( int port, ServerGUI gui ) {
 		this.port = port;
 		this.table = new HashtableOH<String, User>(10);
-//		table = MySQL.readMySQL( table, user );
+//		MySQL.readMySQL( table, user );
 		this.gui = gui;
 	}
 
