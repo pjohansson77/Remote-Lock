@@ -112,6 +112,7 @@ public class ChoicesGUI {
 				loginToServer.choices( "3" );
 			} else if( e.getSource() == btnVal4 ) {
 				loginToServer.choices( "0" );
+				frame.dispose();
 			}
 		}			
 	}

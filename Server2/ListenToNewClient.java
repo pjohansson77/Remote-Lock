@@ -20,7 +20,9 @@ public class ListenToNewClient implements Runnable {
 	private ServerGUI gui;
 	private User user;
 	private HashtableOH<String, User> table;
-	private String loginInfo, username, password, id, tempUsername = "admin", tempPassword = "alfa";
+	private String loginInfo, username, password, id;
+	private ListenForClients server;
+	private String[] temp;
 
 	/**
 	 * A constructor that receives the current socket, current streams, a reference to the server GUI, a hashtable of users and the user textfile.
@@ -31,25 +33,26 @@ public class ListenToNewClient implements Runnable {
 	 * @param gui The server GUI.
 	 * @param table A hashtable that stores users.
 	 */
-	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table ) {
+	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, ListenForClients server ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
 		this.table = table;
+		this.server = server;
+		temp = MySQL.readTempMySQL();
 	}
 
 	/**
 	 * A function that verifies with a username and a password that the 
 	 * user is authorised to be added to the server. After that the
-	 * user selects a username and password for future login.
+	 * user selects a temp username and password for future login.
 	 */
 	public void run() {
 		try {
 			loginInfo = input.readUTF();
 			splitInfo( loginInfo );
-
-			if( username.equals( tempUsername ) && password.equals( tempPassword ) ) {
+			if( username.equals( temp[ 0 ] ) && password.equals( temp[ 1 ] ) ) {
 				output.writeUTF( "temptrue" );
 				output.flush();
 
@@ -66,22 +69,19 @@ public class ListenToNewClient implements Runnable {
 				user = new User( id, username, password );
 				table.put( id, user );
 
-//				MySQL.writeToMySQL( id, username, password );
+				MySQL.writeToMySQL( id, username, password );
 				gui.showText( "Status: User " + username + " added to server\n" );
+				MySQL.updateTempMySQL();
 
-				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id ) );
+				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id, server ) );
 				clientThread.start();
 			} else {
 				output.writeUTF( "tempfalse" );
 				output.flush();
 				gui.showText( "Status: Wrong username or password\n" );
-				try {
-					gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
-					socket.close();
-					output.close();
-					input.close();
-				} catch( Exception e ) {}
-			} 
+				gui.showText( "Disconnected: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
+				socket.close();
+			}
 		} catch(IOException e) {} 
 	} 
 
@@ -99,16 +99,6 @@ public class ListenToNewClient implements Runnable {
 			id += character;
 		}
 		return id;
-	}
-
-	/**
-	 * A private method that returns the date and time.
-	 * 
-	 * @return date and time
-	 */
-	private Date getTime() {
-		Calendar cal = Calendar.getInstance();
-		return cal.getTime();
 	}
 
 	/**

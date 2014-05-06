@@ -127,12 +127,12 @@ public class LoginGUI {
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == okBtn ) {
 				client.startLogin( passwordTextField.getText(), gui );
-				clearPasswordTextField();
 			}
 			if( e.getSource() == disconnectBtn ) {
 				client.disconnect();
 			}
-			hideFrame();
+			clearPasswordTextField();
+			frame.dispose();
 		}
 	}
 }

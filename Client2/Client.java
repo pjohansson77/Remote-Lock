@@ -56,7 +56,7 @@ public class Client implements Runnable {
 				gui2.setStatusDisplay( "Waiting for password" );
 			} else if( message.equals( "newuser" ) ) {
 				gui3 = new LoginNewUserGUI( client );
-				gui3.setStatusDisplay( "Waiting for username and password" );
+				gui3.setStatusDisplay( "Waiting for temp username and password" );
 			} else {
 				try {
 					socket.close();

@@ -1,5 +1,6 @@
 package lock;
 import java.sql.*;
+import java.util.Random;
 
 public class MySQL {
     public static Connection connection;
@@ -55,6 +56,32 @@ public class MySQL {
     }
     
     /**
+	 * A static function that reads a temp username
+	 * and a temp password from a database and returns them.
+	 * 
+	 * @return an array with a temp username and password
+	 */
+    public static String[] readTempMySQL() {
+    	String[] values = null;
+		try {
+			connect();
+			ResultSet result = statement.executeQuery( "SELECT * FROM ad1067.temp" );
+			ResultSetMetaData meta = result.getMetaData();
+ 
+			values = new String[ meta.getColumnCount() ];
+			while( result.next() ) {
+				for( int i = 0; i < values.length; i++ ) {
+					values[ i ] = result.getObject( i + 1 ).toString();
+				}
+			}
+			disconnect();
+		} catch(SQLException e) {
+			System.out.println(e);
+		}
+		return values;
+    }
+    
+    /**
 	 * A static function that writes new users to a database.
 	 * 
 	 * @param id User id.
@@ -85,6 +112,35 @@ public class MySQL {
     		connect();
     		
 			String insert = "UPDATE ad1067.users SET password = '" + newClientPassword + "' WHERE id = '" + id + "'";
+			statement.executeUpdate( insert );
+
+			disconnect();
+		} catch(SQLException e) {
+			System.out.println(e);
+		}
+    }
+    
+    /**
+	 * A static function that updates the admin password in the database.
+	 * 
+	 * @param newTempPassword A new temp user password.
+	 */
+    public static void updateTempMySQL() {
+    	String newTempPassword = "";
+		Random rand = new Random();
+		
+		for( int i = 0; i < 8; i++ ) {
+			if( rand.nextBoolean() ) {
+				newTempPassword += ( char )( rand.nextInt( 26 ) + 'A' );
+			} else {
+				newTempPassword += ( char )( rand.nextInt( 26 ) + 'a' );
+			}
+		}
+		
+    	try {
+    		connect();
+    		
+			String insert = "UPDATE ad1067.temp SET password = '" + newTempPassword + "' WHERE tempusername = 'admin'";
 			statement.executeUpdate( insert );
 
 			disconnect();

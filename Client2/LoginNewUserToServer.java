@@ -60,7 +60,7 @@ public class LoginNewUserToServer implements Runnable {
 				client.disconnect();
 			} else {
 				gui4 = new LoginInfoGUI( client, loginNewUserToServer );
-				gui4.setStatusDisplay( "Waiting for username and password" );
+				gui4.setStatusDisplay( "Waiting for new username and password" );
 			}
 		} catch(Exception e1 ) {
 			System.out.println( e1 );

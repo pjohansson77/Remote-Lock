@@ -19,6 +19,7 @@ public class ListenToClientPassword implements Runnable {
 	private HashtableOH<String, User> table;
 	private ServerGUI gui;
 	private String id;
+	private ListenForClients server;
 	
 	/**
 	 * The constructor receives the current socket, current streams, a reference to the server GUI and the user password.
@@ -30,13 +31,14 @@ public class ListenToClientPassword implements Runnable {
 	 * @param table A hashtable that stores users.
 	 * @param id A user id.
 	 */
-	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id ) {
+	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id, ListenForClients server ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
 		this.table = table;
 		this.id = id;
+		this.server = server;
 	}
 
 	/**
@@ -51,28 +53,15 @@ public class ListenToClientPassword implements Runnable {
 				output.flush();
 				gui.showText( "Status: User " + table.get( id ).getName() + " connected\n" );
 
-				new ArduinoChoices( output, input, gui, table, id );
+				Thread clientThread = new Thread( new ArduinoChoices( socket, output, input, gui, table, id, server ) );
+				clientThread.start();
 			} else {
 				output.writeUTF( "passwordfalse" );
 				output.flush();
 				gui.showText( "Status: Wrong username or password\n" );
+				gui.showText( "Disconnected: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
+				socket.close();
 			}
 		} catch(IOException e) {} 
-		try {
-			gui.showText( "Disconnected: " + getTime() + "\nIP-adress: " + socket.getInetAddress().getHostAddress() + "\n" );
-			socket.close();
-			output.close();
-			input.close();
-		} catch( Exception e ) {}
-	} 
-	
-	/**
-	 * A private function that returns the date and time.
-	 * 
-	 * @return date and time
-	 */
-	private Date getTime() {
-		Calendar cal = Calendar.getInstance();
-		return cal.getTime();
 	}
 }

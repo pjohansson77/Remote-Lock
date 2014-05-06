@@ -106,7 +106,7 @@ public class ServerGUI {
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if( e.getSource() == btnStart ) {
-				showText( "Server started\n" );
+				showText( "Server started: " + Time.getTime() );
 				btnStart.setEnabled(false);
 				btnStop.setEnabled(true);
 				showServerInfo();
@@ -114,10 +114,10 @@ public class ServerGUI {
 				connectThread.start();
 			}
 			if( e.getSource() == btnStop ) {
+				showText( "Server closed: " + Time.getTime() );
 				btnStart.setEnabled(true);
 				btnStop.setEnabled(false);
 				server.terminate();
-				showText( "Server closed\n" );
 			}
 		}
 	}

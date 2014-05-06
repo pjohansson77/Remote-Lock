@@ -73,7 +73,6 @@ public class LoginToServer implements Runnable {
 				output.writeUTF( arduinoChoice );
 				output.flush();
 				
-				choice.hideFrame();
 				client.disconnect();
 			} else if( arduinoChoice.equals( "3" ) ) {
 				output.writeUTF( "changepassword;" + JOptionPane.showInputDialog( "Type old password:" ) );

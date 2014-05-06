@@ -13,8 +13,8 @@ import javax.swing.*;
 public class LoginNewUserGUI {
 	private JFrame frame;
 	private JLabel infoDisplayLbl = new JLabel("Server info", JLabel.CENTER);
-	private JLabel lbl = new JLabel("Enter username:");
-	private JLabel lbl2 = new JLabel("Enter password:");
+	private JLabel lbl = new JLabel("Enter temp username:");
+	private JLabel lbl2 = new JLabel("Enter temp password:");
 	private JLabel statusLbl = new JLabel("Status: ");
 	private JLabel statusLbl2 = new JLabel("");
 	private JPanel panel = new JPanel( new BorderLayout() );
@@ -164,15 +164,17 @@ public class LoginNewUserGUI {
 	 */
 	private class ButtonListener implements ActionListener {		
 		public void actionPerformed( ActionEvent e ) {
-			if( e.getSource() == okBtn ) {
+			if( e.getSource() == okBtn && !userTextField.getText().equals( "" ) && !passwordTextField.getText().equals( "" ) ) {
 				client.startNewUserLogin( userTextField.getText(), passwordTextField.getText() );
-				clearUserTextField();
-				clearPasswordTextField();
-			}
+				frame.dispose();
+			} else
+				setInfoDisplay( "Username and password required" );
 			if( e.getSource() == disconnectBtn ) {
 				client.disconnect();
+				frame.dispose();
 			}
-			hideFrame();
+			clearUserTextField();
+			clearPasswordTextField();
 		}
 	}
 }

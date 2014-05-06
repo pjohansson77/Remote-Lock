@@ -40,14 +40,6 @@ public class User {
 	}
 	
 	/**
-	 * Function that sets the username.
-	 * @param name String.
-	 */
-	public void setName( String name ) {
-		this.name = name;
-	}
-	
-	/**
 	 * Function that returns the user password.
 	 * @return user password.
 	 */
