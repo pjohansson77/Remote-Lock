@@ -35,7 +35,7 @@ public class ListenForClients implements Runnable {
 	public ListenForClients( int port, ServerGUI gui ) {
 		this.port = port;
 		this.table = new HashtableOH<String, User>(10);
-		MySQL.readMySQL( table, user );
+//		MySQL.readMySQL( table, user );
 		this.gui = gui;
 		this.server = this;
 	}
@@ -65,8 +65,7 @@ public class ListenForClients implements Runnable {
 						clientThread.start();
 
 						// If the unique id is empty it's the first login and the client needs a username and password.
-					}
-					if( id.equals( "" ) ) {
+					} else if( id.equals( "" ) ) {
 						gui.showText( "Status: New user\n" );
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "newuser" );
