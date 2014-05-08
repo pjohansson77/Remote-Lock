@@ -121,7 +121,8 @@ public class MySQL {
     }
     
     /**
-	 * A static function that updates the admin password in the database.
+	 * A static function that updates the temp password
+	 * in the database with a new random password.
 	 * 
 	 * @param newTempPassword A new temp user password.
 	 */

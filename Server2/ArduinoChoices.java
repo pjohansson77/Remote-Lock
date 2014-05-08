@@ -5,8 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A class that sends the clients choices to the arduino and sends a confirmation back to the client.
@@ -22,7 +20,6 @@ public class ArduinoChoices implements Runnable {
 	private DataOutputStream clientOutput, arduinoOutput;
 	private ServerGUI gui;
 	private HashtableOH<String, User> table;
-	private ListenForClients server;
 
 	/**
 	 * A class constructor that gets the current socket, current streams and a reference to the server gui.
@@ -33,14 +30,13 @@ public class ArduinoChoices implements Runnable {
 	 * @param table A hashtable that stores users.
 	 * @param id A user id.
 	 */
-	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id, ListenForClients server ) {
+	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id ) {
 		this.clientSocket = socket;
 		this.clientInput = input;
 		this.clientOutput = output;
 		this.gui = gui;
 		this.table = table;
 		this.id = id;
-		this.server = server;
 	}
 
 	/**
@@ -89,7 +85,6 @@ public class ArduinoChoices implements Runnable {
 	public void listenToArduinoChoices() {
 		try{			
 			while( connected ) {
-
 				message = clientInput.readUTF();
 				if( message.length() > 2 ) {
 					splitInfo( message );
@@ -124,11 +119,15 @@ public class ArduinoChoices implements Runnable {
 			}
 			gui.showText( "Disconnected: " + Time.getTime() + "\nIP-address: " + clientSocket.getInetAddress().getHostAddress() + "\n" );
 			clientSocket.close();
-
 //			arduinoSocket.close();
-//			arduinoOutput.close();
-//			arduinoInput.close();
-		} catch(IOException e) {}
+		} catch(IOException e) {
+			try {
+//				arduinoOutput.write( 0 );
+//				arduinoOutput.flush();
+				clientSocket.close();
+//				arduinoSocket.close();
+			} catch (IOException e1) {}
+		}
 	}
 
 	/**
@@ -142,7 +141,7 @@ public class ArduinoChoices implements Runnable {
 			newClientPassword = clientInput.readUTF();
 			table.get( id ).setPassword( newClientPassword );
 
-			MySQL.updateMySQL( newClientPassword, id );
+//			MySQL.updateMySQL( newClientPassword, id );
 			gui.showText( "Status: User " + table.get( id ).getName() + " changed password\n" );
 
 			clientOutput.writeUTF( "Password changed" );

@@ -5,8 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A server class that listens for clients and verifies a trusted client with an unique id.
@@ -23,7 +21,6 @@ public class ListenForClients implements Runnable {
 	private ServerGUI gui;
 	private HashtableOH<String, User> table;
 	private User user;
-	private ListenForClients server;
 	private boolean listen = true;
 
 	/**
@@ -37,7 +34,6 @@ public class ListenForClients implements Runnable {
 		this.table = new HashtableOH<String, User>(10);
 //		MySQL.readMySQL( table, user );
 		this.gui = gui;
-		this.server = this;
 	}
 
 	/**
@@ -61,7 +57,7 @@ public class ListenForClients implements Runnable {
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "connected" );
 						output.flush();
-						Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id, server ) );
+						Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id ) );
 						clientThread.start();
 
 						// If the unique id is empty it's the first login and the client needs a username and password.
@@ -70,7 +66,7 @@ public class ListenForClients implements Runnable {
 						output = new DataOutputStream( socket.getOutputStream() );
 						output.writeUTF( "newuser" );
 						output.flush();
-						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input, gui, table, server ) );
+						Thread clientThread = new Thread( new ListenToNewClient( socket, output, input, gui, table ) );
 						clientThread.start();
 
 						// If the unique id is not empty the user is not allowed to log in.

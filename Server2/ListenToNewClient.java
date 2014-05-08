@@ -4,8 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Random;
 
 /**
@@ -21,7 +19,6 @@ public class ListenToNewClient implements Runnable {
 	private User user;
 	private HashtableOH<String, User> table;
 	private String loginInfo, username, password, id;
-	private ListenForClients server;
 	private String[] temp;
 
 	/**
@@ -33,14 +30,13 @@ public class ListenToNewClient implements Runnable {
 	 * @param gui The server GUI.
 	 * @param table A hashtable that stores users.
 	 */
-	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, ListenForClients server ) {
+	public ListenToNewClient( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
 		this.table = table;
-		this.server = server;
-		temp = MySQL.readTempMySQL();
+//		temp = MySQL.readTempMySQL();
 	}
 
 	/**
@@ -52,7 +48,7 @@ public class ListenToNewClient implements Runnable {
 		try {
 			loginInfo = input.readUTF();
 			splitInfo( loginInfo );
-			if( username.equals( temp[ 0 ] ) && password.equals( temp[ 1 ] ) ) {
+			if( username.equals( "admin" ) && password.equals( "alfa" ) ) {
 				output.writeUTF( "temptrue" );
 				output.flush();
 
@@ -69,11 +65,11 @@ public class ListenToNewClient implements Runnable {
 				user = new User( id, username, password );
 				table.put( id, user );
 
-				MySQL.writeToMySQL( id, username, password );
+//				MySQL.writeToMySQL( id, username, password );
 				gui.showText( "Status: User " + username + " added to server\n" );
-				MySQL.updateTempMySQL();
+//				MySQL.updateTempMySQL(); // Updates temp password to a new one
 
-				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id, server ) );
+				Thread clientThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id ) );
 				clientThread.start();
 			} else {
 				output.writeUTF( "tempfalse" );

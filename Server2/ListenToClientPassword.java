@@ -4,8 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A class that verifies the password if the client is trusted.
@@ -31,14 +29,13 @@ public class ListenToClientPassword implements Runnable {
 	 * @param table A hashtable that stores users.
 	 * @param id A user id.
 	 */
-	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id, ListenForClients server ) {
+	public ListenToClientPassword( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id ) {
 		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
 		this.table = table;
 		this.id = id;
-		this.server = server;
 	}
 
 	/**
@@ -53,7 +50,7 @@ public class ListenToClientPassword implements Runnable {
 				output.flush();
 				gui.showText( "Status: User " + table.get( id ).getName() + " connected\n" );
 
-				Thread clientThread = new Thread( new ArduinoChoices( socket, output, input, gui, table, id, server ) );
+				Thread clientThread = new Thread( new ArduinoChoices( socket, output, input, gui, table, id ) );
 				clientThread.start();
 			} else {
 				output.writeUTF( "passwordfalse" );
