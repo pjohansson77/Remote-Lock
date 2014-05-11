@@ -16,7 +16,7 @@ import java.awt.event.ActionListener;
 /**
  * Class that handles the arduino choice sequence.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class ChoicesGUI {
 	private JFrame frame;
@@ -72,7 +72,7 @@ public class ChoicesGUI {
 	public void showChoices() {
 		frame.setVisible( true );
 		frame.setResizable( false );
-		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		frame.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
 		frame.getContentPane().add( panel2, BorderLayout.CENTER );
 		frame.setLocation( 200, 100 );
 		frame.pack();
@@ -87,14 +87,28 @@ public class ChoicesGUI {
 		infoDisplayLbl.setText( txt );
 	}
 	
+	/**
+	 * Function that dims a button.
+	 */
 	public void unlockedChoice() {
 		btnVal1.setEnabled( true );
 		btnVal2.setEnabled( false );
 	}
 	
+	/**
+	 * Function that dims a button.
+	 */
 	public void lockedChoice() {
 		btnVal1.setEnabled( false );
 		btnVal2.setEnabled( true );
+	}
+	
+	/**
+	 * Function that dims both buttons.
+	 */
+	public void openChoice() {
+		btnVal1.setEnabled( false );
+		btnVal2.setEnabled( false );
 	}
 	
 	/**

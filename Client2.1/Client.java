@@ -6,7 +6,7 @@ import java.io.*;
 /**
  * Client class that connects the client to the server.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class Client {
 	private String message, serverIP;
@@ -14,8 +14,6 @@ public class Client {
 	private Socket socket;
 	boolean connected = true;
 	private ConnectGUI gui;
-	private LoginGUI gui2;
-	private LoginNewUserGUI gui3;
 	private DataOutputStream output;
 	private DataInputStream input;
 	private Client client;
@@ -25,13 +23,16 @@ public class Client {
 	/**
 	 * Constructor for Client class.
 	 * 
-	 * @param idTextFile The user id textfile.
+	 * @param serverIP The ip-address to the server.
+	 * @param serverPort The port that the server listens for clients.
+	 * @param gui A reference to the ConnectGUI class.
+	 * @param idTextFile The client id textfile.
 	 */
-	public Client( String serverIP, int serverPort, ConnectGUI gui, ClientID id, String idTextFile ) { 
+	public Client( String serverIP, int serverPort, ConnectGUI gui, String idTextFile ) { 
+		id = new ClientID( "" );
 		this.serverIP = serverIP;
 		this.serverPort = serverPort;
 		this.gui = gui;
-		this.id = id;
 		this.idTextFile = idTextFile;
 		client = this;
 		readID( idTextFile );
@@ -53,11 +54,9 @@ public class Client {
 			message = input.readUTF();
 
 			if( message.equals( "connected" ) ) {
-				gui2 = new LoginGUI( client, output, input, gui );
-				gui2.setStatusDisplay( "Waiting for password" );
+				new LoginGUI( client, output, input, gui );
 			} else if( message.equals( "newuser" ) ) {
-				gui3 = new LoginNewUserGUI( client, output, input, gui, id, idTextFile );
-				gui3.setStatusDisplay( "Waiting for temp username and password" );
+				new LoginNewUserGUI( client, output, input, gui, id, idTextFile );
 			} else {
 				disconnect();
 			}
@@ -70,7 +69,7 @@ public class Client {
 	/**
 	 * A private function that reads a user id textfile.
 	 * 
-	 * @param filename Name of file that contains all users.
+	 * @param filename A reference to the file that contains the client id.
 	 */
 	private void readID( String filename ) {
 		String str;

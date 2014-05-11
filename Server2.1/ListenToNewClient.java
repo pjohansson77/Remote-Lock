@@ -22,7 +22,7 @@ public class ListenToNewClient implements Runnable {
 	private String[] temp;
 
 	/**
-	 * A constructor that receives the current socket, current streams, a reference to the server GUI, a hashtable of users and the user textfile.
+	 * A constructor that receives the current socket, current streams, a reference to the server GUI and a hashtable of users.
 	 * 
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
@@ -36,7 +36,7 @@ public class ListenToNewClient implements Runnable {
 		this.output = output;
 		this.gui = gui;
 		this.table = table;
-//		temp = MySQL.readTempMySQL();
+		temp = MySQL.readTempMySQL();
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class ListenToNewClient implements Runnable {
 		try {
 			loginInfo = input.readUTF();
 			splitInfo( loginInfo );
-			if( username.equals( "admin" ) && password.equals( "alfa" ) ) {
+			if( username.equals( temp[ 0 ] ) && password.equals( temp[ 1 ] ) ) {
 				output.writeUTF( "temptrue" );
 				output.flush();
 
@@ -65,7 +65,7 @@ public class ListenToNewClient implements Runnable {
 				user = new User( id, username, password );
 				table.put( id, user );
 
-//				MySQL.writeToMySQL( id, username, password );
+				MySQL.writeToMySQL( id, username, password );
 				gui.showText( "Status: User " + username + " added to server\n" );
 //				MySQL.updateTempMySQL(); // Updates temp password to a new one
 
@@ -80,7 +80,7 @@ public class ListenToNewClient implements Runnable {
 			}
 		} catch(IOException e) {
 			try{
-				gui.showText( "Connection lost: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
+				gui.showText( "Disconnected: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
 				socket.close();
 			} catch (IOException e1) {}
 		} 

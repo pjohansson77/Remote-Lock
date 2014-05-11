@@ -17,7 +17,6 @@ public class ListenToClientPassword implements Runnable {
 	private HashtableOH<String, User> table;
 	private ServerGUI gui;
 	private String id;
-	private ListenForClients server;
 	
 	/**
 	 * The constructor receives the current socket, current streams, a reference to the server GUI and the user password.
@@ -62,7 +61,7 @@ public class ListenToClientPassword implements Runnable {
 			}
 		} catch(IOException e) {
 			try{
-				gui.showText( "Connection lost: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
+				gui.showText( "Disconnected: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
 				socket.close();
 			} catch (IOException e1) {}
 		} 

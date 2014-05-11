@@ -33,7 +33,6 @@ public class ServerGUI {
 	 * Constructor for ServerGUI class.
 	 * 
 	 * @param port The port that the server listens on.
-	 * @param server A reference to the ListenForClients class.
 	 */
 	public ServerGUI( int port ) {
 		frame = new JFrame( "Server - Remote Lock" );

@@ -49,9 +49,8 @@ public class LoginToServer implements Runnable {
 			if( message.equals( "passwordtrue" ) ) {
 				
 				choice = new ChoicesGUI( loginToServer );
-				status = input.readUTF();
-				choice.setInfoDisplay( "Door " + status );
-				doorStatus();
+				Thread Status = new Thread( new Status( choice, output, input ) );
+				Status.start();
 			} else {
 				gui.setInfoDisplay( "Wrong username or password" );
 				client.disconnect();
@@ -72,41 +71,18 @@ public class LoginToServer implements Runnable {
 			if( arduinoChoice.equals( "0" ) ) {
 				output.writeUTF( arduinoChoice );
 				output.flush();
-				
 				client.disconnect();
 			} else if( arduinoChoice.equals( "3" ) ) {
 				output.writeUTF( "changepassword;" + JOptionPane.showInputDialog( "Type old password:" ) );
-				output.flush();
-				
-				message = input.readUTF();
-				if( message.equals( "sendnewpassword" ) ) {
-					newPassword = JOptionPane.showInputDialog( "Type new password:" );
-					output.writeUTF( newPassword );
-					output.flush();
-					
-					status = input.readUTF();
-					choice.setInfoDisplay( status );
-				} else {
-					choice.setInfoDisplay( "Wrong password" );
-				}
-					
+				output.flush();					
 			} else {
 				output.writeUTF( arduinoChoice );
 				output.flush();
-				status = input.readUTF();
-				choice.setInfoDisplay( "Door " + status );
-				doorStatus();
 			}
 		} catch(Exception e1 ) {
 			System.out.println( e1 );
 		}
 	}
 	
-	private void doorStatus() {
-		if( status.equals( "unlocked" ) ) {
-			choice.lockedChoice();
-		} else if( status.equals( "locked" ) ) {
-			choice.unlockedChoice();
-		} 
-	}
+	
 }

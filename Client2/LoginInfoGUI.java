@@ -28,7 +28,7 @@ public class LoginInfoGUI {
 	private JTextField userTextField = new JTextField();
 	private JTextField passwordTextField = new JTextField();
 	private JButton okBtn = new JButton("OK");
-	private JButton disconnectBtn = new JButton("Disconnect");
+	private JButton disconnectBtn = new JButton("CANCEL");
 	private Client client;
 	private LoginNewUserToServer loginNewUserToServer;
 	
@@ -99,6 +99,7 @@ public class LoginInfoGUI {
 		frame.getContentPane().add( panel8, BorderLayout.CENTER );
 		frame.setLocation( 200, 100 );
 		frame.pack();
+		frame.getRootPane().setDefaultButton(okBtn);
 	}
 	
 	/**

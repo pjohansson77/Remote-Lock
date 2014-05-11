@@ -8,34 +8,35 @@ import java.io.DataOutputStream;
 import javax.swing.*;
 
 /**
- * Class that handles the login sequence.
+ * Class that handles the login sequence and the change password sequence.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class LoginGUI {
 	private JFrame frame;
 	private JLabel infoDisplayLbl = new JLabel("Welcome", JLabel.CENTER);
-	private JLabel lbl = new JLabel("Enter password:");
 	private JPanel panel = new JPanel( new BorderLayout() );
-	private JPanel panel2 = new JPanel( new GridLayout( 2, 1 ) );
 	private JPanel panel3 = new JPanel( new GridLayout( 1, 2 ) );
-	private JPanel panel4 = new JPanel( new BorderLayout() );
-	private JPanel panel5 = new JPanel( new BorderLayout() );
 	private JPanel panel6 = new JPanel( new BorderLayout() );
 	private JTextField passwordTextField = new JTextField();
-	private JLabel statusLbl = new JLabel("Status: ");
-	private JLabel statusLbl2 = new JLabel("");
 	private JButton okBtn = new JButton("OK");
 	private JButton disconnectBtn = new JButton("CANCEL");
 	private Client client;
 	private DataInputStream input;
 	private DataOutputStream output;
 	private ConnectGUI gui;
+	private LoginToServer loginToServer;
+	private boolean changepassword = false, newpassword = false;
+	private LoginGUI gui2;
+	private ChoicesGUI choice;
 	
 	/**
 	 * Constructor for LoginGUI class.
 	 * 
 	 * @param client Client
+	 * @param output The active OutputStream.
+	 * @param input The active InputStream.
+	 * @param gui A reference to the ConnectGUI class.
 	 */
 	public LoginGUI( Client client, DataOutputStream output, DataInputStream input, ConnectGUI gui ) {
 		frame = new JFrame();
@@ -43,6 +44,9 @@ public class LoginGUI {
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
+		this.gui2 = this;
+		
+		passwordTextField.setBorder(BorderFactory.createTitledBorder("Enter password"));
 		
 		okBtn.setFocusable(false);
 		disconnectBtn.setFocusable(false);
@@ -50,32 +54,20 @@ public class LoginGUI {
 		
 		infoDisplayLbl.setFont( new Font( "DialogInput", Font.BOLD, 14 ) );
 		panel.setBackground( new Color( 255, 255, 255 ) );
-		panel2.setBackground( new Color( 255, 255, 255 ) );
 		panel3.setBackground( new Color( 255, 255, 255 ) );
-		panel4.setBackground( new Color( 255, 255, 255 ) );
 		
 		panel.add(infoDisplayLbl, BorderLayout.CENTER);
-		
-		panel2.add(lbl);
-		panel2.add(passwordTextField);
 		
 		panel3.add(okBtn);
 		panel3.add(disconnectBtn);
 		
-		panel4.add(statusLbl, BorderLayout.WEST);
-		panel4.add(statusLbl2, BorderLayout.CENTER);
-		
-		panel5.add(panel3, BorderLayout.CENTER);
-		panel5.add(panel4, BorderLayout.SOUTH);
-		
 		panel6.add(panel, BorderLayout.NORTH);
-		panel6.add(panel2, BorderLayout.CENTER);
-		panel6.add(panel5, BorderLayout.SOUTH);
+		panel6.add(passwordTextField, BorderLayout.CENTER);
+		panel6.add(panel3, BorderLayout.SOUTH);
 		
 		okBtn.setPreferredSize( new Dimension( 400, 40 ) );
-		panel.setPreferredSize( new Dimension( 400, 60 ) );
-		panel3.setPreferredSize( new Dimension( 400, 50 ) );
-		panel4.setPreferredSize( new Dimension( 400, 30 ) );
+		panel.setPreferredSize( new Dimension( 400, 70 ) );
+		panel3.setPreferredSize( new Dimension( 400, 40 ) );
 		
 		okBtn.addActionListener( new ButtonListener() );
 		disconnectBtn.addActionListener( new ButtonListener() );
@@ -88,11 +80,38 @@ public class LoginGUI {
 	public void showLogIn() {
 		frame.setVisible( true );
 		frame.setResizable( false );
-		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		frame.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
 		frame.getContentPane().add( panel6, BorderLayout.CENTER );
 		frame.setLocation( 200, 100 );
 		frame.pack();
 		frame.getRootPane().setDefaultButton(okBtn);
+	}
+	
+	/**
+	 * Function that gets a reference to the ChoicesGUI class.
+	 * 
+	 * @param choice A reference to the ChoicesGUI class.
+	 */
+	public void getChoiceGUI( ChoicesGUI choice ) {
+		this.choice = choice;
+	}
+	
+	/**
+	 * Function that sets a boolean.
+	 * 
+	 * @param changepassword True or false.
+	 */
+	public void setchangepassword( boolean changepassword ) {
+		this.changepassword = changepassword;
+	}
+	
+	/**
+	 * Function that sets a boolean.
+	 * 
+	 * @param newpassword True or false.
+	 */
+	public void setnewpassword( boolean newpassword ) {
+		this.newpassword = newpassword;
 	}
 	
 	/**
@@ -102,15 +121,6 @@ public class LoginGUI {
 	 */
 	public void setInfoDisplay( String txt ) {
 		infoDisplayLbl.setText( txt );
-	}
-	
-	/**
-	 * Function that sends a message to the GUI.
-	 * 
-	 * @param txt Message in a String.
-	 */
-	public void setStatusDisplay( String txt ) {
-		statusLbl2.setText( txt );
 	}
 	
 	/**
@@ -132,15 +142,29 @@ public class LoginGUI {
 	 */
 	private class ButtonListener implements ActionListener {		
 		public void actionPerformed( ActionEvent e ) {
-			if( e.getSource() == okBtn ) {
-				Thread clientThread = new Thread( new LoginToServer( passwordTextField.getText(), client, output, input, gui ) );
-				clientThread.start();
-			}
-			if( e.getSource() == disconnectBtn ) {
+			if( e.getSource() == okBtn && !changepassword && !newpassword ) {
+				hideFrame();
+				loginToServer = new LoginToServer( passwordTextField.getText(), client, output, input, gui, gui2 );
+			} else if( e.getSource() == okBtn && changepassword && !newpassword && !passwordTextField.getText().equals( "" ) ) {
+				hideFrame();
+				loginToServer.changePassword( passwordTextField.getText() );
+			} else if( e.getSource() == disconnectBtn && !changepassword && !newpassword ) {
+				gui.setInfoDisplay( "Not connected" );
 				client.disconnect();
+				frame.dispose();
+			} else if( e.getSource() == disconnectBtn && changepassword && !newpassword ) {
+				hideFrame();
+				choice.showChoices();
+			} else if( e.getSource() == disconnectBtn && changepassword && newpassword ) {
+				hideFrame();
+				choice.showChoices();
+			} else if( e.getSource() == okBtn && changepassword && newpassword && !passwordTextField.getText().equals( "" ) ) {
+				hideFrame();
+				loginToServer.newPassword( passwordTextField.getText() );
+			} else {
+				setInfoDisplay( "Password required" );
 			}
 			clearPasswordTextField();
-			frame.dispose();
 		}
 	}
 }

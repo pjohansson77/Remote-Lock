@@ -12,7 +12,7 @@ import java.net.Socket;
  * @author Peter Johansson, Jesper Hansen, Andree Höög
  */
 public class ArduinoChoices implements Runnable {
-	private String message, id, clientpassword, newClientPassword, status;
+	private String message, id, clientpassword, status;
 	private int num, arduinoStatus;
 	private boolean connected = true;
 	private Socket clientSocket, arduinoSocket;
@@ -20,10 +20,13 @@ public class ArduinoChoices implements Runnable {
 	private DataOutputStream clientOutput, arduinoOutput;
 	private ServerGUI gui;
 	private HashtableOH<String, User> table;
+	private DoorStatus doorStatus;
 
 	/**
-	 * A class constructor that gets the current socket, current streams and a reference to the server gui.
+	 * A class constructor that gets the current socket, current streams, a reference 
+	 * to a hashtable, a reference to a user id and a reference to the ServerGUI class.
 	 * 
+	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 * @param gui A reference to the ServerGUI class.
@@ -40,21 +43,28 @@ public class ArduinoChoices implements Runnable {
 	}
 
 	/**
-	 * A function that makes a connection to the arduino.
+	 * A function that gets the current arduino status and then starts a new 
+	 * thread that monitors the arduino status for changes and informs the client.
 	 */
 	public void run() {
-//		talkToArduino( "8" );
+		talkToArduino( "8" );
 		arduinoStatus = 1; // Tas bort sen
-		Thread Status = new Thread( new DoorStatus( clientSocket, clientOutput, this ) );
+		Thread Status = new Thread( doorStatus = new DoorStatus( clientSocket, clientOutput, this ) );
 		Status.start();
 		statusToClient();
 		listenToArduinoChoices();
 	}
-	
+
+	/**
+	 * A function that gets the current arduino status.
+	 */
 	public int getArduinoStatus() {
 		return arduinoStatus;
 	}
 	
+	/**
+	 * A function that sets the current arduino status.
+	 */
 	public void setArduinoStatus( int arduinoStatus ) {
 		this.arduinoStatus = arduinoStatus;
 	}
@@ -77,35 +87,36 @@ public class ArduinoChoices implements Runnable {
 	}
 
 	/**
-	 * A function that listens to the clients choices and sends it to the talkToArduino method.
+	 * A function that listens to the clients choices.
 	 */
 	public void listenToArduinoChoices() {
 		try{			
 			while( connected ) {
 				message = clientInput.readUTF();
-
+				System.out.println(message);
 				if( message.length() > 2 ) {
 					splitInfo( message );
 					if( message.equals( "changepassword" ) && table.get( id ).getPassword().equals( clientpassword ) ) {
-						changePassword();
+						clientOutput.writeUTF( "sendnewpassword" );
+						clientOutput.flush();
+					} else if( message.equals( "newpassword" ) ) {
+						setNewPassword();
 					} else {
 						clientOutput.writeUTF( "wrongpassword" );
 						clientOutput.flush();
 					} 
 				} else {
-					if( message.equals( "0" ) ) {
-//						disconnectArduino();
+					if( message.equals( "ok" ) ) {
+						doorStatus.resetCounter();
+					}else if( message.equals( "0" ) ) {
 						connected = false;
 						status = "disconnected";
-						clientOutput.writeUTF( status );
-						clientOutput.flush();
 						gui.showText( "Status: User " + table.get( id ).getName() + " " + status + "\n" );
 					} else {
-//						talkToArduino( message );
-//						disconnectArduino();
+						talkToArduino( message );
 						arduinoStatus = Integer.parseInt( message ); // Tas bort sen
 						statusToClient();
-						gui.showText( "Status: Door is " + status + "\n" );
+						gui.showText( "Status: Door is " + status + " by " + table.get( id ).getName() + "\nTime: " + Time.getTime() + "\n" );
 					} 
 				} 
 			}
@@ -114,24 +125,18 @@ public class ArduinoChoices implements Runnable {
 		} catch(IOException e) {
 			try {
 				gui.showText( "Connection lost: " + Time.getTime() + "\nIP-address: " + clientSocket.getInetAddress().getHostAddress() + "\n" );
-//				disconnectArduino();
 				clientSocket.close();
 			} catch (IOException e1) {}
 		}
 	}
 
 	/**
-	 * A private function that changes the user password.
+	 * A private function that sets a new user password.
 	 */
-	private void changePassword() {
+	private void setNewPassword() {
 		try{
-			clientOutput.writeUTF( "sendnewpassword" );
-			clientOutput.flush();
-
-			newClientPassword = clientInput.readUTF();
-			table.get( id ).setPassword( newClientPassword );
-
-//			MySQL.updateMySQL( newClientPassword, id );
+			table.get( id ).setPassword( clientpassword );
+			MySQL.updateMySQL( clientpassword, id );
 			gui.showText( "Status: User " + table.get( id ).getName() + " changed password\n" );
 
 			clientOutput.writeUTF( "passwordchanged" );
@@ -142,7 +147,7 @@ public class ArduinoChoices implements Runnable {
 	/**
 	 * A private function that splits a string.
 	 * 
-	 * @param str The string that will be split.
+	 * @param str A string that will be split.
 	 */
 	private void splitInfo( String str ) {
 		String[] values;
@@ -150,26 +155,29 @@ public class ArduinoChoices implements Runnable {
 		message = values[ 0 ];
 		clientpassword = values[ 1 ];
 	}
-	
+
+	/**
+	 * A private function that communicates with the arduino.
+	 * 
+	 * @param message A string that contains a message for the arduino.
+	 */
 	private void talkToArduino( String message ) {
 		num = Integer.parseInt( message );
 		try{
-			arduinoSocket = new Socket( InetAddress.getByName( "192.168.1.104" ), 6666 );
+			if( InetAddress.getByName( "10.228.0.123" ).isReachable(1000) ) {
+				arduinoSocket = new Socket( InetAddress.getByName( "10.228.0.123" ), 6666 );
 
-			arduinoOutput = new DataOutputStream( arduinoSocket.getOutputStream() );
-			arduinoInput = new DataInputStream( arduinoSocket.getInputStream() );
-			
-			arduinoOutput.write( num ); // Message to Arduino
-			arduinoOutput.flush();
-			arduinoStatus = arduinoInput.read(); // Message from Arduino
-		} catch(IOException e) {}
-	}
-	
-	private void disconnectArduino() {
-		try{
-			arduinoOutput.write( 0 );
-			arduinoOutput.flush();
-			arduinoSocket.close();
+				arduinoOutput = new DataOutputStream( arduinoSocket.getOutputStream() );
+				arduinoInput = new DataInputStream( arduinoSocket.getInputStream() );
+
+				arduinoOutput.write( num ); // Message to Arduino
+				arduinoOutput.flush();
+				arduinoStatus = arduinoInput.read(); // Message from Arduino
+
+				arduinoOutput.write( 0 );
+				arduinoOutput.flush();
+				arduinoSocket.close();
+			}
 		} catch(IOException e) {}
 	}
 }

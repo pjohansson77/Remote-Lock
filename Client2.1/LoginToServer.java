@@ -3,20 +3,19 @@ package lock;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-import javax.swing.JOptionPane;
-
 /**
  * Class that handles a login sequence.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
-public class LoginToServer implements Runnable {
-	private String message, password, status, newPassword;
+public class LoginToServer {
+	private String message, password;
 	private DataInputStream input;
 	private DataOutputStream output;
 	private Client client;
 	private ChoicesGUI choice;
 	private ConnectGUI gui;
+	private LoginGUI gui2;
 	private LoginToServer loginToServer;
 
 	/**
@@ -26,21 +25,24 @@ public class LoginToServer implements Runnable {
 	 * @param client A reference to the Client class.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
-	 * @param gui A reference to the LoginGUI class.
+	 * @param gui A reference to the ConnectGUI class.
+	 * @param gui2 A reference to the LoginGUI class.
 	 */
-	public LoginToServer( String password, Client client, DataOutputStream output, DataInputStream input, ConnectGUI gui ) {
+	public LoginToServer( String password, Client client, DataOutputStream output, DataInputStream input, ConnectGUI gui, LoginGUI gui2 ) {
 		this.password = password;
 		this.client = client;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
+		this.gui2 = gui2;
 		this.loginToServer = this;
+		connected();
 	}
 
 	/**
 	 * A function that sends the password to the server and starts the ChoicesGUI class.
 	 */
-	public void run() {
+	public void connected() {
 		try {
 			output.writeUTF( password );
 			output.flush();
@@ -49,7 +51,7 @@ public class LoginToServer implements Runnable {
 			if( message.equals( "passwordtrue" ) ) {
 				
 				choice = new ChoicesGUI( loginToServer );
-				Thread Status = new Thread( new Status( choice, input ) );
+				Thread Status = new Thread( new Status( choice, output, input, gui2 ) );
 				Status.start();
 			} else {
 				gui.setInfoDisplay( "Wrong username or password" );
@@ -61,7 +63,7 @@ public class LoginToServer implements Runnable {
 	}
 	
 	/**
-	 * A function that sends the clients Arduino choice to the server.
+	 * A function that sends the clients arduino choice to the server.
 	 * @param str Arduino choices.
 	 */
 	public void choices( String str ) {
@@ -71,23 +73,15 @@ public class LoginToServer implements Runnable {
 			if( arduinoChoice.equals( "0" ) ) {
 				output.writeUTF( arduinoChoice );
 				output.flush();
+				gui.setInfoDisplay( "Not connected" );
 				client.disconnect();
 			} else if( arduinoChoice.equals( "3" ) ) {
-				output.writeUTF( "changepassword;" + JOptionPane.showInputDialog( "Type old password:" ) );
-				output.flush();
-				
-				message = input.readUTF();
-				if( message.equals( "sendnewpassword" ) ) {
-					newPassword = JOptionPane.showInputDialog( "Type new password:" );
-					output.writeUTF( newPassword );
-					output.flush();
-					
-					status = input.readUTF();
-					choice.setInfoDisplay( status );
-				} else {
-					choice.setInfoDisplay( "Wrong password" );
-				}
-					
+				gui2.getChoiceGUI( choice );
+				choice.hideFrame();
+				gui2.setchangepassword( true );
+				gui2.setnewpassword( false );
+				gui2.setInfoDisplay( "Type old password" );
+				gui2.showLogIn();
 			} else {
 				output.writeUTF( arduinoChoice );
 				output.flush();
@@ -97,5 +91,28 @@ public class LoginToServer implements Runnable {
 		}
 	}
 	
+	/**
+	 * A function that sends the clients old password to the server.
+	 * 
+	 * @param oldpassword The old password.
+	 */
+	public void changePassword( String oldpassword) {
+		try {
+			output.writeUTF( "changepassword;" + oldpassword );
+			output.flush();	
+		} catch(Exception e1 ) {}
+	}
 	
+	/**
+	 * A function that sends the clients new password to the server.
+	 * 
+	 * @param newPassword The new password.
+	 */
+	public void newPassword( String newPassword) {
+		try {
+			output.writeUTF( "newpassword;" + newPassword );
+			output.flush();
+			choice.showChoices();
+		} catch(Exception e1 ) {}
+	}
 }

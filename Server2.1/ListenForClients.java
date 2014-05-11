@@ -32,7 +32,7 @@ public class ListenForClients implements Runnable {
 	public ListenForClients( int port, ServerGUI gui ) {
 		this.port = port;
 		this.table = new HashtableOH<String, User>(10);
-//		MySQL.readMySQL( table, user );
+		MySQL.readMySQL( table, user );
 		this.gui = gui;
 	}
 
@@ -79,7 +79,6 @@ public class ListenForClients implements Runnable {
 						socket.close();
 					}
 				} catch( IOException e ) {
-					gui.showText( "Connection lost: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
 					socket.close();
 				}
 			}

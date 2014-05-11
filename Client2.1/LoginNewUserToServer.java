@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Class that handles a new user login sequence.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög, Qasim Ahmad, Andreas Flink, Gustav Frigren
+ * @author  Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class LoginNewUserToServer {
 	private String message, username, password, idTextFile;
@@ -18,9 +18,8 @@ public class LoginNewUserToServer {
 	private Client client;
 	private ConnectGUI gui;
 	private LoginGUI gui2;
-	private LoginInfoGUI gui4;
 	private ClientID id;
-	private LoginNewUserToServer loginNewUserToServer;
+	private LoginNewUserGUI gui3;
 
 	/**
 	 * Constructor for LoginNewUserToServer class.
@@ -30,11 +29,13 @@ public class LoginNewUserToServer {
 	 * @param client A reference to the Client class.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
-	 * @param gui2 A reference to the LoginNewUserGUI class.
+	 * @param gui A reference to the ConnectGUI class.
 	 * @param id A reference to the ClientID class.
 	 * @param idTextFile The user id textfile.
+	 * @param gui3 A reference to the LoginNewUserGUI class.
 	 */
-	public LoginNewUserToServer( String username, String password, Client client, DataOutputStream output, DataInputStream input, ConnectGUI gui, ClientID id, String idTextFile ) {
+	public LoginNewUserToServer( String username, String password, Client client, DataOutputStream output, 
+			DataInputStream input, ConnectGUI gui, ClientID id, String idTextFile, LoginNewUserGUI gui3 ) {
 		this.username = username;
 		this.password = password;
 		this.client = client;
@@ -43,12 +44,12 @@ public class LoginNewUserToServer {
 		this.gui = gui;
 		this.id = id;
 		this.idTextFile = idTextFile;
-		this.loginNewUserToServer = this;
+		this.gui3 = gui3;
 		sendLogin();
 	}
 
 	/**
-	 * A function that sends the username and password to the server and saves a new client id.
+	 * A function that sends the server username and password to the server.
 	 */
 	public void sendLogin() {
 		try {
@@ -60,14 +61,18 @@ public class LoginNewUserToServer {
 				gui.setInfoDisplay( "Wrong username or password" );
 				client.disconnect();
 			} else {
-				gui4 = new LoginInfoGUI( client, loginNewUserToServer );
-				gui4.setStatusDisplay( "Waiting for new username and password" );
+				gui3.setLogin( true );
+				gui3.setInfoDisplay( "Choose your user login info" );
+				gui3.showLogIn();
 			}
 		} catch(Exception e1 ) {
 			System.out.println( e1 );
 		}
 	}
 
+	/**
+	 * A function that sends a chosen username and password to the server and saves a new client id.
+	 */
 	public void startInfoLogin( String username, String password ) {
 		try {
 			output.writeUTF( username + ";" + password );
@@ -78,7 +83,7 @@ public class LoginNewUserToServer {
 			writeID( idTextFile );
 			
 			gui2 = new LoginGUI( client, output, input, gui );
-			gui2.setStatusDisplay( "Added to server" );
+			gui2.setInfoDisplay( "Added to server" );
 		} catch(Exception e1 ) {
 			System.out.println( e1 );
 		}

@@ -4,14 +4,16 @@ import java.util.Calendar;
 /**
  * Class that handles date and time.
  * 
- * @author Peter Johansson, Jesper Hansen, Andree Höög
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class Time {	
-
 	public static Calendar cal;
 	public static int second, minute, hour, dayOfMonth, year;
 	public static String day, month;
 
+	/**
+	 * A constructor that recieves the current date and time.
+	 */
 	public static String getTime() {
 		cal = Calendar.getInstance();
 		second = cal.get( Calendar.SECOND );
@@ -25,6 +27,11 @@ public class Time {
 				":" + String.format( "%02d",minute ) + ":" + String.format( "%02d",second );
 	}
 	
+	/**
+	 * A function that translates an int to the day of the week.
+	 * 
+	 * @param day An int that represents the day of the week.
+	 */
 	public static String dayOfWeek( int day ) {
 		String dayOfWeek = ""; 
 		if( day == 1 ) {
@@ -51,6 +58,11 @@ public class Time {
 		return dayOfWeek;
 	}
 	
+	/**
+	 * A function that translates an int to the month of the year.
+	 * 
+	 * @param day An int that represents the month of the year.
+	 */
 	public static String monthOfYear( int month ) {
 		String monthOfYear = ""; 
 		if( month == 0 ) {

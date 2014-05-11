@@ -25,6 +25,7 @@ public class User {
 	
 	/**
 	 * Function that returns an id.
+	 * 
 	 * @return user id.
 	 */
 	public String getID() {
@@ -33,6 +34,7 @@ public class User {
 	
 	/**
 	 * Function that returns a username.
+	 * 
 	 * @return username.
 	 */
 	public String getName() {
@@ -41,6 +43,7 @@ public class User {
 	
 	/**
 	 * Function that returns the user password.
+	 * 
 	 * @return user password.
 	 */
 	public String getPassword() {
@@ -49,6 +52,7 @@ public class User {
 	
 	/**
 	 * Function that sets the user password.
+	 * 
 	 * @param password String.
 	 */
 	public void setPassword( String password ) {
