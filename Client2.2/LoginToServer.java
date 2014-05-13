@@ -2,6 +2,7 @@ package lock;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.net.Socket;
 
 /**
  * Class that handles a login sequence.
@@ -9,10 +10,10 @@ import java.io.DataOutputStream;
  * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class LoginToServer {
-	private String message, password;
+	private String message;
+	private Socket socket;
 	private DataInputStream input;
 	private DataOutputStream output;
-	private Client client;
 	private ChoicesGUI choice;
 	private ConnectGUI gui;
 	private LoginGUI gui2;
@@ -28,21 +29,18 @@ public class LoginToServer {
 	 * @param gui A reference to the ConnectGUI class.
 	 * @param gui2 A reference to the LoginGUI class.
 	 */
-	public LoginToServer( String password, Client client, DataOutputStream output, DataInputStream input, ConnectGUI gui, LoginGUI gui2 ) {
-		this.password = password;
-		this.client = client;
+	public LoginToServer( Socket socket, DataOutputStream output, DataInputStream input, ConnectGUI gui, LoginGUI gui2 ) {
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
 		this.gui2 = gui2;
 		this.loginToServer = this;
-		connected();
 	}
 
 	/**
 	 * A function that sends the password to the server and starts the ChoicesGUI class.
 	 */
-	public void connected() {
+	public void connected( String password ) {
 		try {
 			output.writeUTF( password );
 			output.flush();
@@ -55,9 +53,10 @@ public class LoginToServer {
 				Status.start();
 			} else {
 				gui.setInfoDisplay( "Wrong username or password" );
-				client.disconnect();
+				gui.showLogIn();
+				socket.close();
 			} 
-		} catch(Exception e1 ) {
+		} catch( Exception e1 ) {
 			System.out.println( e1 );
 		}
 	}
@@ -74,7 +73,8 @@ public class LoginToServer {
 				output.writeUTF( arduinoChoice );
 				output.flush();
 				gui.setInfoDisplay( "Not connected" );
-				client.disconnect();
+				gui.showLogIn();
+				socket.close();
 			} else if( arduinoChoice.equals( "3" ) ) {
 				gui2.getChoiceGUI( choice );
 				choice.hideFrame();

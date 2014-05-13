@@ -9,14 +9,12 @@ import java.io.*;
  * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class Client {
-	private String message, serverIP;
-	private int serverPort;
+	private String message;
 	private Socket socket;
 	boolean connected = true;
 	private ConnectGUI gui;
 	private DataOutputStream output;
 	private DataInputStream input;
-	private Client client;
 	private ClientID id;
 	private String idTextFile;
 
@@ -28,25 +26,20 @@ public class Client {
 	 * @param gui A reference to the ConnectGUI class.
 	 * @param idTextFile The client id textfile.
 	 */
-	public Client( String serverIP, int serverPort, ConnectGUI gui, String idTextFile ) { 
+	public Client( ConnectGUI gui, String idTextFile ) { 
 		id = new ClientID( "" );
-		this.serverIP = serverIP;
-		this.serverPort = serverPort;
 		this.gui = gui;
 		this.idTextFile = idTextFile;
-		client = this;
 		readID( idTextFile );
-		connect();
 	}
 
 	/**
 	 * A function that connects the client to the server and sends the client id.
 	 */
-	public void connect() {
+	public void connect( String serverIP, int serverPort ) {
 		try {
 			socket = new Socket();
 			socket.connect(new InetSocketAddress( serverIP, serverPort ), 5000);
-//			socket = new Socket( InetAddress.getByName( serverIP ), serverPort );
 			output = new DataOutputStream( socket.getOutputStream() );
 
 			output.writeUTF( id.getID() );
@@ -56,10 +49,11 @@ public class Client {
 			message = input.readUTF();
 
 			if( message.equals( "connected" ) ) {
-				new LoginGUI( client, output, input, gui );
+				new LoginGUI( socket, output, input, gui );
 			} else if( message.equals( "newuser" ) ) {
-				new LoginNewUserGUI( client, output, input, gui, id, idTextFile );
+				new LoginNewUserGUI( socket, output, input, gui, id, idTextFile );
 			} else {
+				gui.setInfoDisplay( "Not trusted" );
 				disconnect();
 			}
 
@@ -84,15 +78,31 @@ public class Client {
 					new FileInputStream( filename ), "ISO-8859-1"));
 			while ( ( str = reader.readLine() ) != null ) {
 				id.setID( str );
+				gui.showDeleteIDBtn();
 			}
 			reader.close();
 		} catch (IOException e) {
 			System.out.println(e);
 		}
 	}
+	
+	/**
+	 * A function that deletes the user password.
+	 */
+	public void deleteID() {
+		try {
+			BufferedWriter writer = new BufferedWriter( new FileWriter( idTextFile ) );
+
+			writer.write( "" );
+
+			writer.close();
+			id.setID( "" );
+			gui.setInfoDisplay( "User ID deleted" );
+		} catch( IOException e1 ) {}
+	}
 
 	/**
-	 * A function that disconnects the clients from the server.
+	 * A function that disconnects the client from the server.
 	 */
 	public void disconnect() {
 		try {

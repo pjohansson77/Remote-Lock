@@ -3,7 +3,7 @@ package lock;
 /**
  * Class that handles user information.
  * 
- * @author Peter Johansson, Jesper Hansen, Andree Höög
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class User {
 	private String id;

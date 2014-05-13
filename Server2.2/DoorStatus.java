@@ -10,7 +10,7 @@ import java.net.Socket;
  * A class that constantly checks the arduino status 
  * and sends it back to the client if it changes status.
  * 
- * @author Peter Johansson, Jesper Hansen, Andree Höög
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class DoorStatus implements Runnable {
 	private Socket clientSocket, arduinoSocket;
@@ -89,7 +89,7 @@ public class DoorStatus implements Runnable {
 			}else if( arduinoStatus == 3 ) {
 				status = "open";
 			} else if( arduinoStatus == 4 ){
-				status = "not reachable";
+				status = "unreachable";
 			}
 			clientOutput.writeUTF( status );
 			clientOutput.flush();

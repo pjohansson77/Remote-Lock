@@ -8,7 +8,7 @@ import java.net.Socket;
 /**
  * A class that verifies the password if the client is trusted.
  * 
- * @author Peter Johansson, Jesper Hansen, Andree Höög
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class ListenToClientPassword implements Runnable {
 	private Socket socket;

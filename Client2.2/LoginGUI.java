@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 
 import javax.swing.*;
 
@@ -21,14 +23,11 @@ public class LoginGUI {
 	private JPasswordField passwordTextField = new JPasswordField();
 	private JButton okBtn = new JButton("OK");
 	private JButton disconnectBtn = new JButton("CANCEL");
-	private Client client;
-	private DataInputStream input;
-	private DataOutputStream output;
 	private ConnectGUI gui;
 	private LoginToServer loginToServer;
 	private boolean changepassword = false, newpassword = false;
-	private LoginGUI gui2;
 	private ChoicesGUI choice;
+	private Socket socket;
 	
 	/**
 	 * Constructor for LoginGUI class.
@@ -38,13 +37,10 @@ public class LoginGUI {
 	 * @param input The active InputStream.
 	 * @param gui A reference to the ConnectGUI class.
 	 */
-	public LoginGUI( Client client, DataOutputStream output, DataInputStream input, ConnectGUI gui ) {
+	public LoginGUI( Socket socket, DataOutputStream output, DataInputStream input, ConnectGUI gui ) {
+		loginToServer = new LoginToServer( socket, output, input, gui, this );
 		frame = new JFrame();
-		this.client = client;
-		this.input = input;
-		this.output = output;
 		this.gui = gui;
-		this.gui2 = this;
 		
 		passwordTextField.setBorder(BorderFactory.createTitledBorder("Enter password"));
 		
@@ -158,13 +154,16 @@ public class LoginGUI {
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == okBtn && !changepassword && !newpassword ) {
 				hideFrame();
-				loginToServer = new LoginToServer( charToString( passwordTextField.getPassword() ), client, output, input, gui, gui2 );
+				loginToServer.connected( charToString( passwordTextField.getPassword() ) );
 			} else if( e.getSource() == okBtn && changepassword && !newpassword && !charToString( passwordTextField.getPassword() ).equals( "" ) ) {
 				hideFrame();
 				loginToServer.changePassword( charToString( passwordTextField.getPassword() ) );
 			} else if( e.getSource() == disconnectBtn && !changepassword && !newpassword ) {
 				gui.setInfoDisplay( "Not connected" );
-				client.disconnect();
+				gui.showLogIn();
+				try{
+					socket.close();
+				} catch( IOException e1 ){}
 				frame.dispose();
 			} else if( e.getSource() == disconnectBtn && changepassword && !newpassword ) {
 				hideFrame();

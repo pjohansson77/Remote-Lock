@@ -26,7 +26,6 @@ public class Admin {
 	public Admin(AdminGUI gui, ListenForClients server) {
 		this.gui = gui;
 		this.table = server.getTable();
-		
 	}
 	
 	/**

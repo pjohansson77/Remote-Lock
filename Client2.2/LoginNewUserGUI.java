@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 
 import javax.swing.*;
 
@@ -23,15 +25,10 @@ public class LoginNewUserGUI {
 	private JPasswordField passwordTextField = new JPasswordField();
 	private JButton okBtn = new JButton("OK");
 	private JButton disconnectBtn = new JButton("CANCEL");
-	private Client client;
-	private DataInputStream input;
-	private DataOutputStream output;
 	private ConnectGUI gui;
-	private ClientID id;
-	private String idTextFile;
 	private boolean login = false;
 	private LoginNewUserToServer loginNewUserToServer;
-	private LoginNewUserGUI gui3;
+	private Socket socket;
 	
 	/**
 	 * Constructor for LoginNewUserGUI class.
@@ -43,15 +40,10 @@ public class LoginNewUserGUI {
 	 * @param id A reference to the ClientID class
 	 * @param idTextFile The client id textfile.
 	 */
-	public LoginNewUserGUI( Client client, DataOutputStream output, DataInputStream input, ConnectGUI gui, ClientID id, String idTextFile ) {
+	public LoginNewUserGUI( Socket socket, DataOutputStream output, DataInputStream input, ConnectGUI gui, ClientID id, String idTextFile ) {
+		loginNewUserToServer = new LoginNewUserToServer( socket, output, input, gui, id, idTextFile, this );
 		frame = new JFrame();
-		this.client = client;
-		this.input = input;
-		this.output = output;
 		this.gui = gui;
-		this.id = id;
-		this.idTextFile = idTextFile;
-		this.gui3 = this;
 		
 		userTextField.setBorder(BorderFactory.createTitledBorder("Enter username"));
 		passwordTextField.setBorder(BorderFactory.createTitledBorder("Enter password"));
@@ -162,13 +154,16 @@ public class LoginNewUserGUI {
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == okBtn && !userTextField.getText().equals( "" ) && !charToString( passwordTextField.getPassword() ).equals( "" ) && !login ) {
 				hideFrame();
-				loginNewUserToServer = new LoginNewUserToServer( userTextField.getText(), charToString( passwordTextField.getPassword() ), client, output, input, gui, id, idTextFile, gui3 );
+				loginNewUserToServer.sendLogin( userTextField.getText(), charToString( passwordTextField.getPassword() ) );
 			} else if( e.getSource() == okBtn && !userTextField.getText().equals( "" ) && !charToString( passwordTextField.getPassword() ).equals( "" ) && login ) {
 				loginNewUserToServer.startInfoLogin( userTextField.getText(), charToString( passwordTextField.getPassword() ) );
 				frame.dispose();
 			} else if( e.getSource() == disconnectBtn ) {
 				gui.setInfoDisplay( "Not connected" );
-				client.disconnect();
+				gui.showLogIn();
+				try{
+					socket.close();
+				} catch( IOException e1 ){}
 				frame.dispose();
 			} else {
 				setInfoDisplay( "Username and password required" );
