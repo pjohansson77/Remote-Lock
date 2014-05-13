@@ -54,9 +54,9 @@ public class Client {
 				new LoginNewUserGUI( socket, output, input, gui, id, idTextFile );
 			} else {
 				gui.setInfoDisplay( "Not trusted" );
-				disconnect();
+				gui.showLogIn();
+				socket.close();
 			}
-
 		} catch(Exception e1 ) {
 			try{
 				gui.setInfoDisplay( "Server not reachable" );
@@ -99,17 +99,5 @@ public class Client {
 			id.setID( "" );
 			gui.setInfoDisplay( "User ID deleted" );
 		} catch( IOException e1 ) {}
-	}
-
-	/**
-	 * A function that disconnects the client from the server.
-	 */
-	public void disconnect() {
-		try {
-			gui.showLogIn();
-			socket.close();
-		} catch( IOException e ) {
-			System.out.println( e );
-		}
 	}
 }

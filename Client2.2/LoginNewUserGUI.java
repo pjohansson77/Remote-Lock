@@ -42,6 +42,7 @@ public class LoginNewUserGUI {
 	 */
 	public LoginNewUserGUI( Socket socket, DataOutputStream output, DataInputStream input, ConnectGUI gui, ClientID id, String idTextFile ) {
 		loginNewUserToServer = new LoginNewUserToServer( socket, output, input, gui, id, idTextFile, this );
+		this.socket = socket;
 		frame = new JFrame();
 		this.gui = gui;
 		

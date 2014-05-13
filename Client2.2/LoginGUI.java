@@ -39,6 +39,7 @@ public class LoginGUI {
 	 */
 	public LoginGUI( Socket socket, DataOutputStream output, DataInputStream input, ConnectGUI gui ) {
 		loginToServer = new LoginToServer( socket, output, input, gui, this );
+		this.socket = socket;
 		frame = new JFrame();
 		this.gui = gui;
 		
