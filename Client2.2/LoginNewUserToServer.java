@@ -37,6 +37,7 @@ public class LoginNewUserToServer {
 	 */
 	public LoginNewUserToServer( Socket socket, DataOutputStream output, 
 			DataInputStream input, ConnectGUI gui, ClientID id, String idTextFile, LoginNewUserGUI gui3 ) {
+		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;

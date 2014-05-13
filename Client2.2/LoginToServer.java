@@ -30,6 +30,7 @@ public class LoginToServer {
 	 * @param gui2 A reference to the LoginGUI class.
 	 */
 	public LoginToServer( Socket socket, DataOutputStream output, DataInputStream input, ConnectGUI gui, LoginGUI gui2 ) {
+		this.socket = socket;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
