@@ -2,6 +2,11 @@ package lock;
 import java.sql.*;
 import java.util.Random;
 
+/**
+ * Class that handles database functions.
+ * 
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
+ */
 public class MySQL {
     public static Connection connection;
     public static Statement statement;
@@ -50,7 +55,6 @@ public class MySQL {
 				user = new User( values[ 0 ], values[ 1 ], values[ 2 ] );
 				table.put( values[ 0 ], user );
 			}
-			
 			disconnect();
 		} catch(SQLException e) {
 			System.out.println(e);
@@ -60,7 +64,8 @@ public class MySQL {
     /**
      * A static function that reads temporary password
      * from a database and stores them in a String array
-     * @return An array containing temporary passwords
+     * 
+     * @return an array containing a temp username and password
      */
     public static String[] readTempMySQL() {
     	String[] values = null;
@@ -74,14 +79,11 @@ public class MySQL {
 				for( int i = 0; i < values.length; i++ ) {
 					values[ i ] = result.getObject( i + 1 ).toString();
 				}
-
 			}
-			
 			disconnect();
 		} catch(SQLException e) {
 			System.out.println(e);
 		}
-		
 		return values;
     }
     
@@ -117,8 +119,6 @@ public class MySQL {
     		
 			String insert = "UPDATE ac9457.users SET password = '" + newClientPassword + "' WHERE id = '" + id + "'";
 			statement.executeUpdate( insert );
-			
-			
 			
 			disconnect();
 		} catch(SQLException e) {
@@ -157,6 +157,7 @@ public class MySQL {
     
     /**
      * A static function that deletes a specific user from the database and hashtable
+     * 
      * @param table A hashtable
      * @param id The ID of the specific user
      */
@@ -173,11 +174,10 @@ public class MySQL {
 		} catch(SQLException e) {
 			System.out.println(e);
 		}
-
     }
     
     /**
-     * A static function that deletes all the users from the database
+     * A static function that deletes all users from the database
      */
     public static void deleteAllUsers() {
     	try {
@@ -192,6 +192,11 @@ public class MySQL {
 		}
     }
 
+    /**
+     * A static function that checks if the database is reachable
+     * 
+     * return True or false
+     */
 	public static boolean checkDatabase() {
 		try{
 			connect();

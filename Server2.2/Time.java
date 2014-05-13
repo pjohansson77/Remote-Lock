@@ -41,7 +41,7 @@ public class Time {
 			dayOfWeek = "Monday";
 		}
 		if( day == 3 ) {
-			dayOfWeek = "Thuesday";
+			dayOfWeek = "Tuesday";
 		}
 		if( day == 4 ) {
 			dayOfWeek = "Wednesday";

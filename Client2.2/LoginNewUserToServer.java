@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.Socket;
 
 /**
  * Class that handles a new user login sequence.
@@ -12,10 +13,10 @@ import java.io.IOException;
  * @author  Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class LoginNewUserToServer {
-	private String message, username, password, idTextFile;
+	private String message, idTextFile;
+	private Socket socket;
 	private DataInputStream input;
 	private DataOutputStream output;
-	private Client client;
 	private ConnectGUI gui;
 	private LoginGUI gui2;
 	private ClientID id;
@@ -34,24 +35,20 @@ public class LoginNewUserToServer {
 	 * @param idTextFile The user id textfile.
 	 * @param gui3 A reference to the LoginNewUserGUI class.
 	 */
-	public LoginNewUserToServer( String username, String password, Client client, DataOutputStream output, 
+	public LoginNewUserToServer( Socket socket, DataOutputStream output, 
 			DataInputStream input, ConnectGUI gui, ClientID id, String idTextFile, LoginNewUserGUI gui3 ) {
-		this.username = username;
-		this.password = password;
-		this.client = client;
 		this.input = input;
 		this.output = output;
 		this.gui = gui;
 		this.id = id;
 		this.idTextFile = idTextFile;
 		this.gui3 = gui3;
-		sendLogin();
 	}
 
 	/**
 	 * A function that sends the server username and password to the server.
 	 */
-	public void sendLogin() {
+	public void sendLogin( String username, String password ) {
 		try {
 			output.writeUTF( username + ";" + password );
 			output.flush();
@@ -59,7 +56,12 @@ public class LoginNewUserToServer {
 			message = input.readUTF();
 			if( message.equals( "tempfalse" ) ) {
 				gui.setInfoDisplay( "Wrong username or password" );
-				client.disconnect();
+				gui.showLogIn();
+				socket.close();
+			} else if( message.equals( "databasedown" ) ) {
+				gui.setInfoDisplay( "Database unreachable" );
+				gui.showLogIn();
+				socket.close();
 			} else {
 				gui3.setLogin( true );
 				gui3.setInfoDisplay( "Choose your user login info" );
@@ -82,7 +84,8 @@ public class LoginNewUserToServer {
 			id.setID( message );
 			writeID( idTextFile );
 			
-			gui2 = new LoginGUI( client, output, input, gui );
+			gui.showDeleteIDBtn();
+			gui2 = new LoginGUI( socket, output, input, gui );
 			gui2.setInfoDisplay( "Added to server" );
 		} catch(Exception e1 ) {
 			System.out.println( e1 );

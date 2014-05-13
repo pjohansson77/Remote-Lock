@@ -127,7 +127,7 @@ public class ServerGUI {
 					connectThread.start();
 					enableAdminButton(true);
 				} else {
-					gui.showText( "Database is unreachable\n" + Time.getTime() + "\n" );
+					gui.showText( "Database unreachable - Unable to start\n" + Time.getTime() + "\n" );
 				}
 			}
 			if( e.getSource() == btnStop ) {

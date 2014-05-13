@@ -9,7 +9,7 @@ import java.net.Socket;
 /**
  * A class that sends the clients choices to the arduino and sends a confirmation back to the client.
  * 
- * @author Peter Johansson, Jesper Hansen, Andree Höög
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class ArduinoChoices implements Runnable {
 	private String message, id, clientpassword, status;
@@ -80,7 +80,7 @@ public class ArduinoChoices implements Runnable {
 			}else if( arduinoStatus == 3 ) {
 				status = "open";
 			} else if( arduinoStatus == 4 ){
-				status = "not reachable";
+				status = "unreachable";
 			}
 			clientOutput.writeUTF( status );
 			clientOutput.flush();
@@ -135,12 +135,18 @@ public class ArduinoChoices implements Runnable {
 	 */
 	private void setNewPassword() {
 		try{
-			table.get( id ).setPassword( clientpassword );
-			MySQL.updateMySQLPassword( clientpassword, id );
-			gui.showText( "Status: User " + table.get( id ).getName() + " changed password\n" );
+			if( MySQL.checkDatabase() ) {
+				table.get( id ).setPassword( clientpassword );
+				MySQL.updateMySQLPassword( clientpassword, id );
+				gui.showText( "Status: User " + table.get( id ).getName() + " changed password\n" );
 
-			clientOutput.writeUTF( "passwordchanged" );
-			clientOutput.flush();
+				clientOutput.writeUTF( "passwordchanged" );
+				clientOutput.flush();
+			} else {
+				gui.showText( "Database unreachable - Unable to change user password\n" + Time.getTime() + "\n" );
+				clientOutput.writeUTF( "databasedown" );
+				clientOutput.flush();
+			}
 		} catch(IOException e) {}
 	}
 
@@ -180,7 +186,6 @@ public class ArduinoChoices implements Runnable {
 		} catch(IOException e) {
 			try{
 				arduinoStatus = 4;
-				statusToClient();
 				arduinoSocket.close();
 			} catch(IOException e2) {}
 		}

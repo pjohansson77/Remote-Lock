@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  *  A class that verifies the password if the client is a new user.
  *  
- * @author Peter Johansson, Jesper Hansen, Andree Höög
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class ListenToNewClient implements Runnable {
 	private Socket socket;
@@ -36,7 +36,6 @@ public class ListenToNewClient implements Runnable {
 		this.output = output;
 		this.gui = gui;
 		this.table = table;
-		temp = MySQL.readTempMySQL();
 	}
 
 	/**
@@ -48,34 +47,43 @@ public class ListenToNewClient implements Runnable {
 		try {
 			loginInfo = input.readUTF();
 			splitInfo( loginInfo );
-			if( username.equals( temp[ 0 ] ) && password.equals( temp[ 1 ] ) ) {
-				output.writeUTF( "temptrue" );
-				output.flush();
+			if( MySQL.checkDatabase() ) {
+				temp = MySQL.readTempMySQL();
+				
+				if( username.equals( temp[ 0 ] ) && password.equals( temp[ 1 ] ) ) {
+					output.writeUTF( "temptrue" );
+					output.flush();
 
-				loginInfo = input.readUTF();
-				splitInfo( loginInfo );
+					loginInfo = input.readUTF();
+					splitInfo( loginInfo );
 
-				id = getRandomID();
-				while( table.containsKey( id ) ) {
 					id = getRandomID();
+					while( table.containsKey( id ) ) {
+						id = getRandomID();
+					}
+					output.writeUTF( id ); // Sends unique id to client
+					output.flush();
+
+					user = new User( id, username, password );
+					table.put( id, user );
+
+					MySQL.writeToMySQL( id, username, password );
+					gui.showText( "Status: User " + username + " added to server\n" );
+					MySQL.updateTempPWMySQL(); // Updates temp password to a new one
+
+					Thread serverThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id ) );
+					serverThread.start();
+				} else {
+					output.writeUTF( "tempfalse" );
+					output.flush();
+					gui.showText( "Status: Wrong username or password\n" );
+					gui.showText( "Disconnected: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
+					socket.close();
 				}
-				output.writeUTF( id ); // Sends unique id to client
-				output.flush();
-
-				user = new User( id, username, password );
-				table.put( id, user );
-
-				MySQL.writeToMySQL( id, username, password );
-				gui.showText( "Status: User " + username + " added to server\n" );
-				MySQL.updateTempPWMySQL(); // Updates temp password to a new one
-
-				Thread serverThread = new Thread( new ListenToClientPassword( socket, output, input, gui, table, id ) );
-				serverThread.start();
 			} else {
-				output.writeUTF( "tempfalse" );
+				gui.showText( "Database unreachable - Unable to add users\n" + Time.getTime() + "\n" );
+				output.writeUTF( "databasedown" );
 				output.flush();
-				gui.showText( "Status: Wrong username or password\n" );
-				gui.showText( "Disconnected: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
 				socket.close();
 			}
 		} catch(IOException e) {

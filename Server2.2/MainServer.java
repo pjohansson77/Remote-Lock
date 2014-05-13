@@ -5,7 +5,7 @@ import javax.swing.SwingUtilities;
 /**
  * A main class that starts the server.
  * 
- * @author Jesper Hansen, Peter Johansson, Andree Höög
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class MainServer {	
 	public static void main( String[] args ) {

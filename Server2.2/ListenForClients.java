@@ -9,7 +9,7 @@ import java.net.Socket;
 /**
  * A server class that listens for clients and verifies a trusted client with an unique id.
  * 
- * @author Peter Johansson, Jesper Hansen, Andree Höög
+ * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
 public class ListenForClients implements Runnable {
 	private int port;

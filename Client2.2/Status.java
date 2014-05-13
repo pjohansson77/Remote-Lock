@@ -45,6 +45,8 @@ public class Status implements Runnable {
 				} else if( message.equals( "wrongpassword" ) ){
 					choice.setInfoDisplay( "Wrong password" );
 					choice.showChoices();
+				} else if( message.equals( "databasedown" ) ) {
+					choice.setInfoDisplay( "Database unreachable" );
 				} else if( message.equals( "passwordchanged" ) ){
 					choice.setInfoDisplay( "Password changed" );
 				} else {

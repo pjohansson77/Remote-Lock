@@ -2,7 +2,6 @@ package lock;
 
 import java.awt.*;
 import java.awt.event.*;
-
 import javax.swing.*;
 
 /**
@@ -13,7 +12,10 @@ import javax.swing.*;
 public class ConnectGUI {
 	private JFrame frame;
 	private JLabel infoDisplayLbl = new JLabel("Not connected", JLabel.CENTER);
+	private JLabel paddingLbl = new JLabel();
 	private JPanel panel = new JPanel( new BorderLayout() );
+	private JPanel panel2 = new JPanel( new BorderLayout() );
+	private JPanel panel3 = new JPanel( new BorderLayout() );
 	private JPanel panel4 = new JPanel( new GridLayout( 1, 2 ) );
 	private JPanel panel5 = new JPanel( new GridLayout( 1, 2 ) );
 	private JPanel panel6 = new JPanel( new BorderLayout() );
@@ -21,8 +23,8 @@ public class ConnectGUI {
 	private JTextField portTextField = new JTextField("5555");
 	private JButton connectBtn = new JButton("CONNECT");
 	private JButton closeBtn = new JButton("CLOSE");
-	private ConnectGUI gui;
-	private String idTextFile;
+	private JButton deleteBtn = new JButton("Delete ID");
+	private Client client;
 	
 	/**
 	 * Constructor for ConnectGUI class.
@@ -30,13 +32,14 @@ public class ConnectGUI {
 	 * @param idTextFile The client id textfile.
 	 */
 	public ConnectGUI( String idTextFile ) {
+		deleteBtn.setEnabled( false );
+		client = new Client( this, idTextFile ); 
 		frame = new JFrame();
-		gui = this;
-		this.idTextFile = idTextFile;
 		
 		ipTextField.setBorder(BorderFactory.createTitledBorder("Enter IP-address"));
 		portTextField.setBorder(BorderFactory.createTitledBorder("Enter port"));
 		
+		deleteBtn.setFocusable(false);
 		connectBtn.setFocusable(false);
 		closeBtn.setFocusable(false);
 		ipTextField.setFocusable(true);
@@ -44,10 +47,17 @@ public class ConnectGUI {
 		
 		infoDisplayLbl.setFont( new Font( "DialogInput", Font.BOLD, 14 ) );
 		panel.setBackground( new Color( 255, 255, 255 ) );
+		panel2.setBackground( new Color( 255, 255, 255 ) );
 		panel4.setBackground( new Color( 255, 255, 255 ) );
 		panel5.setBackground( new Color( 255, 255, 255 ) );
 		
 		panel.add(infoDisplayLbl, BorderLayout.CENTER);
+		
+		panel2.add(paddingLbl, BorderLayout.CENTER);
+		panel2.add(deleteBtn, BorderLayout.EAST);
+		
+		panel3.add(panel, BorderLayout.CENTER);
+		panel3.add(panel2, BorderLayout.NORTH);
 		
 		panel4.add(ipTextField);
 		panel4.add(portTextField);
@@ -55,16 +65,18 @@ public class ConnectGUI {
 		panel5.add(connectBtn);
 		panel5.add(closeBtn);
 		
-		panel6.add(panel, BorderLayout.NORTH);
+		panel6.add(panel3, BorderLayout.NORTH);
 		panel6.add(panel4, BorderLayout.CENTER);
 		panel6.add(panel5, BorderLayout.SOUTH);
 		
-		connectBtn.setPreferredSize( new Dimension( 400, 40 ) );
-		panel.setPreferredSize( new Dimension( 400, 80 ) );
+		panel2.setPreferredSize( new Dimension( 400, 20 ) );
+		panel3.setPreferredSize( new Dimension( 400, 80 ) );
+		panel5.setPreferredSize( new Dimension( 400, 40 ) );
 		panel6.setPreferredSize( new Dimension( 400, 160 ) );
 		
 		connectBtn.addActionListener( new ButtonListener() );
 		closeBtn.addActionListener( new ButtonListener() );
+		deleteBtn.addActionListener( new ButtonListener() );
 		showLogIn();
 	}
 	
@@ -98,13 +110,24 @@ public class ConnectGUI {
 	}
 	
 	/**
+	 * Function that dims a button.
+	 */
+	public void showDeleteIDBtn() {
+		deleteBtn.setEnabled( true );
+	}
+	
+	/**
 	 * Button listener that listens to all user inputs in ConnectGUI.
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == connectBtn ) {
 				hideFrame();
-				new Client( ipTextField.getText(), Integer.parseInt(portTextField.getText() ), gui, idTextFile ); 
+				client.connect( ipTextField.getText(), Integer.parseInt( portTextField.getText() ) );
+			}
+			if( e.getSource() == deleteBtn ) {
+				client.deleteID();
+				deleteBtn.setEnabled( false );
 			}
 			if( e.getSource() == closeBtn ) {
 				System.exit(0);
