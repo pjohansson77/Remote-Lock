@@ -18,7 +18,8 @@ public class AdminGUI {
 	private JPanel pnlMainInputSTD = new JPanel();
 	private JPanel pnlUserSettings = new JPanel(new BorderLayout());
 	private JPanel pnlUserSettingsBtns = new JPanel();
-	private JPanel pnlAdminSettings = new JPanel();
+	private JPanel panel = new JPanel(new GridLayout(1,2));
+	private JPanel pnlAdminSettings = new JPanel(new BorderLayout());
 	private JButton btnLogin = new JButton("Login");
 	private JButton btnExit = new JButton("Exit");
 	private JButton btnLogout = new JButton("Logout");
@@ -28,8 +29,8 @@ public class AdminGUI {
 	private JButton btnResetPW = new JButton("Reset Password");
 	private JButton btnShowPW = new JButton("Show Current Password");
 	private JButton btnUpdate = new JButton("Update List");
-	private JButton btnChangeTempPW = new JButton("Change Temporary Password");
-	private JButton btnShowTempPW = new JButton("Show Temporary Password");
+	private JButton btnChangeTempPW = new JButton("Change Temp Password");
+	private JButton btnShowTempPW = new JButton("Show Temp Password");
 	private JTextField txtUsername = new JTextField();
 	private JTextArea txtAreaAdmin, txtAreaUser;
 	private JList list;
@@ -94,11 +95,11 @@ public class AdminGUI {
 		txtAreaAdmin.setPreferredSize(new Dimension(390,70));
 		txtAreaAdmin.setEditable(false);
 		txtAreaAdmin.setBorder(BorderFactory.createTitledBorder("Console"));
-		pnlAdminSettings.add(txtAreaAdmin);
-		pnlAdminSettings.add(btnShowTempPW);
-		pnlAdminSettings.add(btnChangeTempPW);
-		btnChangeTempPW.setPreferredSize(new Dimension(195,35));
-		btnShowTempPW.setPreferredSize(new Dimension(195,35));
+		panel.add(btnShowTempPW);
+		panel.add(btnChangeTempPW);
+		pnlAdminSettings.add(txtAreaAdmin, BorderLayout.CENTER);
+		pnlAdminSettings.add(panel, BorderLayout.SOUTH);
+		panel.setPreferredSize(new Dimension(195,35));
 		pnlAdminSettings.setBackground(Color.WHITE);
 		
 		
