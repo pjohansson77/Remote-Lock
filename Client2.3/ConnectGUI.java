@@ -24,6 +24,7 @@ public class ConnectGUI {
 	private JButton connectBtn = new JButton("CONNECT");
 	private JButton closeBtn = new JButton("CLOSE");
 	private JButton deleteBtn = new JButton("Delete ID");
+	private ConnectGUI gui;
 	private Client client;
 	
 	/**
@@ -32,8 +33,9 @@ public class ConnectGUI {
 	 * @param idTextFile The client id textfile.
 	 */
 	public ConnectGUI( String idTextFile ) {
+		this.gui = this;
 		deleteBtn.setEnabled( false );
-		client = new Client( this, idTextFile ); 
+		client = new Client( gui, idTextFile ); 
 		frame = new JFrame();
 		
 		ipTextField.setBorder(BorderFactory.createTitledBorder("Enter IP-address"));
@@ -112,8 +114,8 @@ public class ConnectGUI {
 	/**
 	 * Function that dims a button.
 	 */
-	public void showDeleteIDBtn() {
-		deleteBtn.setEnabled( true );
+	public void showDeleteIDBtn( boolean bool ) {
+		deleteBtn.setEnabled( bool );
 	}
 	
 	/**
@@ -126,8 +128,8 @@ public class ConnectGUI {
 				client.connect( ipTextField.getText(), Integer.parseInt( portTextField.getText() ) );
 			}
 			if( e.getSource() == deleteBtn ) {
-				client.deleteID();
-				deleteBtn.setEnabled( false );
+				hideFrame();
+				new VerifyGUI( gui, client );
 			}
 			if( e.getSource() == closeBtn ) {
 				System.exit(0);
