@@ -78,7 +78,7 @@ public class Client {
 					new FileInputStream( filename ), "UTF-8"));
 			while ( ( str = reader.readLine() ) != null ) {
 				id.setID( str );
-				gui.showDeleteIDBtn();
+				gui.showDeleteIDBtn( true );
 			}
 			reader.close();
 		} catch (IOException e) {
@@ -96,8 +96,8 @@ public class Client {
 			writer.write( "" );
 
 			writer.close();
+		} catch( IOException e1 ) {}
 			id.setID( "" );
 			gui.setInfoDisplay( "User ID deleted" );
-		} catch( IOException e1 ) {}
 	}
 }

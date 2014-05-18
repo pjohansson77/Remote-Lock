@@ -85,7 +85,7 @@ public class LoginNewUserToServer {
 			id.setID( message );
 			writeID( idTextFile );
 			
-			gui.showDeleteIDBtn();
+			gui.showDeleteIDBtn( true );
 			gui2 = new LoginGUI( socket, output, input, gui );
 			gui2.setInfoDisplay( "Added to server" );
 		} catch(Exception e1 ) {

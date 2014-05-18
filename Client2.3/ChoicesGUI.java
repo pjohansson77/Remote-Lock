@@ -55,8 +55,8 @@ public class ChoicesGUI {
 		panel2.setBackground( new Color( 255, 255, 255 ) );
 		
 		infoDisplayLbl.setFont( new Font( "DialogInput", Font.BOLD, 14 ) );
-		infoDisplayLbl.setPreferredSize( new Dimension( 400, 60 ) );
-		panel.setPreferredSize( new Dimension( 400, 150 ) );
+		infoDisplayLbl.setPreferredSize( new Dimension( 400, 90 ) );
+		panel.setPreferredSize( new Dimension( 400, 120 ) );
 		
 		btnVal1.addActionListener( new ButtonListener() );
 		btnVal2.addActionListener( new ButtonListener() );
