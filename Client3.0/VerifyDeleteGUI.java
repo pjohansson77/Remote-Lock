@@ -14,25 +14,30 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Class that handles the arduino choice sequence.
+ * Class that handles a verification choice sequence.
  * 
  * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
-public class LockChoicesGUI {
+public class VerifyDeleteGUI {
 	private JFrame frame;
 	private JPanel panel = new JPanel( new GridLayout( 1, 2 ) );
 	private JPanel panel2 = new JPanel( new BorderLayout() );
-	private JLabel infoDisplayLbl = new JLabel("Choose lock", JLabel.CENTER);
-	private JButton btnChoice1 = new JButton("Front door");
-	private JButton btnChoice2 = new JButton("Back door");
+	private JLabel infoDisplayLbl = new JLabel("Delete ID?", JLabel.CENTER);
+	private JButton btnChoice1 = new JButton("YES");
+	private JButton btnChoice2 = new JButton("NO");
+	private ConnectGUI gui;
+	private Client client;
 	
 	/**
-	 * Constructor for ChoicesGUI class.
+	 * Constructor for VerifyGUI class.
 	 * 
-	 * @param loginToServer A reference to the LoginToServer class.
+	 * @param gui A reference to the ConnectGUI class.
+	 * @param client A reference to the Client class.
 	 */
-	public LockChoicesGUI() {
+	public VerifyDeleteGUI( ConnectGUI gui, Client client ) {
 		frame = new JFrame();
+		this.gui = gui;
+		this.client = client;
 		
 		btnChoice1.setFocusable(false);
 		btnChoice2.setFocusable(false);
@@ -48,7 +53,7 @@ public class LockChoicesGUI {
 		
 		infoDisplayLbl.setFont( new Font( "DialogInput", Font.BOLD, 14 ) );
 		infoDisplayLbl.setPreferredSize( new Dimension( 400, 90 ) );
-		panel.setPreferredSize( new Dimension( 400, 120 ) );
+		panel.setPreferredSize( new Dimension( 400, 40 ) );
 		
 		btnChoice1.addActionListener( new ButtonListener() );
 		btnChoice2.addActionListener( new ButtonListener() );
@@ -57,7 +62,7 @@ public class LockChoicesGUI {
 	}
 	
 	/**
-	 * Function that activates ChoicesGUI.
+	 * Function that activates VerifyGUI.
 	 */
 	public void showChoices() {
 		frame.setVisible( true );
@@ -78,21 +83,26 @@ public class LockChoicesGUI {
 	}
 	
 	/**
-	 * Function that sets ChoicesGUI visible to false.
+	 * Function that sets VerifyGUI visible to false.
 	 */
 	public void hideFrame() {
 		frame.setVisible( false );
 	}
 	
 	/**
-	 * Button listener that listens to all user inputs in ChoicesGUI.
+	 * Button listener that listens to all user inputs in VerifyGUI.
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if( e.getSource() == btnChoice1 ) {
-
-			} else if( e.getSource() == btnChoice2 ) {
-
+				client.deleteID();
+				gui.showDeleteIDBtn( false );
+				gui.showLogIn();
+				frame.dispose();
+			} 
+			if( e.getSource() == btnChoice2 ) {
+				gui.showLogIn();
+				frame.dispose();
 			}
 		}			
 	}

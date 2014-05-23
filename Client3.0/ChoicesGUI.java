@@ -29,9 +29,10 @@ public class ChoicesGUI {
 	private JButton btnChoice1 = new JButton("Unlock door");
 	private JButton btnChoice2 = new JButton("Lock door");
 	private JButton btnChoice3 = new JButton("Change password");
-	private JButton btnChoice4 = new JButton("Log out");
-	private JButton btnChoice5 = new JButton("Change lock");
+	private JButton btnChoice4 = new JButton("Change lock");
+	private JButton btnChoice5 = new JButton("Log out");
 	private LoginToServer loginToServer;
+	private ChoicesGUI choices;
 	
 	/**
 	 * Constructor for ChoicesGUI class.
@@ -41,6 +42,7 @@ public class ChoicesGUI {
 	public ChoicesGUI( LoginToServer loginToServer ) {
 		frame = new JFrame();
 		this.loginToServer = loginToServer;
+		this.choices = this;
 		
 		btnChoice1.setFocusable(false);
 		btnChoice2.setFocusable(false);
@@ -49,7 +51,7 @@ public class ChoicesGUI {
 		btnChoice5.setFocusable(false);
 		
 		panel.add(paddingLbl, BorderLayout.CENTER);
-		panel.add(btnChoice5, BorderLayout.EAST);
+		panel.add(btnChoice4, BorderLayout.EAST);
 		
 		panel2.add(panel, BorderLayout.NORTH);
 		panel2.add(infoDisplayLbl, BorderLayout.CENTER);
@@ -57,7 +59,7 @@ public class ChoicesGUI {
 		panel3.add( btnChoice1 );
 		panel3.add( btnChoice2 );
 		panel3.add( btnChoice3 );
-		panel3.add( btnChoice4 );
+		panel3.add( btnChoice5 );
 		
 		panel4.add(panel2, BorderLayout.NORTH);
 		panel4.add(panel3, BorderLayout.CENTER);
@@ -139,17 +141,21 @@ public class ChoicesGUI {
 		public void actionPerformed(ActionEvent e) {
 			if( e.getSource() == btnChoice1 ) {
 				loginToServer.choices( "1" );
-			} else if( e.getSource() == btnChoice2 ) {
+			} 
+			if( e.getSource() == btnChoice2 ) {
 				loginToServer.choices( "2" );
-			} else if( e.getSource() == btnChoice3 ) {
+			}
+			if( e.getSource() == btnChoice3 ) {
 				loginToServer.choices( "3" );
-			} else if( e.getSource() == btnChoice4 ) {
-				loginToServer.choices( "0" );
-				frame.dispose();
-			} else if( e.getSource() == btnChoice5 ) {
+			} 
+			if( e.getSource() == btnChoice4 ) {
 				hideFrame();
 				loginToServer.choices( "4" );
 			}
+			if( e.getSource() == btnChoice5 ) {
+				hideFrame();
+				new VerifyLogoutGUI( loginToServer, choices );
+			} 
 		}			
 	}
 }

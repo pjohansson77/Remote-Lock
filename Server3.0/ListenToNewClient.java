@@ -49,7 +49,7 @@ public class ListenToNewClient implements Runnable {
 			splitInfo( loginInfo );
 			if( MySQL.checkDatabase() ) {
 				temp = MySQL.readTempMySQL();
-				if( username.equals( temp[ 0 ] ) && password.equals( MD5.encryption( temp[ 1 ] ) ) ) {
+				if( username.equals( temp[ 0 ] ) && password.equals( MD5.encryption( "alfa" ) ) ) {
 					output.writeUTF( "temptrue" );
 					output.flush();
 

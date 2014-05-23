@@ -15,16 +15,17 @@ import javax.swing.text.DefaultCaret;
  * @author Andree Höög, Peter Johansson, Jesper Hansen
  */
 public class ServerGUI {
+	private HeartBeat heartBeat;
 	private ListenForClients server;
 	private JFrame frame;
 	private JPanel panel = new JPanel( new BorderLayout() );
-	private JPanel btnPanel = new JPanel( new GridLayout(1,2) );
+	private JPanel btnPanel = new JPanel( new GridLayout( 1, 2 ) );
 	private JPanel topPanel = new JPanel( new BorderLayout() );
 	private JButton btnStart = new JButton( "Start server" );
 	private JButton btnStop = new JButton( "Stop server" );
 	private JTextArea txtArea = new JTextArea();
 	private JScrollPane scroll = new JScrollPane( txtArea );
-	private JButton btnAdmin = new JButton("Admin Settings");
+	private JButton btnAdmin = new JButton( "Admin Settings" );
 	private JLabel ipLabel = new JLabel();
 	private String consoleText = "";
 	private int port;
@@ -39,7 +40,7 @@ public class ServerGUI {
 		frame = new JFrame( "Server - Remote Lock" );
 		this.port = port;
 		this.gui = this;
-		enableAdminButton(false);
+		enableAdminButton( false );
 		
 		DefaultCaret caret = ( DefaultCaret )txtArea.getCaret();
 		caret.setUpdatePolicy( DefaultCaret.ALWAYS_UPDATE );
@@ -74,8 +75,8 @@ public class ServerGUI {
 	 * Function that activates ServerGUI.
 	 */
 	public void showServerGUI() {
-		frame.setVisible(true);
-		frame.setResizable(false);
+		frame.setVisible( true );
+		frame.setResizable( false );
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		frame.getContentPane().add( panel, BorderLayout.CENTER );
 		frame.setLocation( 600, 100 );
@@ -87,7 +88,7 @@ public class ServerGUI {
 	 */
 	public void showServerInfo() {
 		try {
-			ipLabel.setText("Server-IP: " + InetAddress.getLocalHost().getHostAddress() + " Port: " + port );
+			ipLabel.setText( "Server-IP: " + InetAddress.getLocalHost().getHostAddress() + " Port: " + port );
 		} catch ( UnknownHostException e ) {
 			e.printStackTrace();
 		}
@@ -99,7 +100,7 @@ public class ServerGUI {
 	 * @param txt Message in a String.
 	 */
 	public void showText( String str ) {
-		consoleText += str+"\n";
+		consoleText += str + "\n";
 		txtArea.setText( consoleText );
 	}
 	
@@ -107,37 +108,44 @@ public class ServerGUI {
 	 * Function that enables or disables the admin button
 	 * @param b boolean true or false
 	 */
-	public void enableAdminButton(boolean b) {
-		btnAdmin.setEnabled(b);
+	public void enableAdminButton( boolean bool ) {
+		btnAdmin.setEnabled( bool );
 	}
 	
 	/**
 	 * Button listener that listens to all user inputs in ServerGUI.
 	 */
 	private class ButtonListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed( ActionEvent e ) {
 			if( e.getSource() == btnStart ) {
 				if( MySQL.checkDatabase() ) {
 					showText( "Server started: " + Time.getTime() + "\n" );
-					btnStart.setEnabled(false);
-					btnStop.setEnabled(true);
 					showServerInfo();
+					
+					btnStart.setEnabled( false );
+					btnStop.setEnabled( true );
+					enableAdminButton( true );
+					
+					Thread arduinoThread = new Thread( heartBeat = new HeartBeat() );
+					arduinoThread.start();
+					
 					Thread connectThread = new Thread( server = new ListenForClients( port, gui ) );
 					connectThread.start();
-					enableAdminButton(true);
 				} else {
 					gui.showText( "Database unreachable - Unable to start\n" + Time.getTime() + "\n" );
 				}
 			}
 			if( e.getSource() == btnStop ) {
+				heartBeat.stopArduinoCheck();
 				showText( "Server closed: " + Time.getTime() );
-				btnStart.setEnabled(true);
-				btnStop.setEnabled(false);
-				enableAdminButton(false);
+				
+				btnStart.setEnabled( true );
+				btnStop.setEnabled( false );
+				enableAdminButton( false );
 				server.terminate();
 			}
 			if (e.getSource() == btnAdmin ) {
-				enableAdminButton(false);
+				enableAdminButton( false );
 				server.startAdminGUI();
 				server.showAdminFrame();		
 			}

@@ -14,7 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Class that handles arduino lock choices.
+ * Class that handles the lock choices sequence.
  * 
  * @author Peter Johansson, Andree Höög, Jesper Hansen
  */

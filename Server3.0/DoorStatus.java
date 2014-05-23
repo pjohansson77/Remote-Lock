@@ -13,17 +13,19 @@ public class DoorStatus implements Runnable {
 	private Socket clientSocket;
 	private int counter = 0;
 	private TalkToArduino talkToArduinoClient, talkToArduinoStatus;
+	private DataOutputStream ClientOutput;
 
 	/**
 	 * A class constructor that gets the current socket, current streams and a reference to the ArduinoChoices class.
 	 * 
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
-	 * @param gui A reference to the ArduinoChoices class.
+	 * @param gui A reference to the TalkToArduino class.
 	 */
 	public DoorStatus( Socket socket, DataOutputStream output, TalkToArduino talkToArduinoClient ) {
+		this.ClientOutput = output;
 		this.talkToArduinoClient = talkToArduinoClient;
-		talkToArduinoStatus = new TalkToArduino( output );
+		talkToArduinoStatus = new TalkToArduino();
 		this.clientSocket = socket;
 	}
 
@@ -32,16 +34,16 @@ public class DoorStatus implements Runnable {
 	 */
 	public void run() {
 		while( !clientSocket.isClosed() ) {
-			try{
-				talkToArduinoStatus.setArduino( talkToArduinoClient.getArduino() );
-				talkToArduinoStatus.arduinoLock( "8" );		
+			try{	
 				if( counter < 1) {
+					talkToArduinoStatus.setArduino( talkToArduinoClient.getArduino() );
+					talkToArduinoStatus.arduinoLock( "8" );	
 					if( talkToArduinoClient.getArduinoStatus() != talkToArduinoStatus.getArduinoStatus() ) {
 						talkToArduinoClient.setArduinoStatus( talkToArduinoStatus.getArduinoStatus() );
 						counter++;
-						talkToArduinoStatus.statusToClient();
+						talkToArduinoStatus.statusToClient( ClientOutput );
 					}
-					Thread.sleep( 15000 );
+					Thread.sleep( 2000 ); // Controls the time that checks arduino status
 				} else {
 					clientSocket.close();
 				}

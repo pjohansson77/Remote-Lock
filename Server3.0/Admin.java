@@ -45,6 +45,16 @@ public class Admin {
 	}
 	
 	/**
+	 * A function that returns a username from an array.
+	 * 
+	 * @param selectedIndex index in an array.
+	 * @return a username.
+	 */
+	public String getUsername( int selectedIndex ) {
+		return users[selectedIndex].getName();
+	}
+	
+	/**
 	 * A function that creates a new DefaultListModel and adds the
 	 * names of all users to it.
 	 * 
@@ -70,18 +80,6 @@ public class Admin {
 			getModel().remove(selectedIndex);
 			MySQL.deleteSpecificUser( table, users[selectedIndex].getID() );
 			gui.showTextUser("User: " + users[selectedIndex].getName() + "\nhas been removed.");
-		} else
-			gui.showTextUser(SELECT_USER);
-	}
-	
-	/**
-	 * A function that shows the password for a specific user
-	 * 
-	 * @param selectedIndex the index for a specific user in the array
-	 */
-	public void showPassword(int selectedIndex) {
-		if (selectedIndex >= 0) {
-			gui.showTextUser("User: " + users[selectedIndex].getName() + "\nCurrent Password: " + users[selectedIndex].getPassword());
 		} else
 			gui.showTextUser(SELECT_USER);
 	}

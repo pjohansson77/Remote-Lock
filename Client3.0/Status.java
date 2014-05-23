@@ -49,6 +49,11 @@ public class Status implements Runnable {
 					choice.setInfoDisplay( "Database unreachable" );
 				} else if( message.equals( "passwordchanged" ) ){
 					choice.setInfoDisplay( "Password changed" );
+				} else if( message.equals( "powerdown" ) ){
+					choice.setInfoDisplay( "Power supply is down" );
+					doorStatus();
+					output.writeUTF( "ok" );
+					output.flush();
 				} else {
 					choice.setInfoDisplay( "Door " + message );
 					doorStatus();

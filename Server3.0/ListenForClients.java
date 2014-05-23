@@ -32,7 +32,7 @@ public class ListenForClients implements Runnable {
 	 */
 	public ListenForClients( int port, ServerGUI gui ) {
 		this.port = port;
-		this.table = new HashtableOH<String, User>(10);
+		this.table = new HashtableOH<String, User>( 10 );
 		MySQL.readMySQL( table, user );
 		this.gui = gui;
 	}
@@ -51,7 +51,7 @@ public class ListenForClients implements Runnable {
 					input = new DataInputStream( socket.getInputStream() );
 					id = input.readUTF();
 					gui.showText( "Inloggningsid: " + id + "\n");
-					
+
 					// If the unique id is known the client only needs to input the password. 
 					if( table.containsKey( id ) ) {
 						gui.showText( "Status: User " + table.get( id ).getName() + " is trusted\n" );
@@ -92,18 +92,19 @@ public class ListenForClients implements Runnable {
 	public void terminate() {
 		try {
 			listen = false;
+			socket.close();
 			serverSocket.close();
 		} catch( Exception e ) {}
 	}
-	
+
 	/**
 	 * A function that enables or disables the admin button in the server interface.
 	 * @param b boolean true or false
 	 */
-	public void enableAdminButton(boolean b) {
-		gui.enableAdminButton(b);		
+	public void enableAdminButton( boolean bool ) {
+		gui.enableAdminButton( bool );		
 	}
-	
+
 	/**
 	 * Returns a reference to this hashtable
 	 * @return a hashtable
@@ -111,19 +112,19 @@ public class ListenForClients implements Runnable {
 	public HashtableOH<String, User> getTable() {
 		return this.table;
 	}
-	
+
 	/**
 	 * A function that creates a reference to an new AdminGUI with reference
 	 * to this server.
 	 */
 	public void startAdminGUI() {
-		adminGUI = new AdminGUI(this);
+		adminGUI = new AdminGUI( this );
 	}
-	
+
 	/**
 	 * Sets the visibility to the adminGUI to true
 	 */
 	public void showAdminFrame() {
-		adminGUI.showFrame(true);
+		adminGUI.showFrame( true );
 	}
 }

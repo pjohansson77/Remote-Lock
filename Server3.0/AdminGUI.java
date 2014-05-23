@@ -39,6 +39,7 @@ public class AdminGUI {
 	private Admin admin;
 	private ListenForClients server;
 	private JScrollPane scrollPane;
+	private AdminGUI gui;
 	
 	/**
 	* Constructs a AdminGUI with a reference to the server
@@ -46,6 +47,7 @@ public class AdminGUI {
 	* @param server A reference to the server
 	*/
 	public AdminGUI(ListenForClients server) {
+		this.gui = this;
 		this.server = server;
 		this.admin = new Admin(this, server);
 		pnlCont.setLayout(c1);
@@ -182,6 +184,13 @@ public class AdminGUI {
 		txtPassword.setText("");
 	}
 	
+	/**
+	 * A function that updates the user list.
+	 */
+	public void updateModel() {
+		list.setModel(admin.getModel());
+	}
+	
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == btnLogin) {
@@ -216,12 +225,19 @@ public class AdminGUI {
 			}
 			
 			if (e.getSource() == btnRemoveUser) {
-				admin.remove( list.getSelectedIndex() );
-				list.setModel(admin.getModel());
+				showFrame(false);
+				VerifyGUI verify = new VerifyGUI( gui, admin, list.getSelectedIndex() );
+				verify.setInfoDisplay( "Remove user: " + admin.getUsername( list.getSelectedIndex() ) + "?" );
+				verify.setRemove( true );
+				verify.setReset( false );
 			}
 			
 			if (e.getSource() == btnResetPW) {
-				admin.resetPassword(list.getSelectedIndex());
+				showFrame(false);
+				VerifyGUI verify = new VerifyGUI( gui, admin, list.getSelectedIndex() );
+				verify.setInfoDisplay( "Reset password for user: " + admin.getUsername( list.getSelectedIndex() ) + "?" );
+				verify.setRemove( false );
+				verify.setReset( true );
 			}
 			
 			if (e.getSource() == btnChangeTempPW) {

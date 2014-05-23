@@ -33,7 +33,7 @@ public class ArduinoChoices implements Runnable {
 	 * @param id A user id.
 	 */
 	public ArduinoChoices( Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id ) {
-		talkToArduinoClient = new TalkToArduino( output );
+		talkToArduinoClient = new TalkToArduino();
 		this.clientSocket = socket;
 		this.clientInput = input;
 		this.clientOutput = output;
@@ -69,7 +69,7 @@ public class ArduinoChoices implements Runnable {
 					} else if( message.equals( "arduino" ) ) {
 						talkToArduinoClient.setArduino( clientMessage );
 						talkToArduinoClient.arduinoLock( "8" );
-						talkToArduinoClient.statusToClient();
+						talkToArduinoClient.statusToClient( clientOutput );
 						gui.showText( "Status: User " + table.get( id ).getName() + " changed to lock " + clientMessage + "\n" );
 					} else {
 						clientOutput.writeUTF( "wrongpassword" );
@@ -78,13 +78,13 @@ public class ArduinoChoices implements Runnable {
 				} else {
 					if( message.equals( "ok" ) ) {
 						doorStatus.resetCounter();
-					}else if( message.equals( "0" ) ) {
+					} else if( message.equals( "0" ) ) {
 						connected = false;
 						status = "disconnected";
 						gui.showText( "Status: User " + table.get( id ).getName() + " " + status + "\n" );
 					} else {
 						talkToArduinoClient.arduinoLock( message );
-						talkToArduinoClient.statusToClient();
+						talkToArduinoClient.statusToClient( clientOutput );
 						gui.showText( "Status: Door is " + talkToArduinoClient.getStatus() + " by " + table.get( id ).getName() + "\nTime: " + Time.getTime() + "\n" );
 					} 
 				} 

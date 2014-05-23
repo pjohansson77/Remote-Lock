@@ -9,18 +9,16 @@ import java.util.Random;
 
 public class TalkToArduino {
 	private String status, arduino = "1";
-	private int num, arduinoStatus;
+	private int num, arduinoStatus = 0;
 	private Socket arduinoSocket;
 	private DataInputStream arduinoInput;
-	private DataOutputStream arduinoOutput, clientOutput;
+	private DataOutputStream arduinoOutput;
 	private Random rand = new Random();
-			
-	public TalkToArduino( DataOutputStream clientOutput ) {
-		this.clientOutput = clientOutput;
-	}
 	
 	/**
 	 * A function that gets the current arduino lock.
+	 * 
+	 * @return 1 or 2.
 	 */
 	public String getArduino() {
 		return arduino;
@@ -28,6 +26,8 @@ public class TalkToArduino {
 	
 	/**
 	 * A function that sets the current arduino lock.
+	 * 
+	 * @param arduino sets the arduino lock in use.
 	 */
 	public void setArduino( String arduino ) {
 		this.arduino = arduino;
@@ -35,6 +35,8 @@ public class TalkToArduino {
 	
 	/**
 	 * A function that gets the current arduino status.
+	 * 
+	 * @return current arduino status from the arduino as an int.
 	 */
 	public int getArduinoStatus() {
 		return arduinoStatus;
@@ -42,6 +44,8 @@ public class TalkToArduino {
 
 	/**
 	 * A function that sets the current arduino status.
+	 * 
+	 * @param arduinoStatus sets current arduino status in use.
 	 */
 	public void setArduinoStatus( int arduinoStatus ) {
 		this.arduinoStatus = arduinoStatus;
@@ -49,6 +53,8 @@ public class TalkToArduino {
 	
 	/**
 	 * A function that gets the current status.
+	 * 
+	 * @return current arduino status from the arduino as a String.
 	 */
 	public String getStatus() {
 		return status;
@@ -78,7 +84,7 @@ public class TalkToArduino {
 				arduinoSocket.close();
 			} else {
 				if( num == 8 ) {
-					num = rand.nextInt( 4 ) + 1;
+					num = rand.nextInt( 5 ) + 1;
 				}
 				arduinoStatus = num;
 			}
@@ -89,11 +95,11 @@ public class TalkToArduino {
 			} catch(IOException e2) {}
 		}
 	}
-	
+
 	/**
 	 * A function that sends the arduinostatus to the client.
 	 */
-	public void statusToClient() {
+	public void statusToClient( DataOutputStream clientOutput ) {
 		try{
 			if( arduinoStatus == 1 ) {
 				status = "unlocked";
@@ -103,6 +109,8 @@ public class TalkToArduino {
 				status = "open";
 			} else if( arduinoStatus == 4 ){
 				status = "unreachable";
+			} else if( arduinoStatus == 5 ){
+				status = "powerdown";
 			}
 			clientOutput.writeUTF( status );
 			clientOutput.flush();

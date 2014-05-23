@@ -128,8 +128,8 @@ public class ConnectGUI {
 				client.connect( ipTextField.getText(), Integer.parseInt( portTextField.getText() ) );
 			}
 			if( e.getSource() == deleteBtn ) {
+				new VerifyDeleteGUI( gui, client );
 				hideFrame();
-				new VerifyGUI( gui, client );
 			}
 			if( e.getSource() == closeBtn ) {
 				System.exit(0);
