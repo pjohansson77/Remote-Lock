@@ -59,10 +59,8 @@ public class LoginToServer {
 				gui.setInfoDisplay( "Disconnected" );
 				gui.showLogIn();
 			} else {
-				gui2.hideFrame();
-				gui.setInfoDisplay( "Wrong password" );
-				gui.showLogIn();
-				socket.close();
+				gui2.setInfoDisplay( "Wrong password" );
+				gui2.showLogIn();
 			} 
 		} catch( Exception e1 ) {
 			System.out.println( e1 );

@@ -45,21 +45,19 @@ public class ListenToClientPassword implements Runnable {
 	public void run() {
 		try {
 			String clientPassword = input.readUTF();
-			if( clientPassword.equals( table.get( id ).getPassword() ) ) {
-				output.writeUTF( "passwordtrue" );
-				output.flush();
-				gui.showText( "Status: User " + table.get( id ).getName() + " connected\n" );
 
-				Thread serverThread = new Thread( new ArduinoChoices( list, socket, output, input, gui, table, id ) );
-				serverThread.start();
-			} else {
+			while( !clientPassword.equals( table.get( id ).getPassword() ) ) {
 				output.writeUTF( "passwordfalse" );
 				output.flush();
-				gui.showText( "Status: Wrong password\n" );
-				gui.showText( "Disconnected: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
-				socket.close();
-				removeSocket();
+				gui.showText( "Status: Wrong password from user " + table.get( id ).getName() + "\n" );
+				clientPassword = input.readUTF();
 			}
+			output.writeUTF( "passwordtrue" );
+			output.flush();
+			gui.showText( "Status: User " + table.get( id ).getName() + " connected\n" );
+
+			Thread serverThread = new Thread( new ArduinoChoices( list, socket, output, input, gui, table, id ) );
+			serverThread.start();
 		} catch(IOException e) {
 			try{
 				gui.showText( "Disconnected: " + Time.getTime() + "\nIP-address: " + socket.getInetAddress().getHostAddress() + "\n" );
