@@ -21,6 +21,7 @@ public class Status implements Runnable {
 	/**
 	 * A class constructor that gets a reference to the ChoicesGUI class, current streams and a reference to the LoginGUI class.
 	 * 
+	 * @param gui A reference to the ConnectGUI class.
 	 * @param choice A reference to the ChoiceGUI class. 
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.

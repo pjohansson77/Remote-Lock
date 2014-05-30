@@ -29,10 +29,10 @@ public class VerifyLogoutGUI {
 	private ChoicesGUI choices;
 	
 	/**
-	 * Constructor for VerifyLogout class.
+	 * Constructor for VerifyLogoutGUI class.
 	 * 
-	 * @param gui A reference to the ConnectGUI class.
-	 * @param client A reference to the Client class.
+	 * @param login A reference to the LoginToServer class.
+	 * @param choice A reference to the ChoiceGUI class. 
 	 */
 	public VerifyLogoutGUI(LoginToServer login, ChoicesGUI choices ) {
 		frame = new JFrame();
@@ -62,7 +62,7 @@ public class VerifyLogoutGUI {
 	}
 	
 	/**
-	 * Function that activates VerifyLogout.
+	 * Function that activates VerifyLogoutGUI.
 	 */
 	public void showChoices() {
 		frame.setVisible( true );
@@ -83,14 +83,14 @@ public class VerifyLogoutGUI {
 	}
 	
 	/**
-	 * Function that sets VerifyLogout visible to false.
+	 * Function that sets VerifyLogoutGUI visible to false.
 	 */
 	public void hideFrame() {
 		frame.setVisible( false );
 	}
 	
 	/**
-	 * Button listener that listens to all user inputs in VerifyLogout.
+	 * Button listener that listens to all user inputs in VerifyLogoutGUI.
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {

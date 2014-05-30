@@ -26,6 +26,7 @@ public class ListenToNewClient implements Runnable {
 	/**
 	 * A constructor that receives the current socket, current streams, a reference to the server GUI and a hashtable of users.
 	 * 
+	 * @param list An array list.
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.

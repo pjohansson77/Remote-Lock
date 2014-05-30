@@ -32,7 +32,7 @@ public class LoginGUI {
 	/**
 	 * Constructor for LoginGUI class.
 	 * 
-	 * @param client Client
+	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 * @param gui A reference to the ConnectGUI class.

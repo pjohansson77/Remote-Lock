@@ -98,6 +98,8 @@ public class TalkToArduino {
 
 	/**
 	 * A function that sends the current arduinostatus to the client.
+	 * 
+	 * @param clientOutput The active OutputStream.
 	 */
 	public void statusToClient( DataOutputStream clientOutput ) {
 		try{

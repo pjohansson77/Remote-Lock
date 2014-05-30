@@ -29,7 +29,7 @@ public class VerifyDeleteGUI {
 	private Client client;
 	
 	/**
-	 * Constructor for VerifyGUI class.
+	 * Constructor for VerifyDeleteGUI class.
 	 * 
 	 * @param gui A reference to the ConnectGUI class.
 	 * @param client A reference to the Client class.
@@ -62,7 +62,7 @@ public class VerifyDeleteGUI {
 	}
 	
 	/**
-	 * Function that activates VerifyGUI.
+	 * Function that activates VerifyDeleteGUI.
 	 */
 	public void showChoices() {
 		frame.setVisible( true );
@@ -83,14 +83,14 @@ public class VerifyDeleteGUI {
 	}
 	
 	/**
-	 * Function that sets VerifyGUI visible to false.
+	 * Function that sets VerifyDeleteGUI visible to false.
 	 */
 	public void hideFrame() {
 		frame.setVisible( false );
 	}
 	
 	/**
-	 * Button listener that listens to all user inputs in VerifyGUI.
+	 * Button listener that listens to all user inputs in VerifyDeleteGUI.
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {

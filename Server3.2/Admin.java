@@ -1,10 +1,7 @@
 package lock;
 
 import java.util.Iterator;
-import java.util.Random;
-
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 
 /**
  * An Admin class that handles all the requests from the AdminGUI
@@ -15,7 +12,6 @@ public class Admin {
 	private AdminGUI gui;  
 	private User[] users;
 	private HashtableOH <String, User> table;
-	private final String SELECT_USER = "You have to select a user!";
 
 	/**
 	 * A constructor that receives a reference to the AdminGUI
@@ -58,14 +54,13 @@ public class Admin {
 	 * 
 	 * @return listModel a DefaultListModel containing all the names of the users. 
 	 */
-	public DefaultListModel getModel() { 
+	public DefaultListModel<String> getList() { 
 		updateUserList();
-		DefaultListModel listModel = new DefaultListModel();
+		DefaultListModel<String> listModel = new DefaultListModel<String>();
 		for (int i=0; i< users.length; i++) {
 			listModel.addElement(users[i].getName());
 		}
 		return listModel;
-
 	}
 
 	/**
@@ -74,9 +69,9 @@ public class Admin {
 	 * @param selectedIndex the index of the user in the list 
 	 */
 	public void remove(int selectedIndex) {
-		getModel().remove(selectedIndex);
-		gui.updateList();
+		getList().remove(selectedIndex);
 		MySQL.deleteSpecificUser( table, users[selectedIndex].getID() );
+		gui.updateList();
 		gui.showTextUser("User: " + users[selectedIndex].getName() + "\nhas been removed.");
 	}
 
@@ -86,8 +81,7 @@ public class Admin {
 	 * @param selectedIndex the index for a specific user in the array
 	 */
 	public void resetPassword(int selectedIndex) {
-		MySQL.updateMySQLPassword(MD5.encryption("0000"), users[selectedIndex].getID());
-		table.get( users[selectedIndex].getID() ).setPassword( MD5.encryption("0000") );
+		MySQL.updateMySQLPassword(table, MD5.encryption("0000"), users[selectedIndex].getID());
 		gui.showTextUser("Password has been reset for\nuser: " + users[selectedIndex].getName() + ".");
 	}
 

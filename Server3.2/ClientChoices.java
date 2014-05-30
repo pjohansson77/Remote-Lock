@@ -10,9 +10,9 @@ import java.net.Socket;
  * 
  * @author Peter Johansson, Andree Höög, Jesper Hansen
  */
-public class ArduinoChoices implements Runnable {
+public class ClientChoices implements Runnable {
 	private String message, id, clientMessage, status;
-	private boolean connected = true;
+	private boolean connected = true, oldpassword = false;
 	private Socket clientSocket;
 	private DataInputStream clientInput;
 	private DataOutputStream clientOutput;
@@ -26,6 +26,7 @@ public class ArduinoChoices implements Runnable {
 	 * A class constructor that gets the current socket, current streams, a reference 
 	 * to a hashtable, a reference to a user id and a reference to the ServerGUI class.
 	 * 
+	 * @param list An array list.
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
@@ -33,7 +34,7 @@ public class ArduinoChoices implements Runnable {
 	 * @param table A hashtable that stores users.
 	 * @param id A user id.
 	 */
-	public ArduinoChoices( ArrayList<Socket> list, Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id ) {
+	public ClientChoices( ArrayList<Socket> list, Socket socket, DataOutputStream output, DataInputStream input, ServerGUI gui, HashtableOH<String, User> table, String id ) {
 		talkToArduinoClient = new TalkToArduino();
 		this.clientSocket = socket;
 		this.clientInput = input;
@@ -45,19 +46,13 @@ public class ArduinoChoices implements Runnable {
 	}
 
 	/**
-	 * A function that gets the current arduino status and then starts a new 
-	 * thread that monitors the arduino status for changes and informs the client.
+	 * A function that starts a new thread that monitors the arduino
+	 * status for changes and then listens to clients choices.
 	 */
 	public void run() {
 		Thread Status = new Thread( doorStatus = new DoorStatus( clientSocket, clientOutput, talkToArduinoClient ) );
 		Status.start();
-		listenToArduinoChoices();
-	}
-
-	/**
-	 * A function that listens to the clients choices.
-	 */
-	public void listenToArduinoChoices() {
+		
 		try{			
 			while( connected ) {
 				message = clientInput.readUTF();
@@ -66,8 +61,10 @@ public class ArduinoChoices implements Runnable {
 					if( message.equals( "changepassword" ) && table.get( id ).getPassword().equals( clientMessage ) ) {
 						clientOutput.writeUTF( "sendnewpassword" );
 						clientOutput.flush();
-					} else if( message.equals( "newpassword" ) ) {
+						oldpassword = true;
+					} else if( message.equals( "newpassword" ) && oldpassword ) {
 						setNewPassword();
+						oldpassword = false;
 					} else if( message.equals( "arduino" ) ) {
 						talkToArduinoClient.setArduino( clientMessage );
 						talkToArduinoClient.arduinoLock( "8" );
@@ -112,7 +109,7 @@ public class ArduinoChoices implements Runnable {
 		try{
 			if( MySQL.checkDatabase() ) {
 				table.get( id ).setPassword( clientMessage );
-				MySQL.updateMySQLPassword( clientMessage, id );
+				MySQL.updateMySQLPassword( table, clientMessage, id );
 				gui.showText( "Status: User " + table.get( id ).getName() + " changed password\n" );
 
 				clientOutput.writeUTF( "passwordchanged" );

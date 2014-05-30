@@ -29,7 +29,6 @@ public class HeartBeat implements Runnable {
 	public void run() {
 		while( check ) {
 			try{	
-				status.setArduino( "1" );
 				status.arduinoLock( "8" );	
 				Thread.sleep( 15000 );
 			} catch(Exception e) {}

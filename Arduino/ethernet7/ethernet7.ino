@@ -48,7 +48,7 @@ void loop() {
 
   // If the power supply for the lock goes down, 
   // "Power down" is written on the display.  
-  if(power < 500 && !doorNotClosed){ // Power down
+  if(power < 500){ // Power down
    lcd.clear();
    lcd.print("Power down");
    unlock = false;
@@ -58,21 +58,6 @@ void loop() {
   }else{
    lcd.clear();
   }    
- 
-  // If the power supply for the lock goes down and the door is open, 
-  // "Power down" and "Door open" is written on the display.  
-  if(power < 500 && doorNotClosed){
-   lcd.clear();
-   lcd.print("Power down");
-   lcd.setCursor(0, 1);
-   lcd.print("Door open");
-   unlock = false;
-   digitalWrite(ledGreen, LOW);
-   digitalWrite(ledRed, HIGH);
-   server.write(5);
-  }else{
-   lcd.clear();
-  } 
  
   // If there is a client and there is an avaliable connection
   if(client) {
@@ -129,7 +114,7 @@ void loop() {
             
           // An 8 from the server means a status query and the
           // arduino chooses a status depending on which is correct.
-          if(input == 8 && doorNotClosed) {
+          if(input == 8 && doorNotClosed && power > 500) {
             server.write(3);
             lcd.print("Door open");
             delay(2000);

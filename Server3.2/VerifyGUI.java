@@ -31,11 +31,11 @@ public class VerifyGUI {
 	private boolean reset = false, remove = false;
 	
 	/**
-	 * Constructor for VerifyRemove class.
+	 * Constructor for VerifyGUI class.
 	 * 
 	 * @param gui A reference to the AdminGUI class.
-	 * @param client A reference to the Admin class.
-	 * @param userIndex A int that represent the place in the list.
+	 * @param admin A reference to the Admin class.
+	 * @param userIndex A int that represent a place in the list.
 	 */
 	public VerifyGUI(AdminGUI gui, Admin admin, int userIndex) {
 		this.userIndex = userIndex;
@@ -87,7 +87,7 @@ public class VerifyGUI {
 	}
 	
 	/**
-	 * Function that sets VerifyRemove visible to false.
+	 * Function that sets VerifyGUI visible to false.
 	 */
 	public void hideFrame() {
 		frame.setVisible( false );
@@ -112,7 +112,7 @@ public class VerifyGUI {
 	}
 	
 	/**
-	 * Button listener that listens to all user inputs in VerifyRemove.
+	 * Button listener that listens to all user inputs in VerifyGUI.
 	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {

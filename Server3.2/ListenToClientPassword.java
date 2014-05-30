@@ -22,6 +22,7 @@ public class ListenToClientPassword implements Runnable {
 	/**
 	 * The constructor receives the current socket, current streams, a reference to the server GUI and the user password.
 	 * 
+	 * @param list An array list.
 	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
@@ -56,7 +57,7 @@ public class ListenToClientPassword implements Runnable {
 			output.flush();
 			gui.showText( "Status: User " + table.get( id ).getName() + " connected\n" );
 
-			Thread serverThread = new Thread( new ArduinoChoices( list, socket, output, input, gui, table, id ) );
+			Thread serverThread = new Thread( new ClientChoices( list, socket, output, input, gui, table, id ) );
 			serverThread.start();
 		} catch(IOException e) {
 			try{

@@ -110,15 +110,18 @@ public class MySQL {
     /**
 	 * A static function that updates the user password in the database.
 	 * 
+	 * @param table A hashtable.
 	 * @param newClientPassword A new user password.
 	 * @param id User id.
 	 */
-    public static void updateMySQLPassword( String newClientPassword, String id ) {
+    public static void updateMySQLPassword( HashtableOH<String, User> table, String newClientPassword, String id ) {
     	try {
     		connect();
     		
 			String insert = "UPDATE ac9457.users SET password = '" + newClientPassword + "' WHERE id = '" + id + "'";
 			statement.executeUpdate( insert );
+			
+			table.get( id ).setPassword( newClientPassword );
 			
 			disconnect();
 		} catch(SQLException e) {

@@ -33,7 +33,7 @@ public class AdminGUI {
 	private JButton btnShowTempPW = new JButton("Show Temp Password");
 	private JTextField txtUsername = new JTextField();
 	private JTextArea txtAreaAdmin, txtAreaUser;
-	private JList list;
+	private JList<String> list;
 	private JPasswordField txtPassword = new JPasswordField();
 	private CardLayout c1 = new CardLayout();
 	private Admin admin;
@@ -72,7 +72,7 @@ public class AdminGUI {
 
 
 		// builds the panel for user settings
-		list = new JList(admin.getModel());
+		list = new JList<String>(admin.getList());
 		list.setBorder(BorderFactory.createTitledBorder("Users"));
 		scrollPane = new JScrollPane(list);	
 		pnlUserSettings.add(scrollPane, BorderLayout.CENTER);		
@@ -189,7 +189,7 @@ public class AdminGUI {
 	 * A function that updates the user list.
 	 */
 	public void updateList() {
-		list.setModel(admin.getModel());
+		list.setModel(admin.getList());
 	}
 
 	private class ButtonListener implements ActionListener {
@@ -218,7 +218,7 @@ public class AdminGUI {
 			if (e.getSource() == btnAdminSettings) {
 				c1.show(pnlMainInputSTD, "4");
 				frame.setSize(400, 175);
-				list.setModel(admin.getModel());
+				list.setModel(admin.getList());
 			}
 			if (e.getSource() == btnExit) {
 				showFrame(false);
@@ -261,7 +261,7 @@ public class AdminGUI {
 
 			if (e.getSource() == btnUpdate) {
 				clearAllDisplays();
-				list.setModel(admin.getModel());
+				updateList();
 			}	
 		}
 	}	

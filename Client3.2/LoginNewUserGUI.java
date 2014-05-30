@@ -33,7 +33,7 @@ public class LoginNewUserGUI {
 	/**
 	 * Constructor for LoginNewUserGUI class.
 	 * 
-	 * @param client A reference to the Client class
+	 * @param socket The active socket.
 	 * @param output The active OutputStream.
 	 * @param input The active InputStream.
 	 * @param gui A reference to the ConnectGUI class.
