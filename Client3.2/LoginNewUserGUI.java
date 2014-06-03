@@ -156,9 +156,12 @@ public class LoginNewUserGUI {
 			if( e.getSource() == okBtn && !userTextField.getText().equals( "" ) && !charToString( passwordTextField.getPassword() ).equals( "" ) && !login ) {
 				hideFrame();
 				loginNewUserToServer.sendLogin( userTextField.getText(), charToString( passwordTextField.getPassword() ) );
-			} else if( e.getSource() == okBtn && !userTextField.getText().equals( "" ) && !charToString( passwordTextField.getPassword() ).equals( "" ) && login ) {
+			} else if( e.getSource() == okBtn && !userTextField.getText().equals( "" ) && !charToString( passwordTextField.getPassword() ).equals( "" ) 
+					&& login && !userTextField.getText().contains( ";" ) ) {
 				hideFrame();
 				loginNewUserToServer.startInfoLogin( userTextField.getText(), charToString( passwordTextField.getPassword() ) );
+			} else if( userTextField.getText().contains( ";" ) ) {
+				setInfoDisplay( "The character ; is not valid" );
 			} else if( e.getSource() == cancelBtn ) {
 				gui.setInfoDisplay( "Not connected" );
 				gui.showLogIn();
