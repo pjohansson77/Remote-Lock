@@ -69,10 +69,10 @@ public class Admin {
 	 * @param selectedIndex the index of the user in the list 
 	 */
 	public void remove(int selectedIndex) {
+		gui.showTextUser("User: " + users[selectedIndex].getName() + "\nhas been removed.");
 		getList().remove(selectedIndex);
 		MySQL.deleteSpecificUser( table, users[selectedIndex].getID() );
 		gui.updateList();
-		gui.showTextUser("User: " + users[selectedIndex].getName() + "\nhas been removed.");
 	}
 
 	/**
